@@ -1,0 +1,7 @@
+.venv
+tests
+*.db
+*.sqlite3
+.env
+Dockerfile
+.github

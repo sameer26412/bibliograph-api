@@ -1,0 +1,1137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BiblioGraph Admin — Librarian Console</title>
+  <style>
+    :root {
+      --bg: #f5f5f7;
+      --surface: #ffffff;
+      --surface-soft: #fbfbfd;
+      --glass: rgba(255, 255, 255, 0.85);
+      --border: rgba(0, 0, 0, 0.08);
+      --border-strong: rgba(0, 0, 0, 0.14);
+      --text: #1d1d1f;
+      --text-secondary: #515154;
+      --text-muted: #86868b;
+      --blue: #0071e3;
+      --blue-hover: #0077ed;
+      --blue-soft: #edf5ff;
+      --green: #1e8e3e;
+      --green-soft: #e9f7ee;
+      --amber: #b26a00;
+      --amber-soft: #fff5e5;
+      --red: #d93025;
+      --red-soft: #fdecea;
+      --shadow-sm: 0 2px 10px rgba(0, 0, 0, 0.04);
+      --shadow-lg: 0 28px 70px rgba(0, 0, 0, 0.16);
+      --radius-lg: 20px;
+      --radius-md: 14px;
+      --radius-sm: 10px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Inter", "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+    }
+
+    /* Login Gate */
+    .gate-wrap {
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+    }
+
+    .gate-card {
+      width: 100%;
+      max-width: 410px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 34px 30px;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .gate-mark {
+      width: 40px;
+      height: 40px;
+      border-radius: 11px;
+      background: #1d1d1f;
+      color: #fff;
+      display: grid;
+      place-items: center;
+      font-weight: 700;
+      font-size: 14px;
+      margin-bottom: 16px;
+    }
+
+    .gate-card h1 {
+      font-size: 22px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      margin-bottom: 6px;
+    }
+
+    .gate-card p {
+      font-size: 13.5px;
+      color: var(--text-secondary);
+      margin-bottom: 22px;
+    }
+
+    /* Top Bar */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      background: var(--glass);
+      -webkit-backdrop-filter: saturate(180%) blur(20px);
+      backdrop-filter: saturate(180%) blur(20px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-inner {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 0 28px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand-mark {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      background: #1d1d1f;
+      color: #fff;
+      display: grid;
+      place-items: center;
+      font-weight: 700;
+      font-size: 12px;
+    }
+
+    .admin-tag {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      background: var(--blue-soft);
+      color: var(--blue);
+      padding: 3px 8px;
+      border-radius: 999px;
+    }
+
+    .segmented {
+      display: inline-flex;
+      background: rgba(0, 0, 0, 0.05);
+      border-radius: 999px;
+      padding: 3px;
+      gap: 2px;
+      flex-wrap: wrap;
+    }
+
+    .seg-btn {
+      border: none;
+      background: transparent;
+      color: var(--text-secondary);
+      font: inherit;
+      font-size: 13px;
+      font-weight: 500;
+      padding: 6px 14px;
+      border-radius: 999px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .seg-btn.active {
+      background: var(--surface);
+      color: var(--text);
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .badge-num {
+      font-size: 11px;
+      font-variant-numeric: tabular-nums;
+      background: var(--blue);
+      color: #fff;
+      padding: 1px 6px;
+      border-radius: 999px;
+      font-weight: 600;
+    }
+    .badge-num.zero { background: rgba(0, 0, 0, 0.12); color: var(--text-secondary); }
+
+    /* Buttons */
+    .btn {
+      font: inherit;
+      font-size: 13px;
+      font-weight: 500;
+      padding: 7px 14px;
+      border-radius: 999px;
+      border: 1px solid var(--border-strong);
+      background: var(--surface);
+      color: var(--text);
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+    .btn:hover { background: #f0f0f3; }
+    .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    .btn-blue { background: var(--blue); border-color: var(--blue); color: #fff; }
+    .btn-blue:hover { background: var(--blue-hover); }
+
+    .btn-green { background: var(--green); border-color: var(--green); color: #fff; }
+    .btn-green:hover { background: #187934; }
+
+    .btn-red { background: var(--red-soft); border-color: rgba(217, 48, 37, 0.28); color: var(--red); }
+    .btn-red:hover { background: #fadad7; }
+
+    .btn-ghost { background: transparent; border-color: transparent; color: var(--text-secondary); }
+    .btn-ghost:hover { background: rgba(0, 0, 0, 0.05); color: var(--text); }
+
+    .btn-sm { padding: 5px 12px; font-size: 12px; }
+
+    /* Workspace */
+    main {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 32px 28px 80px;
+    }
+
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+
+    .kpi {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 18px 20px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .kpi-lbl {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    .kpi-val {
+      font-size: 28px;
+      font-weight: 600;
+      letter-spacing: -0.03em;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .panel-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .panel-head h2 {
+      font-size: 22px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+    }
+
+    /* Tables */
+    .table-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-sm);
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13.5px;
+    }
+
+    th {
+      text-align: left;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      padding: 13px 18px;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface-soft);
+    }
+
+    td {
+      padding: 16px 18px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+    tr:last-child td { border-bottom: none; }
+
+    .member-pill {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: var(--bg);
+      color: var(--text-secondary);
+      margin-left: 6px;
+    }
+    .member-pill.student { background: var(--blue-soft); color: var(--blue); }
+
+    .detail-line {
+      display: block;
+      font-size: 12px;
+      color: var(--text-secondary);
+      margin-top: 2px;
+    }
+
+    .mono {
+      font-family: var(--mono);
+      font-size: 11.5px;
+      color: var(--text-muted);
+    }
+
+    .pill {
+      display: inline-flex;
+      font-size: 11.5px;
+      font-weight: 600;
+      padding: 3px 9px;
+      border-radius: 999px;
+      text-transform: capitalize;
+    }
+    .pill.pending { background: var(--amber-soft); color: var(--amber); }
+    .pill.active { background: var(--blue-soft); color: var(--blue); }
+    .pill.approved, .pill.returned { background: var(--green-soft); color: var(--green); }
+    .pill.rejected, .pill.declined, .pill.overdue { background: var(--red-soft); color: var(--red); }
+
+    .inline-days {
+      width: 64px;
+      font: inherit;
+      font-size: 12.5px;
+      padding: 4px 8px;
+      border: 1px solid var(--border-strong);
+      border-radius: 8px;
+      text-align: center;
+      margin-right: 6px;
+    }
+
+    .empty-box {
+      text-align: center;
+      padding: 56px 20px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      color: var(--text-muted);
+      box-shadow: var(--shadow-sm);
+    }
+
+    /* Forms & Modals */
+    .field { margin-bottom: 13px; }
+    .field label {
+      display: block;
+      font-size: 12.5px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      margin-bottom: 5px;
+    }
+    .field input, .field textarea {
+      width: 100%;
+      font: inherit;
+      font-size: 14px;
+      color: var(--text);
+      background: var(--surface-soft);
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius-sm);
+      padding: 10px 12px;
+      outline: none;
+    }
+    .field input:focus, .field textarea:focus {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.14);
+      background: var(--surface);
+    }
+
+    .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+    .form-err {
+      display: none;
+      background: var(--red-soft);
+      border: 1px solid rgba(217, 48, 37, 0.25);
+      color: var(--red);
+      font-size: 13px;
+      padding: 10px 12px;
+      border-radius: var(--radius-sm);
+      margin-bottom: 14px;
+    }
+    .form-err.show { display: block; }
+
+    .overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      background: rgba(0, 0, 0, 0.36);
+      -webkit-backdrop-filter: blur(8px);
+      backdrop-filter: blur(8px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .overlay.open { display: flex; }
+
+    .sheet {
+      width: 100%;
+      max-width: 620px;
+      max-height: 88vh;
+      overflow-y: auto;
+      background: var(--surface);
+      border-radius: 24px;
+      padding: 26px;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .sheet-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 18px;
+    }
+
+    #toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 80;
+      padding: 11px 20px;
+      border-radius: 999px;
+      background: #1d1d1f;
+      color: #fff;
+      font-size: 13.5px;
+      font-weight: 500;
+      display: none;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.24);
+    }
+    #toast.show { display: block; }
+    #toast.err { background: var(--red); }
+
+    @media (max-width: 760px) {
+      .nav-inner { height: auto; padding: 12px 16px; }
+      .row-2 { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <!-- STANDALONE ADMIN LOGIN GATE -->
+  <section id="loginGate" class="gate-wrap">
+    <div class="gate-card">
+      <div class="gate-mark">BG</div>
+      <h1>Librarian Console</h1>
+      <p>Restricted governance portal for issuing books, reviewing extension tickets, and tracking overdue penalties.</p>
+      <div class="form-err" id="gateErr"></div>
+      <form id="adminLoginForm">
+        <div class="field">
+          <label for="adminEmail">Librarian Email</label>
+          <input id="adminEmail" type="email" required placeholder="librarian@bibliograph.dev" />
+        </div>
+        <div class="field">
+          <label for="adminPassword">Password</label>
+          <input id="adminPassword" type="password" required />
+        </div>
+        <button type="submit" class="btn btn-blue" style="width:100%;padding:11px;margin-top:4px;">Sign In to Console</button>
+      </form>
+      <div style="margin-top:18px;text-align:center;">
+        <a href="/ui" style="font-size:13px;color:var(--blue);text-decoration:none;">← Return to Public Library Portal</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ADMIN CONSOLE SHELL -->
+  <div id="adminShell" style="display:none;">
+    <header>
+      <div class="nav-inner">
+        <div class="brand">
+          <div class="brand-mark">BG</div>
+          <strong>BiblioGraph</strong>
+          <span class="admin-tag">Admin</span>
+        </div>
+
+        <nav class="segmented">
+          <button class="seg-btn active" data-tab="requests" onclick="switchTab('requests')">
+            Requests <span class="badge-num zero" id="cntPending">0</span>
+          </button>
+          <button class="seg-btn" data-tab="active" onclick="switchTab('active')">
+            Active Loans <span class="badge-num zero" id="cntActive">0</span>
+          </button>
+          <button class="seg-btn" data-tab="extensions" onclick="switchTab('extensions')">
+            Extension Tickets <span class="badge-num zero" id="cntExt">0</span>
+          </button>
+          <button class="seg-btn" data-tab="history" onclick="switchTab('history')">History</button>
+          <button class="seg-btn" data-tab="catalogue" onclick="switchTab('catalogue')">Catalogue</button>
+        </nav>
+
+        <div style="display:flex;align-items:center;gap:8px;">
+          <a class="btn btn-ghost btn-sm" href="/docs" target="_blank" rel="noopener">API Docs ↗</a>
+          <button class="btn btn-blue btn-sm" onclick="openAddModal()">+ Add Book</button>
+          <button class="btn btn-ghost btn-sm" onclick="adminSignOut()">Sign Out</button>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <div class="kpi-grid">
+        <div class="kpi">
+          <div class="kpi-lbl">Pending Borrow Requests</div>
+          <div class="kpi-val" id="kpiPending">—</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-lbl">Books Currently Issued</div>
+          <div class="kpi-val" id="kpiActive">—</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-lbl">Pending Extension Tickets</div>
+          <div class="kpi-val" id="kpiExt">—</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-lbl">Catalogued Titles</div>
+          <div class="kpi-val" id="kpiBooks">—</div>
+        </div>
+      </div>
+
+      <div class="panel-head">
+        <h2 id="panelTitle">Pending Borrow Requests</h2>
+        <button class="btn btn-sm" onclick="refreshAll()">Refresh Data</button>
+      </div>
+
+      <div id="panelBody"></div>
+    </main>
+  </div>
+
+  <!-- ADD BOOK MODAL -->
+  <div class="overlay" id="addOverlay">
+    <div class="sheet">
+      <div class="sheet-head">
+        <h2>Register New Book</h2>
+        <button class="btn btn-ghost btn-sm" onclick="closeAddModal()">✕</button>
+      </div>
+      <div class="form-err" id="addErr"></div>
+      <form id="addForm">
+        <div class="row-2">
+          <div class="field">
+            <label>ISBN *</label>
+            <input id="rIsbn" required placeholder="978-0135957059" />
+          </div>
+          <div class="field">
+            <label>Publication Year *</label>
+            <input id="rYear" type="number" required min="1450" max="2100" value="2024" />
+          </div>
+        </div>
+        <div class="field">
+          <label>Title *</label>
+          <input id="rTitle" required maxlength="255" placeholder="The Pragmatic Programmer" />
+        </div>
+        <div class="row-2">
+          <div class="field">
+            <label>Publisher *</label>
+            <input id="rPublisher" required maxlength="150" placeholder="Addison-Wesley" />
+          </div>
+          <div class="field">
+            <label>Total Copies *</label>
+            <input id="rCopies" type="number" required min="1" max="500" value="3" />
+          </div>
+        </div>
+        <div class="field">
+          <label>Authors (comma-separated) *</label>
+          <input id="rAuthors" required placeholder="David Thomas, Andrew Hunt" />
+        </div>
+        <div class="field">
+          <label>Tags (comma-separated)</label>
+          <input id="rTags" placeholder="software-engineering, architecture" />
+        </div>
+        <div class="field">
+          <label>Reference URL (SSRF-validated public http/https)</label>
+          <input id="rUrl" type="url" maxlength="500" placeholder="https://example.org" />
+        </div>
+        <div class="field">
+          <label>Summary</label>
+          <textarea id="rSummary" rows="2" maxlength="2000"></textarea>
+        </div>
+        <button type="submit" class="btn btn-blue" style="width:100%;padding:11px;">Add to Library Catalogue</button>
+      </form>
+    </div>
+  </div>
+
+  <div id="toast"></div>
+
+  <script>
+    const ADMIN_TOKEN_KEY = "bg_admin_token";
+    const state = {
+      token: sessionStorage.getItem(ADMIN_TOKEN_KEY) || null,
+      tab: "requests",
+      loans: [],
+      extensions: [],
+      books: [],
+    };
+
+    const $ = (id) => document.getElementById(id);
+
+    function esc(v) {
+      return String(v ?? "").replace(/[&<>"']/g, (c) => ({
+        "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+      }[c]));
+    }
+
+    function fmtDateTime(iso) {
+      if (!iso) return "—";
+      return new Date(iso).toLocaleString(undefined, {
+        month: "short", day: "numeric", year: "numeric", hour: "2-digit", minute: "2-digit"
+      });
+    }
+
+    function fmtDate(iso) {
+      if (!iso) return "—";
+      return new Date(iso).toLocaleDateString(undefined, {
+        month: "short", day: "numeric", year: "numeric"
+      });
+    }
+
+    let toastTimer = null;
+    function showToast(msg, type = "ok") {
+      const el = $("toast");
+      el.textContent = msg;
+      el.className = `show ${type}`;
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => { el.className = ""; }, 3800);
+    }
+
+    function extractError(data, fallback) {
+      if (!data) return fallback;
+      if (typeof data.detail === "string") return data.detail;
+      if (Array.isArray(data.detail) && data.detail.length) {
+        return data.detail.map((d) => d.msg || JSON.stringify(d)).join("; ");
+      }
+      return fallback;
+    }
+
+    async function apiFetch(url, options = {}) {
+      const headers = { ...(options.headers || {}) };
+      if (state.token) headers["Authorization"] = `Bearer ${state.token}`;
+      return fetch(url, { cache: "no-store", ...options, headers });
+    }
+
+    function borrowerCell(row) {
+      const typeLabel = row.borrower_type === "student"
+        ? `Student · ${row.borrower_semester || "Semester N/A"}`
+        : "Local Member";
+      const pillCls = row.borrower_type === "student" ? "student" : "";
+      const suspended = row.borrower_suspended_until && new Date(row.borrower_suspended_until) > new Date();
+
+      return `
+        <div>
+          <strong>${esc(row.borrower_name)}</strong>
+          <span class="member-pill ${pillCls}">${esc(typeLabel)}</span>
+          ${suspended ? `<span class="pill overdue" style="margin-left:4px;">Cooldown until ${fmtDate(row.borrower_suspended_until)}</span>` : ""}
+          <span class="detail-line">${esc(row.borrower_email)} · ${esc(row.borrower_phone || "No phone")}</span>
+          ${row.borrower_address ? `<span class="detail-line" style="color:var(--text-muted);">${esc(row.borrower_address)}</span>` : ""}
+        </div>
+      `;
+    }
+
+    async function verifyAdminSession() {
+      if (!state.token) {
+        showGate();
+        return;
+      }
+      const res = await apiFetch("/api/v1/auth/me");
+      if (!res.ok) {
+        adminSignOut();
+        return;
+      }
+      const user = await res.json();
+      if (user.role !== "librarian") {
+        adminSignOut("Librarian privileges required. Regular members should use /ui.");
+        return;
+      }
+      $("loginGate").style.display = "none";
+      $("adminShell").style.display = "block";
+      await refreshAll();
+    }
+
+    function showGate(errMsg = "") {
+      $("loginGate").style.display = "grid";
+      $("adminShell").style.display = "none";
+      if (errMsg) {
+        $("gateErr").textContent = errMsg;
+        $("gateErr").className = "form-err show";
+      } else {
+        $("gateErr").className = "form-err";
+      }
+    }
+
+    function adminSignOut(msg = "") {
+      state.token = null;
+      sessionStorage.removeItem(ADMIN_TOKEN_KEY);
+      showGate(msg);
+    }
+
+    $("adminLoginForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      $("gateErr").className = "form-err";
+
+      const res = await fetch("/api/v1/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: $("adminEmail").value.trim(),
+          password: $("adminPassword").value,
+        }),
+      });
+      const data = await res.json().catch(() => null);
+      if (!res.ok) {
+        $("gateErr").textContent = extractError(data, "Invalid credentials.");
+        $("gateErr").className = "form-err show";
+        return;
+      }
+      if (data.user.role !== "librarian") {
+        $("gateErr").textContent = "Access denied: This account is a regular member. Only librarians can access /admin.";
+        $("gateErr").className = "form-err show";
+        return;
+      }
+
+      state.token = data.access_token;
+      sessionStorage.setItem(ADMIN_TOKEN_KEY, state.token);
+      $("adminLoginForm").reset();
+      await verifyAdminSession();
+    });
+
+    async function refreshAll() {
+      const [loansRes, extRes, booksRes] = await Promise.all([
+        apiFetch("/api/v1/loans?limit=50"),
+        apiFetch("/api/v1/loans/extensions?limit=50"),
+        apiFetch("/api/v1/resources?limit=50"),
+      ]);
+
+      if (loansRes.ok) state.loans = await loansRes.json();
+      if (extRes.ok) state.extensions = await extRes.json();
+      if (booksRes.ok) {
+        const bData = await booksRes.json();
+        state.books = bData.items || [];
+      }
+
+      const pendingCount = state.loans.filter((l) => l.status === "pending").length;
+      const activeCount = state.loans.filter((l) => l.status === "active").length;
+      const extPending = state.extensions.filter((e) => e.status === "pending").length;
+
+      $("kpiPending").textContent = String(pendingCount);
+      $("kpiActive").textContent = String(activeCount);
+      $("kpiExt").textContent = String(extPending);
+      $("kpiBooks").textContent = String(state.books.length);
+
+      setBadge("cntPending", pendingCount);
+      setBadge("cntActive", activeCount);
+      setBadge("cntExt", extPending);
+
+      renderTab();
+    }
+
+    function setBadge(id, count) {
+      const el = $(id);
+      el.textContent = String(count);
+      el.className = count > 0 ? "badge-num" : "badge-num zero";
+    }
+
+    function switchTab(tab) {
+      state.tab = tab;
+      document.querySelectorAll("header .seg-btn").forEach((b) => {
+        b.classList.toggle("active", b.dataset.tab === tab);
+      });
+      renderTab();
+    }
+
+    function renderTab() {
+      const titles = {
+        requests: "Pending Borrow Requests",
+        active: "Active Issued Loans",
+        extensions: "Extension Tickets",
+        history: "Completed & Declined History",
+        catalogue: "Catalogue Inventory",
+      };
+      $("panelTitle").textContent = titles[state.tab];
+      const body = $("panelBody");
+
+      if (state.tab === "requests") {
+        const rows = state.loans.filter((l) => l.status === "pending");
+        if (!rows.length) {
+          body.innerHTML = `<div class="empty-box">No pending borrow requests waiting for approval.</div>`;
+          return;
+        }
+        body.innerHTML = `
+          <div class="table-card">
+            <table>
+              <thead>
+                <tr>
+                  <th>Borrower Profile</th>
+                  <th>Requested Book</th>
+                  <th>Requested At</th>
+                  <th style="text-align:right;">Issue Days &amp; Decision</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${rows.map((l) => `
+                  <tr>
+                    <td>${borrowerCell(l)}</td>
+                    <td>
+                      <strong>${esc(l.resource_title)}</strong>
+                      <div class="mono">ISBN ${esc(l.resource_isbn)}</div>
+                    </td>
+                    <td style="font-size:12.5px;color:var(--text-secondary);">
+                      ${fmtDateTime(l.requested_at)}
+                      <div class="mono">Asked for ${l.requested_days} days</div>
+                    </td>
+                    <td style="text-align:right;white-space:nowrap;">
+                      <input type="number" min="1" max="30" value="${l.requested_days}" id="days-${l.id}" class="inline-days" title="Approved days" />
+                      <button class="btn btn-green btn-sm" onclick="approveLoan(${l.id})">Issue Book</button>
+                      <button class="btn btn-red btn-sm" onclick="rejectLoan(${l.id})">Decline</button>
+                    </td>
+                  </tr>
+                `).join("")}
+              </tbody>
+            </table>
+          </div>
+        `;
+      } else if (state.tab === "active") {
+        const rows = state.loans.filter((l) => l.status === "active");
+        if (!rows.length) {
+          body.innerHTML = `<div class="empty-box">No books are currently checked out.</div>`;
+          return;
+        }
+        body.innerHTML = `
+          <div class="table-card">
+            <table>
+              <thead>
+                <tr>
+                  <th>Borrower Profile</th>
+                  <th>Book</th>
+                  <th>Issued / Due</th>
+                  <th style="text-align:right;">Return Control</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${rows.map((l) => {
+                  const due = l.due_at ? new Date(l.due_at) : null;
+                  const now = new Date();
+                  const lateDays = due && now > due ? Math.max(1, Math.ceil((now - due) / 86400000)) : 0;
+                  return `
+                    <tr>
+                      <td>${borrowerCell(l)}</td>
+                      <td>
+                        <strong>${esc(l.resource_title)}</strong>
+                        <div class="mono">ISBN ${esc(l.resource_isbn)}</div>
+                      </td>
+                      <td style="font-size:12.5px;">
+                        <div>Issued: ${fmtDateTime(l.borrowed_at)}</div>
+                        <div style="margin-top:3px;">
+                          Due: <strong>${fmtDate(l.due_at)}</strong>
+                          ${lateDays > 0 ? `<span class="pill overdue" style="margin-left:6px;">${lateDays}d overdue</span>` : `<span class="pill active" style="margin-left:6px;">On schedule</span>`}
+                        </div>
+                      </td>
+                      <td style="text-align:right;">
+                        <button class="btn btn-blue btn-sm" onclick="markReturned(${l.id})">Mark Returned</button>
+                      </td>
+                    </tr>
+                  `;
+                }).join("")}
+              </tbody>
+            </table>
+          </div>
+        `;
+      } else if (state.tab === "extensions") {
+        if (!state.extensions.length) {
+          body.innerHTML = `<div class="empty-box">No extension tickets submitted yet.</div>`;
+          return;
+        }
+        body.innerHTML = `
+          <div class="table-card">
+            <table>
+              <thead>
+                <tr>
+                  <th>Borrower</th>
+                  <th>Book &amp; Current Due</th>
+                  <th>Request &amp; Reason</th>
+                  <th>Status</th>
+                  <th style="text-align:right;">Decision</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${state.extensions.map((t) => `
+                  <tr>
+                    <td>
+                      <strong>${esc(t.borrower_name)}</strong>
+                      <span class="member-pill ${t.borrower_type === "student" ? "student" : ""}">
+                        ${esc(t.borrower_type === "student" ? `Student · ${t.borrower_semester || "N/A"}` : "Local")}
+                      </span>
+                      <span class="detail-line">${esc(t.borrower_email)} · ${esc(t.borrower_phone)}</span>
+                    </td>
+                    <td>
+                      <strong>${esc(t.resource_title)}</strong>
+                      <span class="detail-line">Due: ${fmtDate(t.current_due_at)}</span>
+                    </td>
+                    <td>
+                      <strong>+${t.extra_days} extra days</strong>
+                      <span class="detail-line">"${esc(t.reason)}"</span>
+                    </td>
+                    <td><span class="pill ${esc(t.status)}">${esc(t.status)}</span></td>
+                    <td style="text-align:right;white-space:nowrap;">
+                      ${t.status === "pending"
+                        ? `<button class="btn btn-green btn-sm" onclick="decideExtension(${t.id}, 'approved')">Approve</button>
+                           <button class="btn btn-red btn-sm" onclick="decideExtension(${t.id}, 'declined')">Decline</button>`
+                        : `<span class="mono">${fmtDate(t.decided_at)}</span>`}
+                    </td>
+                  </tr>
+                `).join("")}
+              </tbody>
+            </table>
+          </div>
+        `;
+      } else if (state.tab === "history") {
+        const rows = state.loans.filter((l) => l.status === "returned" || l.status === "rejected");
+        if (!rows.length) {
+          body.innerHTML = `<div class="empty-box">No returned or declined records yet.</div>`;
+          return;
+        }
+        body.innerHTML = `
+          <div class="table-card">
+            <table>
+              <thead>
+                <tr>
+                  <th>Borrower</th>
+                  <th>Book</th>
+                  <th>Outcome</th>
+                  <th>Penalty / Notes</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${rows.map((l) => `
+                  <tr>
+                    <td>${borrowerCell(l)}</td>
+                    <td>
+                      <strong>${esc(l.resource_title)}</strong>
+                      <div class="mono">ISBN ${esc(l.resource_isbn)}</div>
+                    </td>
+                    <td>
+                      <span class="pill ${esc(l.status)}">${esc(l.status)}</span>
+                      <div class="detail-line">${l.status === "returned" ? `Returned ${fmtDateTime(l.returned_at)}` : `Requested ${fmtDateTime(l.requested_at)}`}</div>
+                    </td>
+                    <td style="font-size:12.5px;">
+                      ${l.overdue_days > 0
+                        ? `<span class="pill overdue">${l.overdue_days}d overdue penalty served</span>`
+                        : (l.admin_note ? esc(l.admin_note) : "Clean return")}
+                    </td>
+                  </tr>
+                `).join("")}
+              </tbody>
+            </table>
+          </div>
+        `;
+      } else if (state.tab === "catalogue") {
+        if (!state.books.length) {
+          body.innerHTML = `<div class="empty-box">Catalogue is empty.</div>`;
+          return;
+        }
+        body.innerHTML = `
+          <div class="table-card">
+            <table>
+              <thead>
+                <tr>
+                  <th>Title &amp; Authors</th>
+                  <th>ISBN</th>
+                  <th>Stock</th>
+                  <th style="text-align:right;">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${state.books.map((b) => `
+                  <tr>
+                    <td>
+                      <strong>${esc(b.title)}</strong>
+                      <span class="detail-line">${esc(b.authors.join(", "))} · ${esc(b.publisher)} (${b.publication_year})</span>
+                    </td>
+                    <td class="mono">${esc(b.isbn)}</td>
+                    <td><strong>${b.available_copies}</strong> / ${b.total_copies}</td>
+                    <td style="text-align:right;white-space:nowrap;">
+                      ${b.source_url ? `<button class="btn btn-sm" onclick="verifyLink(${b.id})">Verify URL</button>` : ""}
+                      <button class="btn btn-red btn-sm" onclick="deleteBook(${b.id})">Delete</button>
+                    </td>
+                  </tr>
+                `).join("")}
+              </tbody>
+            </table>
+          </div>
+        `;
+      }
+    }
+
+    async function approveLoan(loanId) {
+      const days = Number($(`days-${loanId}`)?.value) || 14;
+      const res = await apiFetch(`/api/v1/loans/${loanId}/approve`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ days }),
+      });
+      const data = await res.json().catch(() => null);
+      if (!res.ok) {
+        showToast(extractError(data, "Could not issue book."), "err");
+        return;
+      }
+      showToast(`Issued "${data.resource_title}" to ${data.borrower_name} for ${days} days.`);
+      await refreshAll();
+    }
+
+    async function rejectLoan(loanId) {
+      const note = prompt("Optional reason for declining this request:") ?? "";
+      const res = await apiFetch(`/api/v1/loans/${loanId}/reject`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ admin_note: note.trim() || null }),
+      });
+      const data = await res.json().catch(() => null);
+      if (!res.ok) {
+        showToast(extractError(data, "Decline failed."), "err");
+        return;
+      }
+      showToast("Borrow request declined.");
+      await refreshAll();
+    }
+
+    async function markReturned(loanId) {
+      const res = await apiFetch(`/api/v1/loans/${loanId}/return`, { method: "POST" });
+      const data = await res.json().catch(() => null);
+      if (!res.ok) {
+        showToast(extractError(data, "Return failed."), "err");
+        return;
+      }
+      if (data.overdue_days > 0) {
+        showToast(`Returned ${data.overdue_days}d late. Cooldown penalty applied to ${data.borrower_name}.`);
+      } else {
+        showToast(`Returned on time. Copy restored to stock.`);
+      }
+      await refreshAll();
+    }
+
+    async function decideExtension(extId, decision) {
+      const res = await apiFetch(`/api/v1/loans/extensions/${extId}/decide`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ decision }),
+      });
+      const data = await res.json().catch(() => null);
+      if (!res.ok) {
+        showToast(extractError(data, "Could not update ticket."), "err");
+        return;
+      }
+      showToast(decision === "approved" ? `Extension approved (+${data.extra_days}d).` : "Extension declined.");
+      await refreshAll();
+    }
+
+    async function verifyLink(resourceId) {
+      showToast("Checking external URL (SSRF-guarded, 3.5s max)…");
+      const res = await apiFetch(`/api/v1/resources/${resourceId}/verify-link`, { method: "POST" });
+      const data = await res.json().catch(() => null);
+      if (!res.ok) {
+        showToast(extractError(data, "Link verification failed."), "err");
+        return;
+      }
+      showToast(`HTTP ${data.status_code} · ${data.latency_ms} ms`);
+    }
+
+    async function deleteBook(resourceId) {
+      if (!confirm("Delete this book from the catalogue?")) return;
+      const res = await apiFetch(`/api/v1/resources/${resourceId}`, { method: "DELETE" });
+      if (!res.ok) {
+        const data = await res.json().catch(() => null);
+        showToast(extractError(data, "Cannot delete book."), "err");
+        return;
+      }
+      showToast("Book deleted.");
+      await refreshAll();
+    }
+
+    function openAddModal() {
+      $("addErr").className = "form-err";
+      $("addOverlay").classList.add("open");
+    }
+    function closeAddModal() { $("addOverlay").classList.remove("open"); }
+
+    $("addForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      $("addErr").className = "form-err";
+      const payload = {
+        isbn: $("rIsbn").value.trim(),
+        title: $("rTitle").value.trim(),
+        summary: $("rSummary").value.trim(),
+        publication_year: Number($("rYear").value),
+        publisher: $("rPublisher").value.trim(),
+        language: "en",
+        source_url: $("rUrl").value.trim() || null,
+        total_copies: Number($("rCopies").value),
+        authors: $("rAuthors").value.split(",").map((s) => s.trim()).filter(Boolean),
+        tags: $("rTags").value.split(",").map((s) => s.trim()).filter(Boolean),
+      };
+
+      const res = await apiFetch("/api/v1/resources", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const data = await res.json().catch(() => null);
+      if (!res.ok) {
+        $("addErr").textContent = extractError(data, "Could not register book.");
+        $("addErr").className = "form-err show";
+        return;
+      }
+      closeAddModal();
+      $("addForm").reset();
+      showToast(`Registered "${data.title}"`);
+      await refreshAll();
+    });
+
+    $("addOverlay").addEventListener("click", (e) => {
+      if (e.target === $("addOverlay")) closeAddModal();
+    });
+
+    verifyAdminSession();
+  </script>
+</body>
+</html>

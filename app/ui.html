@@ -1,0 +1,1717 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BiblioGraph — Library Portal</title>
+  <style>
+    :root {
+      --bg: #f5f5f7;
+      --surface: #ffffff;
+      --surface-soft: #fbfbfd;
+      --glass: rgba(255, 255, 255, 0.82);
+      --border: rgba(0, 0, 0, 0.08);
+      --border-strong: rgba(0, 0, 0, 0.14);
+      --text: #1d1d1f;
+      --text-secondary: #515154;
+      --text-muted: #86868b;
+      --blue: #0071e3;
+      --blue-hover: #0077ed;
+      --blue-soft: #edf5ff;
+      --green: #1e8e3e;
+      --green-soft: #e9f7ee;
+      --amber: #b26a00;
+      --amber-soft: #fff5e5;
+      --red: #d93025;
+      --red-soft: #fdecea;
+      --shadow-sm: 0 2px 10px rgba(0, 0, 0, 0.04);
+      --shadow-md: 0 12px 32px rgba(0, 0, 0, 0.08);
+      --shadow-lg: 0 28px 70px rgba(0, 0, 0, 0.18);
+      --radius-lg: 20px;
+      --radius-md: 14px;
+      --radius-sm: 10px;
+      --ease: cubic-bezier(0.25, 1, 0.5, 1);
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Inter", "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+    }
+
+    /* Apple Light Frosted Navbar */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      background: var(--glass);
+      -webkit-backdrop-filter: saturate(180%) blur(20px);
+      backdrop-filter: saturate(180%) blur(20px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-inner {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 0 28px;
+      height: 60px;
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      user-select: none;
+      width: fit-content;
+    }
+
+    .brand-mark {
+      width: 30px;
+      height: 30px;
+      border-radius: 9px;
+      background: linear-gradient(180deg, #1d1d1f 0%, #3a3a3c 100%);
+      color: #ffffff;
+      display: grid;
+      place-items: center;
+      font-weight: 700;
+      font-size: 12.5px;
+      letter-spacing: -0.04em;
+    }
+
+    .brand-title {
+      font-size: 16px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+    }
+
+    .segmented {
+      display: inline-flex;
+      align-items: center;
+      background: rgba(0, 0, 0, 0.05);
+      border-radius: 999px;
+      padding: 3px;
+      gap: 2px;
+    }
+
+    .seg-btn {
+      border: none;
+      background: transparent;
+      color: var(--text-secondary);
+      font: inherit;
+      font-size: 13px;
+      font-weight: 500;
+      padding: 6px 16px;
+      border-radius: 999px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      transition: all 0.2s var(--ease);
+    }
+
+    .seg-btn:hover { color: var(--text); }
+    .seg-btn.active {
+      background: var(--surface);
+      color: var(--text);
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .pill-count {
+      font-size: 11px;
+      font-variant-numeric: tabular-nums;
+      background: var(--blue);
+      color: #fff;
+      padding: 1px 6px;
+      border-radius: 999px;
+      font-weight: 600;
+    }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+
+    .status-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: var(--text-muted);
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+    }
+
+    .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--amber);
+    }
+    .dot.ok { background: var(--green); }
+    .dot.err { background: var(--red); }
+
+    /* Buttons */
+    .btn {
+      font: inherit;
+      font-size: 13.5px;
+      font-weight: 500;
+      padding: 8px 16px;
+      border-radius: 999px;
+      border: 1px solid var(--border-strong);
+      background: var(--surface);
+      color: var(--text);
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: background 0.18s var(--ease), border-color 0.18s var(--ease), transform 0.12s var(--ease);
+    }
+
+    .btn:hover { background: #f0f0f3; border-color: rgba(0, 0, 0, 0.2); }
+    .btn:active { transform: scale(0.98); }
+    .btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+    .btn-blue {
+      background: var(--blue);
+      border-color: var(--blue);
+      color: #ffffff;
+    }
+    .btn-blue:hover { background: var(--blue-hover); border-color: var(--blue-hover); }
+
+    .btn-ghost {
+      background: transparent;
+      border-color: transparent;
+      color: var(--text-secondary);
+    }
+    .btn-ghost:hover { background: rgba(0, 0, 0, 0.05); color: var(--text); border-color: transparent; }
+
+    .btn-sm { padding: 6px 13px; font-size: 12.5px; }
+
+    /* Main Container */
+    main {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 40px 28px 96px;
+    }
+
+    /* Cooldown Warning Banner */
+    .cooldown-banner {
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 14px 20px;
+      margin-bottom: 24px;
+      border-radius: var(--radius-md);
+      background: var(--red-soft);
+      border: 1px solid rgba(217, 48, 37, 0.22);
+      color: #9e1c14;
+      font-size: 13.5px;
+    }
+    .cooldown-banner.show { display: flex; }
+
+    /* Hero */
+    .hero {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 24px;
+      margin-bottom: 28px;
+      flex-wrap: wrap;
+    }
+
+    .hero h1 {
+      font-size: clamp(28px, 4vw, 40px);
+      font-weight: 600;
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+      margin-bottom: 6px;
+    }
+
+    .hero p {
+      font-size: 15px;
+      color: var(--text-secondary);
+      max-width: 560px;
+    }
+
+    .metrics {
+      display: flex;
+      gap: 24px;
+      align-items: center;
+    }
+
+    .metric {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 12px 18px;
+      min-width: 118px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .metric-val {
+      font-size: 22px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      font-variant-numeric: tabular-nums;
+      line-height: 1.2;
+    }
+
+    .metric-lbl {
+      font-size: 11.5px;
+      color: var(--text-muted);
+    }
+
+    /* Spotlight Search Bar */
+    .controls {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+    }
+
+    .spotlight {
+      position: relative;
+      flex: 1;
+      min-width: 260px;
+    }
+
+    .spotlight svg {
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 17px;
+      height: 17px;
+      color: var(--text-muted);
+      pointer-events: none;
+    }
+
+    .spotlight input {
+      width: 100%;
+      font: inherit;
+      font-size: 15px;
+      color: var(--text);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 13px 44px;
+      outline: none;
+      box-shadow: var(--shadow-sm);
+      transition: border-color 0.2s var(--ease), box-shadow 0.2s var(--ease);
+    }
+
+    .spotlight input::placeholder { color: var(--text-muted); }
+    .spotlight input:focus {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 4px rgba(0, 113, 227, 0.14);
+    }
+
+    .clear-x {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      border: none;
+      background: rgba(0, 0, 0, 0.08);
+      color: var(--text-secondary);
+      font-size: 14px;
+      cursor: pointer;
+      display: none;
+      place-items: center;
+    }
+    .clear-x.show { display: grid; }
+    .clear-x:hover { background: rgba(0, 0, 0, 0.14); color: var(--text); }
+
+    select.light-select {
+      font: inherit;
+      font-size: 13px;
+      color: var(--text-secondary);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 9px 14px;
+      outline: none;
+      cursor: pointer;
+      box-shadow: var(--shadow-sm);
+    }
+
+    /* Filter Back Banner */
+    .back-bar {
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 10px 16px;
+      margin-bottom: 16px;
+      border-radius: var(--radius-md);
+      background: var(--blue-soft);
+      border: 1px solid rgba(0, 113, 227, 0.2);
+      font-size: 13.5px;
+      color: #004c99;
+      flex-wrap: wrap;
+    }
+    .back-bar.show { display: flex; }
+
+    .sub-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12.5px;
+      color: var(--text-muted);
+      margin-bottom: 18px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* Clean Book Cards (Click anywhere to open Brief Pop-up) */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
+      gap: 20px;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 22px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      box-shadow: var(--shadow-sm);
+      cursor: pointer;
+      transition: transform 0.24s var(--ease), box-shadow 0.24s var(--ease), border-color 0.24s var(--ease);
+    }
+
+    .card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-md);
+      border-color: rgba(0, 113, 227, 0.28);
+    }
+
+    .card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .card-kicker {
+      font-size: 11.5px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 4px;
+    }
+
+    .card h3 {
+      font-size: 17px;
+      font-weight: 600;
+      letter-spacing: -0.015em;
+      line-height: 1.3;
+      color: var(--text);
+    }
+
+    .stock-badge {
+      flex-shrink: 0;
+      font-size: 11.5px;
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+      padding: 4px 10px;
+      border-radius: 999px;
+    }
+    .stock-badge.in { background: var(--green-soft); color: var(--green); }
+    .stock-badge.out { background: var(--red-soft); color: var(--red); }
+
+    .authors {
+      font-size: 13.5px;
+      color: var(--text-secondary);
+      margin-top: -4px;
+    }
+
+    .summary {
+      font-size: 13.5px;
+      color: var(--text-muted);
+      line-height: 1.55;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+      line-clamp: 2;
+      overflow: hidden;
+      flex-grow: 1;
+    }
+
+    .tags {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .tag {
+      font-size: 11.5px;
+      color: var(--text-secondary);
+      background: var(--bg);
+      padding: 3px 10px;
+      border-radius: 999px;
+      transition: background 0.15s, color 0.15s;
+    }
+    .tag:hover { background: var(--blue-soft); color: var(--blue); }
+
+    .card-foot {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
+      font-size: 12.5px;
+    }
+
+    .status-inline {
+      font-weight: 600;
+      font-size: 12px;
+      padding: 3px 10px;
+      border-radius: 999px;
+    }
+    .status-inline.pending { background: var(--amber-soft); color: var(--amber); }
+    .status-inline.active { background: var(--blue-soft); color: var(--blue); }
+
+    .quick-cue {
+      color: var(--blue);
+      font-weight: 500;
+    }
+
+    /* My Loans Table */
+    .view-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 16px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+
+    .view-head h2 {
+      font-size: 28px;
+      font-weight: 600;
+      letter-spacing: -0.025em;
+      margin-bottom: 4px;
+    }
+
+    .view-head p {
+      font-size: 14.5px;
+      color: var(--text-secondary);
+    }
+
+    .table-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-sm);
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+
+    th {
+      text-align: left;
+      font-size: 11.5px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface-soft);
+    }
+
+    td {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+    }
+    tr:last-child td { border-bottom: none; }
+
+    .sub-mono {
+      display: block;
+      font-size: 12px;
+      font-family: var(--mono);
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .state-pill {
+      display: inline-flex;
+      align-items: center;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 3px 10px;
+      border-radius: 999px;
+      text-transform: capitalize;
+    }
+    .state-pill.pending { background: var(--amber-soft); color: var(--amber); }
+    .state-pill.active { background: var(--blue-soft); color: var(--blue); }
+    .state-pill.returned { background: var(--green-soft); color: var(--green); }
+    .state-pill.rejected { background: var(--red-soft); color: var(--red); }
+
+    .empty-box {
+      text-align: center;
+      padding: 64px 24px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      color: var(--text-secondary);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .pager {
+      margin-top: 30px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 16px;
+    }
+
+    /* Apple Pop-up Sheets */
+    .overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      background: rgba(0, 0, 0, 0.36);
+      -webkit-backdrop-filter: blur(8px);
+      backdrop-filter: blur(8px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .overlay.open { display: flex; }
+
+    .sheet {
+      width: 100%;
+      max-width: 640px;
+      max-height: 88vh;
+      overflow-y: auto;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 28px;
+      box-shadow: var(--shadow-lg);
+    }
+    .sheet-sm { max-width: 450px; }
+
+    .sheet-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+
+    .sheet-head h2 {
+      font-size: 21px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      line-height: 1.25;
+    }
+
+    /* Book Brief Pop-up Details */
+    .brief-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin: 16px 0 18px;
+    }
+
+    .brief-cell {
+      background: var(--bg);
+      border-radius: var(--radius-sm);
+      padding: 10px 12px;
+    }
+
+    .brief-cell span {
+      display: block;
+      font-size: 11px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 2px;
+    }
+
+    .brief-cell strong {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .borrow-box {
+      margin-top: 20px;
+      padding: 18px;
+      border-radius: var(--radius-md);
+      background: var(--bg);
+      border: 1px solid var(--border);
+    }
+
+    .borrow-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    details.meta-drawer {
+      margin-top: 18px;
+      border-top: 1px solid var(--border);
+      padding-top: 14px;
+    }
+
+    details.meta-drawer summary {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .http-meta {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      font-size: 11.5px;
+      font-family: var(--mono);
+      color: var(--text-muted);
+      margin: 12px 0 8px;
+    }
+
+    pre {
+      background: #1d1d1f;
+      color: #f5f5f7;
+      border-radius: var(--radius-sm);
+      padding: 14px;
+      overflow-x: auto;
+      font-family: var(--mono);
+      font-size: 12px;
+      line-height: 1.55;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    /* Forms */
+    .field { margin-bottom: 13px; }
+    .field label {
+      display: block;
+      font-size: 12.5px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      margin-bottom: 5px;
+    }
+
+    .field input, .field select, .field textarea {
+      width: 100%;
+      font: inherit;
+      font-size: 14px;
+      color: var(--text);
+      background: var(--surface-soft);
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius-sm);
+      padding: 10px 12px;
+      outline: none;
+    }
+
+    .field input:focus, .field select:focus, .field textarea:focus {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.14);
+      background: var(--surface);
+    }
+
+    .row-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .form-err {
+      display: none;
+      background: var(--red-soft);
+      border: 1px solid rgba(217, 48, 37, 0.25);
+      color: var(--red);
+      font-size: 13px;
+      padding: 10px 12px;
+      border-radius: var(--radius-sm);
+      margin-bottom: 14px;
+    }
+    .form-err.show { display: block; }
+
+    /* Toast */
+    #toast {
+      position: fixed;
+      bottom: 26px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 80;
+      max-width: 90vw;
+      padding: 11px 20px;
+      border-radius: 999px;
+      background: #1d1d1f;
+      color: #ffffff;
+      font-size: 13.5px;
+      font-weight: 500;
+      display: none;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.24);
+    }
+    #toast.show { display: block; }
+    #toast.err { background: var(--red); }
+
+    @media (max-width: 820px) {
+      .nav-inner { grid-template-columns: auto auto; height: auto; padding: 12px 18px; }
+      .segmented.main-nav { grid-column: 1 / -1; justify-self: center; }
+      .status-chip, .metrics { display: none; }
+      .brief-grid, .row-2 { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="nav-inner">
+      <div class="brand" onclick="resetAndGoHome()">
+        <div class="brand-mark">BG</div>
+        <span class="brand-title">BiblioGraph</span>
+      </div>
+
+      <nav class="segmented main-nav">
+        <button class="seg-btn active" id="navCatalogue" onclick="switchView('catalogue')">Catalogue</button>
+        <button class="seg-btn" id="navLoans" style="display:none;" onclick="switchView('loans')">
+          My Activity <span class="pill-count" id="myLoanCount">0</span>
+        </button>
+      </nav>
+
+      <div class="nav-right">
+        <span class="status-chip">
+          <span class="dot" id="healthDot"></span>
+          <span id="healthText">Checking…</span>
+        </span>
+        <span id="userBadge" style="font-size:13px;color:var(--text-secondary);font-weight:500;display:none;"></span>
+        <button class="btn btn-blue btn-sm" id="authBtn">Sign In</button>
+        <button class="btn btn-ghost btn-sm" id="logoutBtn" style="display:none;">Sign Out</button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- Overdue Penalty Cooldown Banner -->
+    <div class="cooldown-banner" id="cooldownBanner">
+      <div id="cooldownText"></div>
+    </div>
+
+    <!-- VIEW 1: CATALOGUE -->
+    <section id="viewCatalogue">
+      <div class="hero">
+        <div>
+          <h1>Library Catalogue</h1>
+          <p>Click any book for a full brief and submit a borrow request for librarian approval.</p>
+        </div>
+        <div class="metrics">
+          <div class="metric">
+            <div class="metric-val" id="statTotal">—</div>
+            <div class="metric-lbl">Catalogued Titles</div>
+          </div>
+          <div class="metric">
+            <div class="metric-val" id="statAvail">—</div>
+            <div class="metric-lbl">Copies Ready</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="controls">
+        <div class="spotlight">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="7"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          <input
+            id="searchInput"
+            type="text"
+            maxlength="500"
+            autocomplete="off"
+            placeholder="Type to search live by title, author, ISBN, or topic…"
+          />
+          <button class="clear-x" id="clearSearchBtn" title="Clear search">×</button>
+        </div>
+
+        <div class="segmented" id="availPills">
+          <button class="seg-btn active" data-val="" onclick="setAvailFilter('')">All</button>
+          <button class="seg-btn" data-val="true" onclick="setAvailFilter('true')">Available</button>
+          <button class="seg-btn" data-val="false" onclick="setAvailFilter('false')">Out</button>
+        </div>
+
+        <select id="limitSelect" class="light-select">
+          <option value="6">6 / page</option>
+          <option value="15" selected>15 / page</option>
+          <option value="50">50 / page</option>
+        </select>
+      </div>
+
+      <div class="back-bar" id="filterBanner">
+        <span id="filterSummary"></span>
+        <button class="btn btn-sm" onclick="clearAllFilters()">← Back to Full Catalogue</button>
+      </div>
+
+      <div class="sub-bar">
+        <span id="resultSummary">Loading catalogue…</span>
+        <span id="charCount">0 / 500</span>
+      </div>
+
+      <div id="catalogueGrid" class="grid"></div>
+
+      <div class="pager" id="pager" style="display:none;">
+        <button class="btn btn-sm" id="prevBtn">← Previous</button>
+        <span id="pageInfo" style="font-size:13px;color:var(--text-muted);"></span>
+        <button class="btn btn-sm" id="nextBtn">Next →</button>
+      </div>
+    </section>
+
+    <!-- VIEW 2: MY ACTIVITY / LOANS (STRICTLY PRIVATE TO SIGNED-IN USER) -->
+    <section id="viewLoans" style="display:none;">
+      <div class="view-head">
+        <div>
+          <h2>My Requests &amp; Loans</h2>
+          <p>Track librarian approval status, due dates, and extension tickets for your account.</p>
+        </div>
+        <div style="display:flex;gap:8px;">
+          <button class="btn btn-sm" onclick="loadMyLoans(true)">Refresh</button>
+          <button class="btn btn-sm" onclick="switchView('catalogue')">← Back to Catalogue</button>
+        </div>
+      </div>
+      <div id="myLoansContainer"></div>
+    </section>
+  </main>
+
+  <!-- BOOK BRIEF POP-UP SHEET -->
+  <div class="overlay" id="bookOverlay">
+    <div class="sheet">
+      <div class="sheet-head">
+        <div>
+          <div id="bKicker" style="font-size:12px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:4px;"></div>
+          <h2 id="bTitle">Book Title</h2>
+          <p id="bAuthors" style="font-size:14px;color:var(--text-secondary);margin-top:4px;"></p>
+        </div>
+        <button class="btn btn-ghost btn-sm" onclick="closeModal('bookOverlay')">✕</button>
+      </div>
+
+      <p id="bSummary" style="font-size:14.5px;color:var(--text-secondary);line-height:1.6;"></p>
+
+      <div class="brief-grid">
+        <div class="brief-cell">
+          <span>Availability</span>
+          <strong id="bStock">—</strong>
+        </div>
+        <div class="brief-cell">
+          <span>ISBN</span>
+          <strong id="bIsbn" style="font-family:var(--mono);font-size:12px;">—</strong>
+        </div>
+        <div class="brief-cell">
+          <span>Language</span>
+          <strong id="bLang">—</strong>
+        </div>
+      </div>
+
+      <div class="tags" id="bTags"></div>
+
+      <!-- Borrow Request Controls -->
+      <div class="borrow-box" id="bBorrowBox"></div>
+
+      <!-- Optional Standards Metadata Drawer (XML / JSON-LD for Migration) -->
+      <details class="meta-drawer" id="metaDrawer">
+        <summary>Interoperable Metadata (JSON · Dublin Core XML · Schema.org JSON-LD)</summary>
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:12px;flex-wrap:wrap;">
+          <div class="segmented" id="fmtTabs">
+            <button class="seg-btn active" data-fmt="json" onclick="loadBookMetadata('json')">JSON</button>
+            <button class="seg-btn" data-fmt="xml" onclick="loadBookMetadata('xml')">Dublin Core XML</button>
+            <button class="seg-btn" data-fmt="jsonld" onclick="loadBookMetadata('jsonld')">Schema.org JSON-LD</button>
+          </div>
+          <button class="btn btn-sm" onclick="copyMetadata()">Copy</button>
+        </div>
+        <div class="http-meta" id="metaHeaders"></div>
+        <pre id="metaBody">Expand to load structured metadata…</pre>
+      </details>
+    </div>
+  </div>
+
+  <!-- EXTENSION TICKET SHEET -->
+  <div class="overlay" id="extOverlay">
+    <div class="sheet sheet-sm">
+      <div class="sheet-head">
+        <div>
+          <h2>Request Extension</h2>
+          <p id="extBookName" style="font-size:13px;color:var(--text-secondary);margin-top:3px;"></p>
+        </div>
+        <button class="btn btn-ghost btn-sm" onclick="closeModal('extOverlay')">✕</button>
+      </div>
+      <div class="form-err" id="extErr"></div>
+      <form id="extForm">
+        <div class="field">
+          <label for="extDays">Extra Days Needed (1–14)</label>
+          <select id="extDays">
+            <option value="3">+3 days</option>
+            <option value="7" selected>+7 days</option>
+            <option value="10">+10 days</option>
+            <option value="14">+14 days (max)</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="extReason">Reason for Librarian Review *</label>
+          <textarea id="extReason" rows="3" required minlength="3" maxlength="300" placeholder="e.g. Preparing for semester exams and need 7 more days."></textarea>
+        </div>
+        <button type="submit" class="btn btn-blue" style="width:100%;padding:11px;">Submit Ticket to Librarian</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- AUTH SHEET (SIGN IN / MEMBER REGISTRATION) -->
+  <div class="overlay" id="authOverlay">
+    <div class="sheet sheet-sm">
+      <div class="sheet-head">
+        <h2 id="authHeading">Sign In</h2>
+        <button class="btn btn-ghost btn-sm" onclick="closeModal('authOverlay')">✕</button>
+      </div>
+      <div class="segmented" style="width:100%;display:grid;grid-template-columns:1fr 1fr;margin-bottom:16px;">
+        <button class="seg-btn active" id="tabLogin" onclick="setAuthMode('login')">Sign In</button>
+        <button class="seg-btn" id="tabRegister" onclick="setAuthMode('register')">Create Account</button>
+      </div>
+      <div class="form-err" id="authErr"></div>
+      <form id="authForm">
+        <div id="registerFields" style="display:none;">
+          <div class="field">
+            <label for="authName">Full Name *</label>
+            <input id="authName" type="text" minlength="2" maxlength="120" placeholder="Rohan Kulkarni" />
+          </div>
+          <div class="row-2">
+            <div class="field">
+              <label for="authType">Member Category *</label>
+              <select id="authType" onchange="toggleSemesterField()">
+                <option value="student">College Student</option>
+                <option value="local">Local Member</option>
+              </select>
+            </div>
+            <div class="field" id="semField">
+              <label for="authSemester">Semester *</label>
+              <input id="authSemester" type="text" maxlength="30" placeholder="e.g. 5th Sem BCA" />
+            </div>
+          </div>
+          <div class="field">
+            <label for="authPhone">Phone Number *</label>
+            <input id="authPhone" type="tel" minlength="7" maxlength="25" placeholder="+91 98765 43210" />
+          </div>
+          <div class="field">
+            <label for="authAddress">Residential Address *</label>
+            <textarea id="authAddress" rows="2" minlength="5" maxlength="300" placeholder="Street, Area, City"></textarea>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="authEmail">Email *</label>
+          <input id="authEmail" type="email" required placeholder="you@example.com" />
+        </div>
+        <div class="field">
+          <label for="authPassword">Password (8–72 characters) *</label>
+          <input id="authPassword" type="password" required minlength="8" maxlength="72" />
+        </div>
+        <button type="submit" class="btn btn-blue" style="width:100%;padding:11px;margin-top:4px;" id="authSubmit">Sign In</button>
+      </form>
+    </div>
+  </div>
+
+  <div id="toast"></div>
+
+  <script>
+    const TOKEN_KEY = "bg_member_token";
+    const state = {
+      token: sessionStorage.getItem(TOKEN_KEY) || null,
+      user: null,
+      view: "catalogue",
+      availFilter: "",
+      offset: 0,
+      limit: 15,
+      itemsById: {},
+      myLoansByResource: new Map(),
+      authMode: "login",
+      activeBookId: null,
+      extLoanId: null,
+      searchSeq: 0,
+    };
+
+    const $ = (id) => document.getElementById(id);
+
+    function esc(v) {
+      return String(v ?? "").replace(/[&<>"']/g, (c) => ({
+        "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+      }[c]));
+    }
+
+    function fmtDate(iso) {
+      if (!iso) return "—";
+      return new Date(iso).toLocaleDateString(undefined, {
+        year: "numeric", month: "short", day: "numeric"
+      });
+    }
+
+    let toastTimer = null;
+    function showToast(msg, type = "ok") {
+      const el = $("toast");
+      el.textContent = msg;
+      el.className = `show ${type}`;
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => { el.className = ""; }, 3800);
+    }
+
+    function extractError(data, fallback) {
+      if (!data) return fallback;
+      if (typeof data.detail === "string") return data.detail;
+      if (Array.isArray(data.detail) && data.detail.length) {
+        return data.detail.map((d) => d.msg || JSON.stringify(d)).join("; ");
+      }
+      return fallback;
+    }
+
+    function openModal(id) { $(id).classList.add("open"); }
+    function closeModal(id) { $(id).classList.remove("open"); }
+
+    async function apiFetch(url, options = {}) {
+      const headers = { ...(options.headers || {}) };
+      if (state.token) headers["Authorization"] = `Bearer ${state.token}`;
+      return fetch(url, { cache: "no-store", ...options, headers });
+    }
+
+    function isSuspended() {
+      if (!state.user || !state.user.suspended_until) return false;
+      return new Date(state.user.suspended_until) > new Date();
+    }
+
+    function renderCooldownBanner() {
+      const banner = $("cooldownBanner");
+      if (isSuspended()) {
+        const until = new Date(state.user.suspended_until);
+        const daysLeft = Math.max(1, Math.ceil((until - new Date()) / 86400000));
+        $("cooldownText").innerHTML =
+          `<strong>Borrowing Paused (${daysLeft} day${daysLeft > 1 ? "s" : ""} remaining):</strong> ` +
+          `A previous late return placed your account in cooldown until <strong>${until.toLocaleString()}</strong> to keep books rotating fairly.`;
+        banner.classList.add("show");
+      } else {
+        banner.classList.remove("show");
+      }
+    }
+
+    function switchView(viewName) {
+      state.view = viewName;
+      $("viewCatalogue").style.display = viewName === "catalogue" ? "block" : "none";
+      $("viewLoans").style.display = viewName === "loans" ? "block" : "none";
+      $("navCatalogue").classList.toggle("active", viewName === "catalogue");
+      $("navLoans").classList.toggle("active", viewName === "loans");
+
+      if (viewName === "catalogue") loadCatalogue();
+      if (viewName === "loans") loadMyLoans(true);
+    }
+
+    function setAvailFilter(val) {
+      state.availFilter = val;
+      document.querySelectorAll("#availPills .seg-btn").forEach((b) => {
+        b.classList.toggle("active", b.dataset.val === val);
+      });
+      state.offset = 0;
+      loadCatalogue();
+    }
+
+    function resetAndGoHome() {
+      clearAllFilters();
+      switchView("catalogue");
+    }
+
+    function clearAllFilters() {
+      $("searchInput").value = "";
+      $("charCount").textContent = "0 / 500";
+      $("clearSearchBtn").classList.remove("show");
+      state.availFilter = "";
+      document.querySelectorAll("#availPills .seg-btn").forEach((b) => {
+        b.classList.toggle("active", b.dataset.val === "");
+      });
+      state.offset = 0;
+      loadCatalogue();
+    }
+
+    async function checkHealth() {
+      try {
+        const res = await fetch("/health", { cache: "no-store" });
+        const data = await res.json();
+        if (res.ok && data.status === "ok") {
+          $("healthDot").className = "dot ok";
+          $("healthText").textContent = data.environment === "production" ? "Live" : "Local Ready";
+        } else {
+          $("healthDot").className = "dot err";
+          $("healthText").textContent = "Degraded";
+        }
+      } catch {
+        $("healthDot").className = "dot err";
+        $("healthText").textContent = "Offline";
+      }
+    }
+
+    async function syncSession() {
+      if (!state.token) {
+        state.user = null;
+        state.myLoansByResource.clear();
+        renderAuthState();
+        return;
+      }
+      const res = await apiFetch("/api/v1/auth/me");
+      if (res.ok) {
+        state.user = await res.json();
+        await loadMyLoans(false);
+      } else {
+        state.token = null;
+        state.user = null;
+        state.myLoansByResource.clear();
+        sessionStorage.removeItem(TOKEN_KEY);
+      }
+      renderAuthState();
+    }
+
+    function renderAuthState() {
+      const loggedIn = Boolean(state.user);
+      $("authBtn").style.display = loggedIn ? "none" : "inline-flex";
+      $("logoutBtn").style.display = loggedIn ? "inline-flex" : "none";
+      $("userBadge").style.display = loggedIn ? "inline" : "none";
+      $("navLoans").style.display = loggedIn ? "inline-flex" : "none";
+
+      if (loggedIn) {
+        const tag = state.user.member_type === "student" && state.user.semester
+          ? ` · ${state.user.semester}`
+          : "";
+        $("userBadge").textContent = `${state.user.full_name}${tag}`;
+      } else if (state.view !== "catalogue") {
+        switchView("catalogue");
+      }
+      renderCooldownBanner();
+    }
+
+    async function loadCatalogue() {
+      const seq = ++state.searchSeq;
+      const q = $("searchInput").value.trim();
+      const avail = state.availFilter;
+      state.limit = Number($("limitSelect").value) || 15;
+
+      const hasFilter = Boolean(q || avail);
+      $("clearSearchBtn").classList.toggle("show", Boolean(q));
+      $("filterBanner").classList.toggle("show", hasFilter);
+      if (hasFilter) {
+        const parts = [];
+        if (q) parts.push(`"${q}"`);
+        if (avail === "true") parts.push("Available only");
+        if (avail === "false") parts.push("Out of stock");
+        $("filterSummary").textContent = `Showing filtered results for ${parts.join(" · ")}`;
+      }
+
+      const params = new URLSearchParams({
+        limit: String(state.limit),
+        offset: String(state.offset),
+      });
+      if (q) params.set("q", q);
+      if (avail) params.set("available", avail);
+
+      const res = await apiFetch(`/api/v1/resources?${params.toString()}`);
+      if (seq !== state.searchSeq) return;
+
+      if (!res.ok) {
+        const err = await res.json().catch(() => null);
+        showToast(extractError(err, "Could not load catalogue."), "err");
+        return;
+      }
+      const data = await res.json();
+      renderCatalogue(data, hasFilter);
+    }
+
+    function renderCatalogue(data, hasFilter) {
+      const grid = $("catalogueGrid");
+      const start = data.total === 0 ? 0 : data.offset + 1;
+      const end = data.offset + data.items.length;
+      $("resultSummary").textContent =
+        data.total === 0 ? "0 matching titles" : `Showing ${start}–${end} of ${data.total} titles`;
+
+      if (!hasFilter) {
+        $("statTotal").textContent = String(data.total);
+        const ready = data.items.reduce((acc, it) => acc + it.available_copies, 0);
+        $("statAvail").textContent = String(ready);
+      }
+
+      state.itemsById = {};
+      data.items.forEach((item) => { state.itemsById[item.id] = item; });
+
+      if (!data.items.length) {
+        grid.innerHTML = `
+          <div class="empty-box" style="grid-column:1/-1;">
+            <p style="margin-bottom:16px;">No books matched your search.</p>
+            <button class="btn btn-sm" onclick="clearAllFilters()">← Back to Full Catalogue</button>
+          </div>
+        `;
+        $("pager").style.display = "none";
+        return;
+      }
+
+      grid.innerHTML = data.items.map((item) => {
+        const inStock = item.available_copies > 0;
+        const myLoan = state.myLoansByResource.get(item.id);
+        const badge = inStock
+          ? `<span class="stock-badge in">${item.available_copies} of ${item.total_copies} ready</span>`
+          : `<span class="stock-badge out">Out of stock</span>`;
+
+        const tagsHtml = item.tags
+          .map((t) => `<span class="tag" data-tag="${esc(t)}">#${esc(t)}</span>`)
+          .join("");
+
+        let footLeft = `<span style="color:var(--text-muted);font-family:var(--mono);font-size:11.5px;">ISBN ${esc(item.isbn)}</span>`;
+        if (myLoan && myLoan.status === "pending") {
+          footLeft = `<span class="status-inline pending">Approval Pending</span>`;
+        } else if (myLoan && myLoan.status === "active") {
+          footLeft = `<span class="status-inline active">Issued · Due ${fmtDate(myLoan.due_at)}</span>`;
+        }
+
+        return `
+          <article class="card" onclick="openBookModal(${item.id})">
+            <div class="card-top">
+              <div>
+                <div class="card-kicker">${esc(item.publisher)} · ${esc(item.publication_year)}</div>
+                <h3>${esc(item.title)}</h3>
+              </div>
+              ${badge}
+            </div>
+            <div class="authors">${esc(item.authors.join(", "))}</div>
+            <p class="summary">${esc(item.summary || "Click to read details and request this book.")}</p>
+            <div class="tags">${tagsHtml}</div>
+            <div class="card-foot">
+              ${footLeft}
+              <span class="quick-cue">Quick View →</span>
+            </div>
+          </article>
+        `;
+      }).join("");
+
+      grid.querySelectorAll(".tag").forEach((el) => {
+        el.addEventListener("click", (e) => {
+          e.stopPropagation();
+          const t = el.dataset.tag;
+          $("searchInput").value = t;
+          $("charCount").textContent = `${t.length} / 500`;
+          state.offset = 0;
+          loadCatalogue();
+        });
+      });
+
+      const showPager = data.total > data.limit;
+      $("pager").style.display = showPager ? "flex" : "none";
+      $("prevBtn").disabled = data.offset === 0;
+      $("nextBtn").disabled = !data.has_more;
+      $("pageInfo").textContent =
+        `Page ${Math.floor(data.offset / data.limit) + 1} of ${Math.max(1, Math.ceil(data.total / data.limit))}`;
+    }
+
+    function openBookModal(id) {
+      const item = state.itemsById[id];
+      if (!item) return;
+      state.activeBookId = id;
+
+      $("bKicker").textContent = `${item.publisher} · ${item.publication_year}`;
+      $("bTitle").textContent = item.title;
+      $("bAuthors").textContent = `By ${item.authors.join(", ")}`;
+      $("bSummary").textContent = item.summary || "No summary provided.";
+      $("bStock").textContent = `${item.available_copies} / ${item.total_copies} copies`;
+      $("bIsbn").textContent = item.isbn;
+      $("bLang").textContent = item.language.toUpperCase();
+      $("bTags").innerHTML = item.tags.map((t) => `<span class="tag">#${esc(t)}</span>`).join("");
+
+      // Reset optional metadata drawer
+      $("metaDrawer").open = false;
+      $("metaBody").textContent = "Loading…";
+      $("metaHeaders").innerHTML = "";
+
+      const box = $("bBorrowBox");
+      const myLoan = state.myLoansByResource.get(id);
+
+      if (!state.token) {
+        box.innerHTML = `
+          <div class="borrow-row">
+            <span style="font-size:13.5px;color:var(--text-secondary);">Sign in or create an account to request this book from the librarian.</span>
+            <button class="btn btn-blue btn-sm" onclick="closeModal('bookOverlay'); setAuthMode('register'); openModal('authOverlay');">Sign In / Register</button>
+          </div>
+        `;
+      } else if (myLoan && myLoan.status === "pending") {
+        box.innerHTML = `
+          <div class="borrow-row">
+            <div>
+              <strong style="font-size:14px;color:var(--amber);">Borrow Request Pending</strong>
+              <p style="font-size:13px;color:var(--text-secondary);">Requested for ${myLoan.requested_days} days on ${fmtDate(myLoan.requested_at)}. Waiting for librarian approval.</p>
+            </div>
+            <button class="btn btn-sm" onclick="closeModal('bookOverlay'); switchView('loans');">View My Activity</button>
+          </div>
+        `;
+      } else if (myLoan && myLoan.status === "active") {
+        box.innerHTML = `
+          <div class="borrow-row">
+            <div>
+              <strong style="font-size:14px;color:var(--blue);">Currently Issued to You</strong>
+              <p style="font-size:13px;color:var(--text-secondary);">Due on <strong>${fmtDate(myLoan.due_at)}</strong>. Need more time? Raise an extension ticket.</p>
+            </div>
+            <button class="btn btn-blue btn-sm" onclick="closeModal('bookOverlay'); openExtModal(${myLoan.id}, '${esc(item.title)}');">Request Extension</button>
+          </div>
+        `;
+      } else if (isSuspended()) {
+        box.innerHTML = `
+          <div style="font-size:13.5px;color:var(--red);">
+            <strong>Account in Cooldown:</strong> Borrowing is paused until ${new Date(state.user.suspended_until).toLocaleString()} due to a prior overdue return.
+          </div>
+        `;
+      } else if (item.available_copies <= 0) {
+        box.innerHTML = `<div style="font-size:13.5px;color:var(--text-secondary);">All copies are currently checked out. Check back once a copy is returned.</div>`;
+      } else {
+        box.innerHTML = `
+          <div class="borrow-row">
+            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+              <label for="reqDays" style="font-size:13px;font-weight:500;color:var(--text-secondary);">Loan Duration:</label>
+              <select id="reqDays" class="light-select">
+                <option value="7">7 days</option>
+                <option value="14" selected>14 days</option>
+                <option value="21">21 days</option>
+                <option value="30">30 days</option>
+              </select>
+            </div>
+            <button class="btn btn-blue" onclick="submitBorrowRequest(${item.id})">Request to Borrow</button>
+          </div>
+          <p style="font-size:12px;color:var(--text-muted);margin-top:8px;">Your request goes to the librarian queue. Stock updates once issued.</p>
+        `;
+      }
+
+      openModal("bookOverlay");
+    }
+
+    $("metaDrawer").addEventListener("toggle", () => {
+      if ($("metaDrawer").open && state.activeBookId) {
+        loadBookMetadata("json");
+      }
+    });
+
+    async function loadBookMetadata(fmt) {
+      document.querySelectorAll("#fmtTabs .seg-btn").forEach((b) => {
+        b.classList.toggle("active", b.dataset.fmt === fmt);
+      });
+      $("metaBody").textContent = "Loading…";
+      const acceptMap = {
+        json: "application/json",
+        xml: "application/xml",
+        jsonld: "application/ld+json",
+      };
+      const res = await fetch(`/api/v1/resources/${state.activeBookId}?format=${fmt}`, {
+        cache: "no-store",
+        headers: { Accept: acceptMap[fmt] },
+      });
+      const raw = await res.text();
+      $("metaHeaders").innerHTML = `
+        <span><strong>Type:</strong> ${esc(res.headers.get("content-type") || "—")}</span>
+        <span><strong>ETag:</strong> ${esc(res.headers.get("etag") || "—")}</span>
+      `;
+      if (fmt === "xml") {
+        $("metaBody").textContent = raw;
+      } else {
+        try {
+          $("metaBody").textContent = JSON.stringify(JSON.parse(raw), null, 2);
+        } catch {
+          $("metaBody").textContent = raw;
+        }
+      }
+    }
+
+    async function copyMetadata() {
+      try {
+        await navigator.clipboard.writeText($("metaBody").textContent);
+        showToast("Metadata copied to clipboard.");
+      } catch {
+        showToast("Copy failed.", "err");
+      }
+    }
+
+    async function submitBorrowRequest(resourceId) {
+      const days = Number($("reqDays")?.value) || 14;
+      const res = await apiFetch("/api/v1/loans", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ resource_id: resourceId, days }),
+      });
+      const data = await res.json().catch(() => null);
+      if (!res.ok) {
+        showToast(extractError(data, "Could not submit request."), "err");
+        return;
+      }
+      closeModal("bookOverlay");
+      showToast(`Request sent to librarian for "${data.resource_title}".`);
+      await syncSession();
+      await loadCatalogue();
+    }
+
+    async function loadMyLoans(render = true) {
+      if (!state.token) return;
+      const res = await apiFetch("/api/v1/loans/me?limit=50");
+      if (!res.ok) {
+        if (render) {
+          $("myLoansContainer").innerHTML = `<div class="empty-box">Unable to load your activity right now.</div>`;
+        }
+        return;
+      }
+      const loans = await res.json();
+
+      state.myLoansByResource = new Map();
+      let openCount = 0;
+      loans.forEach((l) => {
+        if (l.status === "pending" || l.status === "active") {
+          state.myLoansByResource.set(l.resource_id, l);
+          openCount += 1;
+        }
+      });
+      $("myLoanCount").textContent = String(openCount);
+
+      if (!render) return;
+      const box = $("myLoansContainer");
+      if (!loans.length) {
+        box.innerHTML = `
+          <div class="empty-box">
+            <p style="margin-bottom:16px;">You haven't requested any books yet.</p>
+            <button class="btn btn-blue btn-sm" onclick="switchView('catalogue')">Browse Catalogue</button>
+          </div>
+        `;
+        return;
+      }
+
+      box.innerHTML = `
+        <div class="table-card">
+          <table>
+            <thead>
+              <tr>
+                <th>Book</th>
+                <th>Status</th>
+                <th>Timeline</th>
+                <th>Notes / Tickets</th>
+                <th style="text-align:right;">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${loans.map((l) => {
+                const pendingExt = (l.extensions || []).find((e) => e.status === "pending");
+                const latestExt = (l.extensions || [])[0];
+                const isOverdue = l.status === "active" && l.due_at && new Date(l.due_at) < new Date();
+
+                let timeline = `Requested ${fmtDate(l.requested_at)} (${l.requested_days}d)`;
+                if (l.status === "active") {
+                  timeline = `Issued ${fmtDate(l.borrowed_at)} · <strong style="color:${isOverdue ? "var(--red)" : "var(--text)"}">Due ${fmtDate(l.due_at)}${isOverdue ? " (Overdue)" : ""}</strong>`;
+                } else if (l.status === "returned") {
+                  timeline = `Returned ${fmtDate(l.returned_at)}` +
+                    (l.overdue_days > 0 ? ` · <strong style="color:var(--red)">${l.overdue_days}d late penalty</strong>` : " · On time");
+                }
+
+                const noteBits = [];
+                if (l.admin_note) noteBits.push(`Librarian: "${esc(l.admin_note)}"`);
+                if (latestExt) {
+                  noteBits.push(`Extension (+${latestExt.extra_days}d): <strong>${esc(latestExt.status)}</strong>`);
+                }
+
+                let action = `<span style="font-size:12px;color:var(--text-muted);">—</span>`;
+                if (l.status === "pending") {
+                  action = `<span style="font-size:12px;color:var(--amber);">Awaiting admin</span>`;
+                } else if (l.status === "active") {
+                  action = pendingExt
+                    ? `<span style="font-size:12px;color:var(--amber);">Ticket pending</span>`
+                    : `<button class="btn btn-sm" onclick="openExtModal(${l.id}, '${esc(l.resource_title)}')">Extend Due Date</button>`;
+                }
+
+                return `
+                  <tr>
+                    <td>
+                      <strong>${esc(l.resource_title)}</strong>
+                      <span class="sub-mono">ISBN ${esc(l.resource_isbn)}</span>
+                    </td>
+                    <td><span class="state-pill ${esc(l.status)}">${esc(l.status)}</span></td>
+                    <td style="font-size:13px;color:var(--text-secondary);">${timeline}</td>
+                    <td style="font-size:12.5px;color:var(--text-secondary);">${noteBits.join("<br>") || "—"}</td>
+                    <td style="text-align:right;">${action}</td>
+                  </tr>
+                `;
+              }).join("")}
+            </tbody>
+          </table>
+        </div>
+      `;
+    }
+
+    function openExtModal(loanId, title) {
+      state.extLoanId = loanId;
+      $("extBookName").textContent = title;
+      $("extErr").className = "form-err";
+      $("extForm").reset();
+      openModal("extOverlay");
+    }
+
+    $("extForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      $("extErr").className = "form-err";
+      const res = await apiFetch(`/api/v1/loans/${state.extLoanId}/extensions`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          extra_days: Number($("extDays").value),
+          reason: $("extReason").value.trim(),
+        }),
+      });
+      const data = await res.json().catch(() => null);
+      if (!res.ok) {
+        $("extErr").textContent = extractError(data, "Could not submit ticket.");
+        $("extErr").className = "form-err show";
+        return;
+      }
+      closeModal("extOverlay");
+      showToast("Extension ticket sent to the librarian.");
+      await loadMyLoans(state.view === "loans");
+    });
+
+    function toggleSemesterField() {
+      const isStudent = $("authType").value === "student";
+      $("semField").style.display = isStudent ? "block" : "none";
+      $("authSemester").required = isStudent && state.authMode === "register";
+    }
+
+    function setAuthMode(mode) {
+      state.authMode = mode;
+      const isReg = mode === "register";
+      $("authHeading").textContent = isReg ? "Create Library Account" : "Sign In";
+      $("authSubmit").textContent = isReg ? "Register & Sign In" : "Sign In";
+      $("registerFields").style.display = isReg ? "block" : "none";
+      $("authName").required = isReg;
+      $("authPhone").required = isReg;
+      $("authAddress").required = isReg;
+      toggleSemesterField();
+      $("tabLogin").classList.toggle("active", !isReg);
+      $("tabRegister").classList.toggle("active", isReg);
+      $("authErr").className = "form-err";
+    }
+
+    $("authForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      $("authErr").className = "form-err";
+      const email = $("authEmail").value.trim();
+      const password = $("authPassword").value;
+
+      if (state.authMode === "register") {
+        const memberType = $("authType").value;
+        const regPayload = {
+          email,
+          full_name: $("authName").value.trim(),
+          password,
+          phone: $("authPhone").value.trim(),
+          address: $("authAddress").value.trim(),
+          member_type: memberType,
+          semester: memberType === "student" ? $("authSemester").value.trim() : null,
+        };
+        const regRes = await fetch("/api/v1/auth/register", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(regPayload),
+        });
+        const regData = await regRes.json().catch(() => null);
+        if (!regRes.ok) {
+          $("authErr").textContent = extractError(regData, "Registration failed.");
+          $("authErr").className = "form-err show";
+          return;
+        }
+      }
+
+      const loginRes = await fetch("/api/v1/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+      const loginData = await loginRes.json().catch(() => null);
+      if (!loginRes.ok) {
+        $("authErr").textContent = extractError(loginData, "Invalid credentials.");
+        $("authErr").className = "form-err show";
+        return;
+      }
+
+      state.token = loginData.access_token;
+      state.user = loginData.user;
+      sessionStorage.setItem(TOKEN_KEY, state.token);
+      closeModal("authOverlay");
+      $("authForm").reset();
+      await loadMyLoans(false);
+      renderAuthState();
+      await loadCatalogue();
+      showToast(`Welcome, ${state.user.full_name}`);
+    });
+
+    let searchTimer = null;
+    $("searchInput").addEventListener("input", (e) => {
+      const len = e.target.value.length;
+      $("charCount").textContent = `${len} / 500`;
+      $("clearSearchBtn").classList.toggle("show", len > 0);
+      clearTimeout(searchTimer);
+      searchTimer = setTimeout(() => {
+        state.offset = 0;
+        loadCatalogue();
+      }, 180);
+    });
+
+    $("clearSearchBtn").onclick = clearAllFilters;
+    $("limitSelect").onchange = () => { state.offset = 0; loadCatalogue(); };
+    $("prevBtn").onclick = () => { state.offset = Math.max(0, state.offset - state.limit); loadCatalogue(); };
+    $("nextBtn").onclick = () => { state.offset += state.limit; loadCatalogue(); };
+    $("authBtn").onclick = () => { setAuthMode("login"); openModal("authOverlay"); };
+    $("logoutBtn").onclick = () => {
+      state.token = null;
+      state.user = null;
+      state.myLoansByResource.clear();
+      sessionStorage.removeItem(TOKEN_KEY);
+      renderAuthState();
+      loadCatalogue();
+      showToast("Signed out.");
+    };
+
+    document.querySelectorAll(".overlay").forEach((ov) => {
+      ov.addEventListener("click", (e) => {
+        if (e.target === ov) ov.classList.remove("open");
+      });
+    });
+
+    checkHealth();
+    syncSession().then(loadCatalogue);
+  </script>
+</body>
+</html>
