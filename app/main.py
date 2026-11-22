@@ -2,7 +2,7 @@ from contextlib import asynccontextmanager
 from pathlib import Path
 
 from fastapi import Depends, FastAPI, Request, Response, status
-from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
 from sqlalchemy import func, select, text
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from sqlalchemy.orm import Session
@@ -234,10 +234,13 @@ app.include_router(loans.router)
 
 
 @app.get("/", tags=["System"])
-def root() -> dict[str, str]:
+def root(request: Request):
+    accept = request.headers.get("accept", "")
+    if "text/html" in accept and "application/json" not in accept:
+        return RedirectResponse(url="/ui", status_code=status.HTTP_307_TEMPORARY_REDIRECT)
     return {
         "service": "BiblioGraph API",
-        "version": "1.0.0",
+        "version": "2.0.0",
         "ui": "/ui",
         "admin": "/admin",
         "docs": "/docs",

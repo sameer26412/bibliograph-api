@@ -4,11 +4,14 @@
 
 A librarian-governed bibliographic catalogue and circulation system built with **FastAPI**, **SQLAlchemy 2.0**, **Pydantic v2**, and **Neon PostgreSQL**. Combines dual lightweight web portals (**Member Portal** at `/ui` and **Standalone Librarian Console** at `/admin`) with an interoperable REST API supporting **JSON**, **Dublin Core XML**, and **Schema.org JSON-LD** content negotiation.
 
-> **Live Deployment:**
-> * Member Portal (`/ui`): *(Updated upon deployment)*
-> * Librarian Console (`/admin`): *(Updated upon deployment)*
-> * OpenAPI Swagger Docs (`/docs`): *(Updated upon deployment)*
-
+> **Live Deployment (Vercel + Neon PostgreSQL):**
+> * **Member Portal (`/ui`):** https://bibliograph-api.vercel.app/ui
+> * **Librarian Console (`/admin`):** https://bibliograph-api.vercel.app/admin
+> * **OpenAPI Swagger Docs (`/docs`):** https://bibliograph-api.vercel.app/docs
+> * **Health Check (`/health`):** https://bibliograph-api.vercel.app/health
+>
+> **Reviewer Quick-Test (Dual-Portal Workflow):**
+> Open `/ui` in Tab 1 to register a student/local account and request a book (or join a waitlist). Open `/admin` in Tab 2 and sign in with the sandbox shift-librarian account (`reviewer@bibliograph.dev` / `ReviewDesk2026!`, License `LIB-DEMO`) to issue books, pre-assign waitlists, approve extension tickets, or generate password recovery codes. *(Staff management remains locked to the Head Librarian `LIB-001`.)*
 ---
 
 ## Key Capabilities (v2.0)
