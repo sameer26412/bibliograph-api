@@ -38,6 +38,11 @@ def get_current_user(
             detail="User account no longer exists.",
             headers={"WWW-Authenticate": "Bearer"},
         )
+    if not user.is_active:
+        raise HTTPException(
+           status_code=status.HTTP_403_FORBIDDEN,
+           detail="This account has been deactivated by the Head Librarian.",
+        ) 
     return user
 
 
@@ -46,5 +51,15 @@ def require_librarian(current_user: User = Depends(get_current_user)) -> User:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Librarian privileges are required for this action.",
+        )
+    return current_user
+
+def require_head_librarian(
+    current_user: User = Depends(require_librarian),
+) -> User:
+    if not current_user.is_head_librarian:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Head Librarian privileges required for staff management.",
         )
     return current_user

@@ -3,15 +3,16 @@ import math
 from typing import Literal
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
-from sqlalchemy import select, update
+from sqlalchemy import func, select, update
 from sqlalchemy.orm import Session, selectinload
 
 from app.database import get_db
 from app.deps import get_current_user, require_librarian
-from app.models import ExtensionRequest, Loan, Resource, User, utcnow
+from app.models import ExtensionRequest, Loan, Resource, User, WaitlistEntry, utcnow
 from app.schemas import (
     AdminExtensionOut,
     AdminLoanOut,
+    AdminWaitlistOut,
     ExtensionCreate,
     ExtensionDecision,
     ExtensionOut,
@@ -19,9 +20,16 @@ from app.schemas import (
     LoanCreate,
     LoanOut,
     LoanReject,
+    ResourceAvailabilityOut,
+    WaitlistAssign,
+    WaitlistCreate,
+    WaitlistFulfill,
+    WaitlistOut,
 )
 
 router = APIRouter(prefix="/api/v1/loans", tags=["Circulation & Loans"])
+
+WAITLIST_HOLD_DAYS = 3
 
 
 def _as_utc(dt: datetime | None) -> datetime | None:
@@ -38,11 +46,345 @@ def _load_loan(db: Session, loan_id: int) -> Loan | None:
         .options(
             selectinload(Loan.resource),
             selectinload(Loan.user),
+            selectinload(Loan.issued_by),
+            selectinload(Loan.returned_by),
             selectinload(Loan.extensions),
         )
         .where(Loan.id == loan_id)
     )
 
+
+def _load_waitlist_entry(db: Session, entry_id: int) -> WaitlistEntry | None:
+    return db.scalar(
+        select(WaitlistEntry)
+        .options(
+            selectinload(WaitlistEntry.resource),
+            selectinload(WaitlistEntry.user),
+            selectinload(WaitlistEntry.assigned_by),
+        )
+        .where(WaitlistEntry.id == entry_id)
+    )
+
+
+def _earliest_due_date(db: Session, resource_id: int) -> datetime | None:
+    return db.scalar(
+        select(func.min(Loan.due_at)).where(
+            Loan.resource_id == resource_id,
+            Loan.status == "active",
+            Loan.due_at.is_not(None),
+        )
+    )
+
+
+# --- Public Availability & Expected Return Forecast (Non-PII) ---
+
+@router.get("/availability", response_model=list[ResourceAvailabilityOut])
+def get_catalogue_availability_forecast(
+    response: Response,
+    db: Session = Depends(get_db),
+) -> list[ResourceAvailabilityOut]:
+    response.headers["Cache-Control"] = "no-store"
+
+    due_rows = db.execute(
+        select(Loan.resource_id, func.min(Loan.due_at))
+        .where(Loan.status == "active", Loan.due_at.is_not(None))
+        .group_by(Loan.resource_id)
+    ).all()
+    next_due_map = {rid: due for rid, due in due_rows}
+
+    wait_rows = db.execute(
+        select(WaitlistEntry.resource_id, func.count(WaitlistEntry.id))
+        .where(WaitlistEntry.status.in_(["waiting", "assigned"]))
+        .group_by(WaitlistEntry.resource_id)
+    ).all()
+    wait_map = {rid: cnt for rid, cnt in wait_rows}
+
+    ready_rows = db.execute(
+        select(WaitlistEntry.resource_id, func.count(WaitlistEntry.id))
+        .where(WaitlistEntry.status == "ready")
+        .group_by(WaitlistEntry.resource_id)
+    ).all()
+    ready_map = {rid: cnt for rid, cnt in ready_rows}
+
+    all_ids = sorted(set(next_due_map) | set(wait_map) | set(ready_map))
+    return [
+        ResourceAvailabilityOut(
+            resource_id=rid,
+            next_available_at=next_due_map.get(rid),
+            waiting_count=wait_map.get(rid, 0),
+            ready_holds=ready_map.get(rid, 0),
+        )
+        for rid in all_ids
+    ]
+
+
+# --- Rare Book Waitlist & Pre-Assignment ---
+
+@router.post("/waitlist", response_model=WaitlistOut, status_code=status.HTTP_201_CREATED)
+def join_waitlist(
+    payload: WaitlistCreate,
+    response: Response,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+) -> WaitlistOut:
+    response.headers["Cache-Control"] = "no-store"
+    now = utcnow()
+
+    suspended_until = _as_utc(current_user.suspended_until)
+    if suspended_until is not None and suspended_until > now:
+        remaining = max(1, math.ceil((suspended_until - now).total_seconds() / 86400))
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail=f"Cannot join waitlist while borrowing is paused ({remaining} day(s) remaining).",
+        )
+
+    resource = db.get(Resource, payload.resource_id)
+    if resource is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Resource {payload.resource_id} not found.",
+        )
+
+    if resource.available_copies > 0:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Copies are currently available—submit a direct borrow request instead.",
+        )
+
+    existing_loan = db.scalar(
+        select(Loan).where(
+            Loan.user_id == current_user.id,
+            Loan.resource_id == payload.resource_id,
+            Loan.status.in_(["pending", "active"]),
+        )
+    )
+    if existing_loan is not None:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="You already hold or have requested this book.",
+        )
+
+    existing_wait = db.scalar(
+        select(WaitlistEntry).where(
+            WaitlistEntry.user_id == current_user.id,
+            WaitlistEntry.resource_id == payload.resource_id,
+            WaitlistEntry.status.in_(["waiting", "assigned", "ready"]),
+        )
+    )
+    if existing_wait is not None:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="You are already on the waitlist for this book.",
+        )
+
+    entry = WaitlistEntry(
+        resource_id=payload.resource_id,
+        user_id=current_user.id,
+        status="waiting",
+        expected_available_at=_earliest_due_date(db, payload.resource_id),
+    )
+    db.add(entry)
+    db.commit()
+    return WaitlistOut.from_model(_load_waitlist_entry(db, entry.id))
+
+
+@router.get("/waitlist/me", response_model=list[WaitlistOut])
+def list_my_waitlist(
+    response: Response,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+) -> list[WaitlistOut]:
+    response.headers["Cache-Control"] = "no-store"
+
+    rows = db.scalars(
+        select(WaitlistEntry)
+        .options(
+            selectinload(WaitlistEntry.resource),
+            selectinload(WaitlistEntry.assigned_by),
+        )
+        .where(WaitlistEntry.user_id == current_user.id)
+        .order_by(WaitlistEntry.created_at.desc())
+        .limit(50)
+    ).all()
+    return [WaitlistOut.from_model(row) for row in rows]
+
+
+@router.get("/waitlist", response_model=list[AdminWaitlistOut])
+def list_all_waitlist_for_librarian(
+    response: Response,
+    entry_status: Literal["waiting", "assigned", "ready", "fulfilled", "cancelled"] | None = Query(
+        default=None, alias="status"
+    ),
+    _librarian: User = Depends(require_librarian),
+    db: Session = Depends(get_db),
+) -> list[AdminWaitlistOut]:
+    response.headers["Cache-Control"] = "no-store"
+
+    stmt = select(WaitlistEntry).options(
+        selectinload(WaitlistEntry.resource),
+        selectinload(WaitlistEntry.user),
+        selectinload(WaitlistEntry.assigned_by),
+    )
+    if entry_status is not None:
+        stmt = stmt.where(WaitlistEntry.status == entry_status)
+
+    rows = db.scalars(
+        stmt.order_by(WaitlistEntry.created_at.asc()).limit(50)
+    ).all()
+    return [AdminWaitlistOut.from_model(row) for row in rows]
+
+
+@router.post("/waitlist/{entry_id}/assign", response_model=AdminWaitlistOut)
+def pre_assign_waitlist_spot(
+    entry_id: int,
+    payload: WaitlistAssign | None = None,
+    response: Response = None,
+    librarian: User = Depends(require_librarian),
+    db: Session = Depends(get_db),
+) -> AdminWaitlistOut:
+    if response is not None:
+        response.headers["Cache-Control"] = "no-store"
+
+    entry = _load_waitlist_entry(db, entry_id)
+    if entry is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Waitlist entry {entry_id} not found.",
+        )
+
+    if entry.status != "waiting":
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Only waiting entries can be pre-assigned.",
+        )
+
+    expected = _earliest_due_date(db, entry.resource_id)
+    entry.status = "assigned"
+    entry.assigned_by_id = librarian.id
+    entry.expected_available_at = expected
+    if payload and payload.note:
+        entry.note = payload.note
+    else:
+        when = expected.strftime("%Y-%m-%d") if expected else "the next return"
+        entry.note = (
+            f"Spot secured by {librarian.full_name} ({librarian.staff_license_id or 'Staff'}). "
+            f"Expected return: {when}. You will be notified the moment it arrives."
+        )
+
+    db.commit()
+    db.expire_all()
+    return AdminWaitlistOut.from_model(_load_waitlist_entry(db, entry.id))
+
+
+@router.post("/waitlist/{entry_id}/fulfill", response_model=AdminLoanOut)
+def issue_ready_waitlist_hold(
+    entry_id: int,
+    payload: WaitlistFulfill | None = None,
+    response: Response = None,
+    librarian: User = Depends(require_librarian),
+    db: Session = Depends(get_db),
+) -> AdminLoanOut:
+    if response is not None:
+        response.headers["Cache-Control"] = "no-store"
+
+    entry = _load_waitlist_entry(db, entry_id)
+    if entry is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Waitlist entry {entry_id} not found.",
+        )
+
+    if entry.status != "ready":
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Only a 'ready' reserved hold can be issued directly.",
+        )
+
+    days = payload.days if payload else 14
+    now = utcnow()
+    loan = Loan(
+        user_id=entry.user_id,
+        resource_id=entry.resource_id,
+        issued_by_id=librarian.id,
+        requested_days=days,
+        requested_at=entry.created_at,
+        borrowed_at=now,
+        due_at=now + timedelta(days=days),
+        admin_note=(payload.admin_note if payload and payload.admin_note else "Issued from reserved waitlist hold."),
+        status="active",
+    )
+    entry.status = "fulfilled"
+    entry.note = f"Issued by {librarian.full_name} ({librarian.staff_license_id or 'Staff'})."
+    db.add(loan)
+    db.commit()
+    db.expire_all()
+    return AdminLoanOut.from_model(_load_loan(db, loan.id))
+
+
+@router.delete("/waitlist/{entry_id}", status_code=status.HTTP_204_NO_CONTENT)
+def cancel_waitlist_entry(
+    entry_id: int,
+    response: Response,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+) -> None:
+    response.headers["Cache-Control"] = "no-store"
+
+    entry = _load_waitlist_entry(db, entry_id)
+    if entry is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Waitlist entry {entry_id} not found.",
+        )
+
+    if entry.user_id != current_user.id and current_user.role != "librarian":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You cannot cancel another member's waitlist spot.",
+        )
+
+    if entry.status in ("fulfilled", "cancelled"):
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="This waitlist entry is already closed.",
+        )
+
+    was_ready_hold = entry.status == "ready"
+    entry.status = "cancelled"
+
+    # If a held copy is released, pass it to the next pre-assigned reader or return to stock
+    if was_ready_hold:
+        next_assigned = db.scalar(
+            select(WaitlistEntry)
+            .where(
+                WaitlistEntry.resource_id == entry.resource_id,
+                WaitlistEntry.status == "assigned",
+                WaitlistEntry.id != entry.id,
+            )
+            .order_by(WaitlistEntry.created_at.asc())
+        )
+        if next_assigned is not None:
+            hold_until = utcnow() + timedelta(days=WAITLIST_HOLD_DAYS)
+            next_assigned.status = "ready"
+            next_assigned.hold_expires_at = hold_until
+            next_assigned.note = (
+                f"A copy of '{entry.resource.title}' is now held exclusively for you "
+                f"until {hold_until.strftime('%Y-%m-%d %H:%M UTC')}."
+            )
+        else:
+            db.execute(
+                update(Resource)
+                .where(
+                    Resource.id == entry.resource_id,
+                    Resource.available_copies < Resource.total_copies,
+                )
+                .values(available_copies=Resource.available_copies + 1)
+            )
+
+    db.commit()
+
+
+# --- Member Activity & Extension Tickets ---
 
 @router.get("/me", response_model=list[LoanOut])
 def list_my_loans(
@@ -59,7 +401,12 @@ def list_my_loans(
 
     stmt = (
         select(Loan)
-        .options(selectinload(Loan.resource), selectinload(Loan.extensions))
+        .options(
+            selectinload(Loan.resource),
+            selectinload(Loan.issued_by),
+            selectinload(Loan.returned_by),
+            selectinload(Loan.extensions),
+        )
         .where(Loan.user_id == current_user.id)
     )
     if loan_status is not None:
@@ -86,6 +433,7 @@ def list_extension_tickets(
 
     stmt = select(ExtensionRequest).options(
         selectinload(ExtensionRequest.user),
+        selectinload(ExtensionRequest.decided_by),
         selectinload(ExtensionRequest.loan).selectinload(Loan.resource),
     )
     if ticket_status is not None:
@@ -102,7 +450,7 @@ def decide_extension_ticket(
     extension_id: int,
     payload: ExtensionDecision,
     response: Response,
-    _librarian: User = Depends(require_librarian),
+    librarian: User = Depends(require_librarian),
     db: Session = Depends(get_db),
 ) -> AdminExtensionOut:
     response.headers["Cache-Control"] = "no-store"
@@ -111,6 +459,7 @@ def decide_extension_ticket(
         select(ExtensionRequest)
         .options(
             selectinload(ExtensionRequest.user),
+            selectinload(ExtensionRequest.decided_by),
             selectinload(ExtensionRequest.loan).selectinload(Loan.resource),
         )
         .where(ExtensionRequest.id == extension_id)
@@ -138,11 +487,24 @@ def decide_extension_ticket(
 
     ticket.status = payload.decision
     ticket.admin_note = payload.admin_note
+    ticket.decided_by_id = librarian.id
     ticket.decided_at = utcnow()
     db.commit()
-    db.refresh(ticket)
-    return AdminExtensionOut.from_model(ticket)
+    db.expire_all()
 
+    reloaded = db.scalar(
+        select(ExtensionRequest)
+        .options(
+            selectinload(ExtensionRequest.user),
+            selectinload(ExtensionRequest.decided_by),
+            selectinload(ExtensionRequest.loan).selectinload(Loan.resource),
+        )
+        .where(ExtensionRequest.id == ticket.id)
+    )
+    return AdminExtensionOut.from_model(reloaded)
+
+
+# --- Core Circulation Endpoints ---
 
 @router.get("", response_model=list[AdminLoanOut])
 def list_all_loans_for_librarian(
@@ -160,6 +522,8 @@ def list_all_loans_for_librarian(
     stmt = select(Loan).options(
         selectinload(Loan.resource),
         selectinload(Loan.user),
+        selectinload(Loan.issued_by),
+        selectinload(Loan.returned_by),
         selectinload(Loan.extensions),
     )
     if loan_status is not None:
@@ -202,7 +566,7 @@ def request_borrow(
     if resource.available_copies <= 0:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
-            detail="No copies are currently available to request.",
+            detail="No copies are currently available. Join the waitlist to reserve the next return.",
         )
 
     existing = db.scalar(
@@ -227,9 +591,7 @@ def request_borrow(
     )
     db.add(loan)
     db.commit()
-
-    loaded = _load_loan(db, loan.id)
-    return LoanOut.from_model(loaded)
+    return LoanOut.from_model(_load_loan(db, loan.id))
 
 
 @router.post("/{loan_id}/approve", response_model=AdminLoanOut)
@@ -237,7 +599,7 @@ def approve_and_issue_loan(
     loan_id: int,
     payload: LoanApprove | None = None,
     response: Response = None,
-    _librarian: User = Depends(require_librarian),
+    librarian: User = Depends(require_librarian),
     db: Session = Depends(get_db),
 ) -> AdminLoanOut:
     if response is not None:
@@ -258,7 +620,6 @@ def approve_and_issue_loan(
 
     issued_days = payload.days if (payload and payload.days is not None) else loan.requested_days
 
-    # Atomic stock check + decrement when admin physically issues the book
     decrement = db.execute(
         update(Resource)
         .where(
@@ -276,6 +637,7 @@ def approve_and_issue_loan(
 
     now = utcnow()
     loan.status = "active"
+    loan.issued_by_id = librarian.id
     loan.requested_days = issued_days
     loan.borrowed_at = now
     loan.due_at = now + timedelta(days=issued_days)
@@ -283,6 +645,7 @@ def approve_and_issue_loan(
         loan.admin_note = payload.admin_note
 
     db.commit()
+    db.expire_all()
     return AdminLoanOut.from_model(_load_loan(db, loan.id))
 
 
@@ -291,7 +654,7 @@ def reject_loan_request(
     loan_id: int,
     payload: LoanReject | None = None,
     response: Response = None,
-    _librarian: User = Depends(require_librarian),
+    librarian: User = Depends(require_librarian),
     db: Session = Depends(get_db),
 ) -> AdminLoanOut:
     if response is not None:
@@ -311,10 +674,12 @@ def reject_loan_request(
         )
 
     loan.status = "rejected"
+    loan.issued_by_id = librarian.id
     if payload and payload.admin_note is not None:
         loan.admin_note = payload.admin_note
 
     db.commit()
+    db.expire_all()
     return AdminLoanOut.from_model(_load_loan(db, loan.id))
 
 
@@ -322,7 +687,7 @@ def reject_loan_request(
 def mark_loan_returned(
     loan_id: int,
     response: Response,
-    _librarian: User = Depends(require_librarian),
+    librarian: User = Depends(require_librarian),
     db: Session = Depends(get_db),
 ) -> AdminLoanOut:
     response.headers["Cache-Control"] = "no-store"
@@ -358,24 +723,45 @@ def mark_loan_returned(
 
     loan.status = "returned"
     loan.returned_at = now
+    loan.returned_by_id = librarian.id
     loan.overdue_days = overdue_days
 
-    # Close any open extension tickets on this loan
     for ext in loan.extensions:
         if ext.status == "pending":
             ext.status = "declined"
+            ext.decided_by_id = librarian.id
             ext.decided_at = now
             ext.admin_note = "Closed automatically when book was returned."
 
-    db.execute(
-        update(Resource)
+    # Auto-hold for the earliest pre-assigned waitlist reader; otherwise return to public stock
+    assigned_entry = db.scalar(
+        select(WaitlistEntry)
         .where(
-            Resource.id == loan.resource_id,
-            Resource.available_copies < Resource.total_copies,
+            WaitlistEntry.resource_id == loan.resource_id,
+            WaitlistEntry.status == "assigned",
         )
-        .values(available_copies=Resource.available_copies + 1)
+        .order_by(WaitlistEntry.created_at.asc())
     )
+    if assigned_entry is not None:
+        hold_until = now + timedelta(days=WAITLIST_HOLD_DAYS)
+        assigned_entry.status = "ready"
+        assigned_entry.hold_expires_at = hold_until
+        assigned_entry.note = (
+            f"Your reserved copy of '{loan.resource.title}' has arrived! "
+            f"Held exclusively for you until {hold_until.strftime('%Y-%m-%d %H:%M UTC')}."
+        )
+    else:
+        db.execute(
+            update(Resource)
+            .where(
+                Resource.id == loan.resource_id,
+                Resource.available_copies < Resource.total_copies,
+            )
+            .values(available_copies=Resource.available_copies + 1)
+        )
+
     db.commit()
+    db.expire_all()
     return AdminLoanOut.from_model(_load_loan(db, loan.id))
 
 
@@ -408,8 +794,7 @@ def request_loan_extension(
             detail="Extensions can only be requested on active issued loans.",
         )
 
-    has_pending = any(ext.status == "pending" for ext in loan.extensions)
-    if has_pending:
+    if any(ext.status == "pending" for ext in loan.extensions):
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
             detail="You already have a pending extension ticket for this loan.",

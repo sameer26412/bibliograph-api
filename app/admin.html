@@ -9,7 +9,7 @@
       --bg: #f5f5f7;
       --surface: #ffffff;
       --surface-soft: #fbfbfd;
-      --glass: rgba(255, 255, 255, 0.85);
+      --glass: rgba(255, 255, 255, 0.86);
       --border: rgba(0, 0, 0, 0.08);
       --border-strong: rgba(0, 0, 0, 0.14);
       --text: #1d1d1f;
@@ -44,412 +44,195 @@
     }
 
     /* Login Gate */
-    .gate-wrap {
-      min-height: 100vh;
-      display: grid;
-      place-items: center;
-      padding: 24px;
-    }
-
+    .gate-wrap { min-height: 100vh; display: grid; place-items: center; padding: 24px; }
     .gate-card {
-      width: 100%;
-      max-width: 410px;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 24px;
-      padding: 34px 30px;
-      box-shadow: var(--shadow-lg);
+      width: 100%; max-width: 420px; background: var(--surface);
+      border: 1px solid var(--border); border-radius: 24px; padding: 34px 30px; box-shadow: var(--shadow-lg);
     }
-
     .gate-mark {
-      width: 40px;
-      height: 40px;
-      border-radius: 11px;
-      background: #1d1d1f;
-      color: #fff;
-      display: grid;
-      place-items: center;
-      font-weight: 700;
-      font-size: 14px;
-      margin-bottom: 16px;
+      width: 40px; height: 40px; border-radius: 11px; background: #1d1d1f; color: #fff;
+      display: grid; place-items: center; font-weight: 700; font-size: 14px; margin-bottom: 16px;
     }
-
-    .gate-card h1 {
-      font-size: 22px;
-      font-weight: 600;
-      letter-spacing: -0.02em;
-      margin-bottom: 6px;
-    }
-
-    .gate-card p {
-      font-size: 13.5px;
-      color: var(--text-secondary);
-      margin-bottom: 22px;
-    }
+    .gate-card h1 { font-size: 22px; font-weight: 600; letter-spacing: -0.02em; margin-bottom: 6px; }
+    .gate-card p { font-size: 13.5px; color: var(--text-secondary); margin-bottom: 20px; }
 
     /* Top Bar */
     header {
-      position: sticky;
-      top: 0;
-      z-index: 30;
-      background: var(--glass);
-      -webkit-backdrop-filter: saturate(180%) blur(20px);
-      backdrop-filter: saturate(180%) blur(20px);
-      border-bottom: 1px solid var(--border);
+      position: sticky; top: 0; z-index: 30;
+      background: var(--glass); -webkit-backdrop-filter: saturate(180%) blur(20px);
+      backdrop-filter: saturate(180%) blur(20px); border-bottom: 1px solid var(--border);
     }
-
     .nav-inner {
-      max-width: 1240px;
-      margin: 0 auto;
-      padding: 0 28px;
-      height: 60px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-      flex-wrap: wrap;
+      max-width: 1280px; margin: 0 auto; padding: 10px 24px;
+      display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap;
     }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
+    .brand { display: flex; align-items: center; gap: 10px; }
     .brand-mark {
-      width: 28px;
-      height: 28px;
-      border-radius: 8px;
-      background: #1d1d1f;
-      color: #fff;
-      display: grid;
-      place-items: center;
-      font-weight: 700;
-      font-size: 12px;
+      width: 28px; height: 28px; border-radius: 8px; background: #1d1d1f; color: #fff;
+      display: grid; place-items: center; font-weight: 700; font-size: 12px;
     }
-
-    .admin-tag {
-      font-size: 11px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      background: var(--blue-soft);
-      color: var(--blue);
-      padding: 3px 8px;
-      border-radius: 999px;
+    .staff-badge {
+      font-size: 11.5px; font-weight: 600; background: var(--blue-soft); color: var(--blue);
+      padding: 3px 10px; border-radius: 999px;
     }
 
     .segmented {
-      display: inline-flex;
-      background: rgba(0, 0, 0, 0.05);
-      border-radius: 999px;
-      padding: 3px;
-      gap: 2px;
-      flex-wrap: wrap;
+      display: inline-flex; background: rgba(0, 0, 0, 0.05);
+      border-radius: 999px; padding: 3px; gap: 2px; flex-wrap: wrap;
     }
-
     .seg-btn {
-      border: none;
-      background: transparent;
-      color: var(--text-secondary);
-      font: inherit;
-      font-size: 13px;
-      font-weight: 500;
-      padding: 6px 14px;
-      border-radius: 999px;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
+      border: none; background: transparent; color: var(--text-secondary);
+      font: inherit; font-size: 12.5px; font-weight: 500; padding: 6px 12px;
+      border-radius: 999px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;
     }
-    .seg-btn.active {
-      background: var(--surface);
-      color: var(--text);
-      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
-    }
+    .seg-btn.active { background: var(--surface); color: var(--text); box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1); }
 
     .badge-num {
-      font-size: 11px;
-      font-variant-numeric: tabular-nums;
-      background: var(--blue);
-      color: #fff;
-      padding: 1px 6px;
-      border-radius: 999px;
-      font-weight: 600;
+      font-size: 11px; font-variant-numeric: tabular-nums; background: var(--blue);
+      color: #fff; padding: 1px 6px; border-radius: 999px; font-weight: 600;
     }
     .badge-num.zero { background: rgba(0, 0, 0, 0.12); color: var(--text-secondary); }
 
     /* Buttons */
     .btn {
-      font: inherit;
-      font-size: 13px;
-      font-weight: 500;
-      padding: 7px 14px;
-      border-radius: 999px;
-      border: 1px solid var(--border-strong);
-      background: var(--surface);
-      color: var(--text);
-      cursor: pointer;
-      text-decoration: none;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
+      font: inherit; font-size: 13px; font-weight: 500; padding: 7px 14px; border-radius: 999px;
+      border: 1px solid var(--border-strong); background: var(--surface); color: var(--text);
+      cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; gap: 6px;
     }
     .btn:hover { background: #f0f0f3; }
     .btn:disabled { opacity: 0.4; cursor: not-allowed; }
-
     .btn-blue { background: var(--blue); border-color: var(--blue); color: #fff; }
     .btn-blue:hover { background: var(--blue-hover); }
-
     .btn-green { background: var(--green); border-color: var(--green); color: #fff; }
     .btn-green:hover { background: #187934; }
-
     .btn-red { background: var(--red-soft); border-color: rgba(217, 48, 37, 0.28); color: var(--red); }
     .btn-red:hover { background: #fadad7; }
-
     .btn-ghost { background: transparent; border-color: transparent; color: var(--text-secondary); }
     .btn-ghost:hover { background: rgba(0, 0, 0, 0.05); color: var(--text); }
+    .btn-sm { padding: 5px 11px; font-size: 12px; }
 
-    .btn-sm { padding: 5px 12px; font-size: 12px; }
+    main { max-width: 1280px; margin: 0 auto; padding: 28px 24px 80px; }
 
-    /* Workspace */
-    main {
-      max-width: 1240px;
-      margin: 0 auto;
-      padding: 32px 28px 80px;
-    }
-
-    .kpi-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
-      gap: 16px;
-      margin-bottom: 28px;
-    }
-
+    .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 14px; margin-bottom: 24px; }
     .kpi {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-md);
-      padding: 18px 20px;
-      box-shadow: var(--shadow-sm);
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius-md); padding: 16px 18px; box-shadow: var(--shadow-sm);
     }
-
-    .kpi-lbl {
-      font-size: 12px;
-      font-weight: 500;
-      color: var(--text-muted);
-      margin-bottom: 6px;
-    }
-
-    .kpi-val {
-      font-size: 28px;
-      font-weight: 600;
-      letter-spacing: -0.03em;
-      font-variant-numeric: tabular-nums;
-    }
+    .kpi-lbl { font-size: 12px; font-weight: 500; color: var(--text-muted); margin-bottom: 4px; }
+    .kpi-val { font-size: 26px; font-weight: 600; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
 
     .panel-head {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 16px;
-      gap: 12px;
-      flex-wrap: wrap;
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 16px; gap: 12px; flex-wrap: wrap;
     }
+    .panel-head h2 { font-size: 22px; font-weight: 600; letter-spacing: -0.02em; }
 
-    .panel-head h2 {
-      font-size: 22px;
-      font-weight: 600;
-      letter-spacing: -0.02em;
+    /* Issued Reset Code Banner */
+    .code-banner {
+      display: none; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+      background: var(--green-soft); border: 1px solid rgba(30, 142, 62, 0.3);
+      border-radius: var(--radius-md); padding: 14px 20px; margin-bottom: 20px;
+    }
+    .code-banner.show { display: flex; }
+    .code-big {
+      font-family: var(--mono); font-size: 22px; font-weight: 700; letter-spacing: 0.16em;
+      background: var(--surface); padding: 4px 14px; border-radius: 10px;
+      border: 1px solid rgba(30, 142, 62, 0.35); color: #135c28;
     }
 
     /* Tables */
     .table-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      box-shadow: var(--shadow-sm);
-      overflow-x: auto;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); overflow-x: auto;
     }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 13.5px;
-    }
-
+    table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
     th {
-      text-align: left;
-      font-size: 11px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      color: var(--text-muted);
-      padding: 13px 18px;
-      border-bottom: 1px solid var(--border);
-      background: var(--surface-soft);
+      text-align: left; font-size: 11px; font-weight: 600; text-transform: uppercase;
+      letter-spacing: 0.05em; color: var(--text-muted); padding: 13px 16px;
+      border-bottom: 1px solid var(--border); background: var(--surface-soft);
     }
-
-    td {
-      padding: 16px 18px;
-      border-bottom: 1px solid var(--border);
-      vertical-align: top;
-    }
+    td { padding: 15px 16px; border-bottom: 1px solid var(--border); vertical-align: top; }
     tr:last-child td { border-bottom: none; }
 
     .member-pill {
-      display: inline-block;
-      font-size: 11px;
-      font-weight: 600;
-      padding: 2px 8px;
-      border-radius: 999px;
-      background: var(--bg);
-      color: var(--text-secondary);
-      margin-left: 6px;
+      display: inline-block; font-size: 11px; font-weight: 600;
+      padding: 2px 8px; border-radius: 999px; background: var(--bg); color: var(--text-secondary); margin-left: 6px;
     }
     .member-pill.student { background: var(--blue-soft); color: var(--blue); }
 
-    .detail-line {
-      display: block;
-      font-size: 12px;
-      color: var(--text-secondary);
-      margin-top: 2px;
-    }
-
-    .mono {
-      font-family: var(--mono);
-      font-size: 11.5px;
-      color: var(--text-muted);
-    }
+    .detail-line { display: block; font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+    .mono { font-family: var(--mono); font-size: 11.5px; color: var(--text-muted); }
 
     .pill {
-      display: inline-flex;
-      font-size: 11.5px;
-      font-weight: 600;
-      padding: 3px 9px;
-      border-radius: 999px;
-      text-transform: capitalize;
+      display: inline-flex; font-size: 11.5px; font-weight: 600;
+      padding: 3px 9px; border-radius: 999px; text-transform: capitalize;
     }
-    .pill.pending { background: var(--amber-soft); color: var(--amber); }
-    .pill.active { background: var(--blue-soft); color: var(--blue); }
-    .pill.approved, .pill.returned { background: var(--green-soft); color: var(--green); }
-    .pill.rejected, .pill.declined, .pill.overdue { background: var(--red-soft); color: var(--red); }
+    .pill.pending, .pill.waiting { background: var(--amber-soft); color: var(--amber); }
+    .pill.active, .pill.assigned, .pill.issued { background: var(--blue-soft); color: var(--blue); }
+    .pill.approved, .pill.returned, .pill.ready, .pill.fulfilled, .pill.completed { background: var(--green-soft); color: var(--green); }
+    .pill.rejected, .pill.declined, .pill.overdue, .pill.cancelled, .pill.inactive { background: var(--red-soft); color: var(--red); }
 
     .inline-days {
-      width: 64px;
-      font: inherit;
-      font-size: 12.5px;
-      padding: 4px 8px;
-      border: 1px solid var(--border-strong);
-      border-radius: 8px;
-      text-align: center;
-      margin-right: 6px;
+      width: 60px; font: inherit; font-size: 12.5px; padding: 4px 8px;
+      border: 1px solid var(--border-strong); border-radius: 8px; text-align: center; margin-right: 6px;
     }
+
+    .staff-grid { display: grid; grid-template-columns: 1fr 1.6fr; gap: 20px; align-items: start; }
+    .panel-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius-lg); padding: 22px; box-shadow: var(--shadow-sm);
+    }
+    .panel-card h3 { font-size: 16.5px; font-weight: 600; margin-bottom: 4px; }
 
     .empty-box {
-      text-align: center;
-      padding: 56px 20px;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      color: var(--text-muted);
-      box-shadow: var(--shadow-sm);
+      text-align: center; padding: 54px 20px; background: var(--surface);
+      border: 1px solid var(--border); border-radius: var(--radius-lg);
+      color: var(--text-muted); box-shadow: var(--shadow-sm);
     }
 
-    /* Forms & Modals */
     .field { margin-bottom: 13px; }
-    .field label {
-      display: block;
-      font-size: 12.5px;
-      font-weight: 500;
-      color: var(--text-secondary);
-      margin-bottom: 5px;
+    .field label { display: block; font-size: 12.5px; font-weight: 500; color: var(--text-secondary); margin-bottom: 5px; }
+    .field input, .field select, .field textarea {
+      width: 100%; font: inherit; font-size: 14px; color: var(--text);
+      background: var(--surface-soft); border: 1px solid var(--border-strong);
+      border-radius: var(--radius-sm); padding: 10px 12px; outline: none;
     }
-    .field input, .field textarea {
-      width: 100%;
-      font: inherit;
-      font-size: 14px;
-      color: var(--text);
-      background: var(--surface-soft);
-      border: 1px solid var(--border-strong);
-      border-radius: var(--radius-sm);
-      padding: 10px 12px;
-      outline: none;
+    .field input:focus, .field select:focus, .field textarea:focus {
+      border-color: var(--blue); box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.14); background: var(--surface);
     }
-    .field input:focus, .field textarea:focus {
-      border-color: var(--blue);
-      box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.14);
-      background: var(--surface);
-    }
-
     .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 
+    .check-inline { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-secondary); margin: 2px 0 16px; cursor: pointer; }
+    .check-inline input { width: 15px; height: 15px; accent-color: var(--blue); }
+
     .form-err {
-      display: none;
-      background: var(--red-soft);
-      border: 1px solid rgba(217, 48, 37, 0.25);
-      color: var(--red);
-      font-size: 13px;
-      padding: 10px 12px;
-      border-radius: var(--radius-sm);
-      margin-bottom: 14px;
+      display: none; background: var(--red-soft); border: 1px solid rgba(217, 48, 37, 0.25);
+      color: var(--red); font-size: 13px; padding: 10px 12px; border-radius: var(--radius-sm); margin-bottom: 14px;
     }
     .form-err.show { display: block; }
 
     .overlay {
-      position: fixed;
-      inset: 0;
-      z-index: 50;
-      background: rgba(0, 0, 0, 0.36);
-      -webkit-backdrop-filter: blur(8px);
-      backdrop-filter: blur(8px);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
+      position: fixed; inset: 0; z-index: 50;
+      background: rgba(0, 0, 0, 0.36); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+      display: none; align-items: center; justify-content: center; padding: 20px;
     }
     .overlay.open { display: flex; }
-
     .sheet {
-      width: 100%;
-      max-width: 620px;
-      max-height: 88vh;
-      overflow-y: auto;
-      background: var(--surface);
-      border-radius: 24px;
-      padding: 26px;
-      box-shadow: var(--shadow-lg);
+      width: 100%; max-width: 600px; max-height: 88vh; overflow-y: auto;
+      background: var(--surface); border-radius: 24px; padding: 26px; box-shadow: var(--shadow-lg);
     }
-
-    .sheet-head {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 18px;
-    }
+    .sheet-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
 
     #toast {
-      position: fixed;
-      bottom: 24px;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 80;
-      padding: 11px 20px;
-      border-radius: 999px;
-      background: #1d1d1f;
-      color: #fff;
-      font-size: 13.5px;
-      font-weight: 500;
-      display: none;
-      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.24);
+      position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); z-index: 80;
+      padding: 11px 20px; border-radius: 999px; background: #1d1d1f; color: #fff;
+      font-size: 13.5px; font-weight: 500; display: none; box-shadow: 0 16px 40px rgba(0, 0, 0, 0.24);
     }
     #toast.show { display: block; }
     #toast.err { background: var(--red); }
 
-    @media (max-width: 760px) {
-      .nav-inner { height: auto; padding: 12px 16px; }
-      .row-2 { grid-template-columns: 1fr; }
+    @media (max-width: 900px) {
+      .staff-grid, .row-2 { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -459,7 +242,7 @@
     <div class="gate-card">
       <div class="gate-mark">BG</div>
       <h1>Librarian Console</h1>
-      <p>Restricted governance portal for issuing books, reviewing extension tickets, and tracking overdue penalties.</p>
+      <p>Sign in with your licensed staff profile. All book issuances, returns, waitlist holds, and password resets are logged under your Staff ID.</p>
       <div class="form-err" id="gateErr"></div>
       <form id="adminLoginForm">
         <div class="field">
@@ -470,7 +253,11 @@
           <label for="adminPassword">Password</label>
           <input id="adminPassword" type="password" required />
         </div>
-        <button type="submit" class="btn btn-blue" style="width:100%;padding:11px;margin-top:4px;">Sign In to Console</button>
+        <label class="check-inline">
+          <input type="checkbox" id="adminRemember" checked />
+          Keep me signed in on this desk (7 days)
+        </label>
+        <button type="submit" class="btn btn-blue" style="width:100%;padding:11px;">Sign In to Console</button>
       </form>
       <div style="margin-top:18px;text-align:center;">
         <a href="/ui" style="font-size:13px;color:var(--blue);text-decoration:none;">← Return to Public Library Portal</a>
@@ -485,7 +272,7 @@
         <div class="brand">
           <div class="brand-mark">BG</div>
           <strong>BiblioGraph</strong>
-          <span class="admin-tag">Admin</span>
+          <span class="staff-badge" id="staffIdentity">Librarian</span>
         </div>
 
         <nav class="segmented">
@@ -493,18 +280,25 @@
             Requests <span class="badge-num zero" id="cntPending">0</span>
           </button>
           <button class="seg-btn" data-tab="active" onclick="switchTab('active')">
-            Active Loans <span class="badge-num zero" id="cntActive">0</span>
+            Active <span class="badge-num zero" id="cntActive">0</span>
+          </button>
+          <button class="seg-btn" data-tab="waitlist" onclick="switchTab('waitlist')">
+            Waitlist <span class="badge-num zero" id="cntWait">0</span>
           </button>
           <button class="seg-btn" data-tab="extensions" onclick="switchTab('extensions')">
-            Extension Tickets <span class="badge-num zero" id="cntExt">0</span>
+            Extensions <span class="badge-num zero" id="cntExt">0</span>
+          </button>
+          <button class="seg-btn" data-tab="resets" onclick="switchTab('resets')">
+            Resets <span class="badge-num zero" id="cntResets">0</span>
           </button>
           <button class="seg-btn" data-tab="history" onclick="switchTab('history')">History</button>
           <button class="seg-btn" data-tab="catalogue" onclick="switchTab('catalogue')">Catalogue</button>
+          <button class="seg-btn" data-tab="staff" onclick="switchTab('staff')">Staff</button>
         </nav>
 
         <div style="display:flex;align-items:center;gap:8px;">
-          <a class="btn btn-ghost btn-sm" href="/docs" target="_blank" rel="noopener">API Docs ↗</a>
-          <button class="btn btn-blue btn-sm" onclick="openAddModal()">+ Add Book</button>
+          <a class="btn btn-ghost btn-sm" href="/docs" target="_blank" rel="noopener">API ↗</a>
+          <button class="btn btn-blue btn-sm" onclick="openModal('addOverlay')">+ Add Book</button>
           <button class="btn btn-ghost btn-sm" onclick="adminSignOut()">Sign Out</button>
         </div>
       </div>
@@ -512,27 +306,31 @@
 
     <main>
       <div class="kpi-grid">
-        <div class="kpi">
-          <div class="kpi-lbl">Pending Borrow Requests</div>
-          <div class="kpi-val" id="kpiPending">—</div>
+        <div class="kpi"><div class="kpi-lbl">Pending Borrow Requests</div><div class="kpi-val" id="kpiPending">—</div></div>
+        <div class="kpi"><div class="kpi-lbl">Active Issued Loans</div><div class="kpi-val" id="kpiActive">—</div></div>
+        <div class="kpi"><div class="kpi-lbl">Waitlist &amp; Ready Holds</div><div class="kpi-val" id="kpiWait">—</div></div>
+        <div class="kpi"><div class="kpi-lbl">Pending Tickets / Resets</div><div class="kpi-val" id="kpiDesk">—</div></div>
+      </div>
+
+      <!-- One-Time Recovery Code Banner -->
+      <div class="code-banner" id="codeBanner">
+        <div>
+          <strong style="color:#135c28;" id="codeBannerUser">Recovery Code Issued</strong>
+          <div style="font-size:12.5px;color:#1b6e33;">Share this single-use 6-digit code with the verified member. Expires in 15 minutes.</div>
         </div>
-        <div class="kpi">
-          <div class="kpi-lbl">Books Currently Issued</div>
-          <div class="kpi-val" id="kpiActive">—</div>
-        </div>
-        <div class="kpi">
-          <div class="kpi-lbl">Pending Extension Tickets</div>
-          <div class="kpi-val" id="kpiExt">—</div>
-        </div>
-        <div class="kpi">
-          <div class="kpi-lbl">Catalogued Titles</div>
-          <div class="kpi-val" id="kpiBooks">—</div>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span class="code-big" id="codeBannerValue">000000</span>
+          <button class="btn btn-green btn-sm" onclick="copyRecoveryCode()">Copy Code</button>
+          <button class="btn btn-ghost btn-sm" onclick="$('codeBanner').classList.remove('show')">Dismiss</button>
         </div>
       </div>
 
       <div class="panel-head">
         <h2 id="panelTitle">Pending Borrow Requests</h2>
-        <button class="btn btn-sm" onclick="refreshAll()">Refresh Data</button>
+        <div style="display:flex;gap:8px;">
+          <button class="btn btn-blue btn-sm" id="addStaffBtn" style="display:none;" onclick="openModal('staffOverlay')">+ Register Shift Librarian</button>
+          <button class="btn btn-sm" onclick="refreshAll()">Refresh Data</button>
+        </div>
       </div>
 
       <div id="panelBody"></div>
@@ -544,51 +342,59 @@
     <div class="sheet">
       <div class="sheet-head">
         <h2>Register New Book</h2>
-        <button class="btn btn-ghost btn-sm" onclick="closeAddModal()">✕</button>
+        <button class="btn btn-ghost btn-sm" onclick="closeModal('addOverlay')">✕</button>
       </div>
       <div class="form-err" id="addErr"></div>
       <form id="addForm">
         <div class="row-2">
-          <div class="field">
-            <label>ISBN *</label>
-            <input id="rIsbn" required placeholder="978-0135957059" />
-          </div>
-          <div class="field">
-            <label>Publication Year *</label>
-            <input id="rYear" type="number" required min="1450" max="2100" value="2024" />
-          </div>
+          <div class="field"><label>ISBN *</label><input id="rIsbn" required placeholder="978-0135957059" /></div>
+          <div class="field"><label>Publication Year *</label><input id="rYear" type="number" required min="1450" max="2100" value="2024" /></div>
         </div>
-        <div class="field">
-          <label>Title *</label>
-          <input id="rTitle" required maxlength="255" placeholder="The Pragmatic Programmer" />
+        <div class="field"><label>Title *</label><input id="rTitle" required maxlength="255" placeholder="The Pragmatic Programmer" /></div>
+        <div class="row-2">
+          <div class="field"><label>Publisher *</label><input id="rPublisher" required maxlength="150" placeholder="Addison-Wesley" /></div>
+          <div class="field"><label>Total Copies *</label><input id="rCopies" type="number" required min="1" max="500" value="2" /></div>
+        </div>
+        <div class="field"><label>Authors (comma-separated) *</label><input id="rAuthors" required placeholder="David Thomas, Andrew Hunt" /></div>
+        <div class="field"><label>Tags (comma-separated)</label><input id="rTags" placeholder="software-engineering, architecture" /></div>
+        <div class="field"><label>Reference URL (SSRF-guarded public http/https)</label><input id="rUrl" type="url" maxlength="500" placeholder="https://example.org" /></div>
+        <div class="field"><label>Summary</label><textarea id="rSummary" rows="2" maxlength="2000"></textarea></div>
+        <button type="submit" class="btn btn-blue" style="width:100%;padding:11px;">Add to Library Catalogue</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- REGISTER SHIFT LIBRARIAN MODAL (HEAD LIBRARIAN ONLY) -->
+  <div class="overlay" id="staffOverlay">
+    <div class="sheet">
+      <div class="sheet-head">
+        <h2>Register Shift Librarian</h2>
+        <button class="btn btn-ghost btn-sm" onclick="closeModal('staffOverlay')">✕</button>
+      </div>
+      <div class="form-err" id="staffErr"></div>
+      <form id="staffForm">
+        <div class="row-2">
+          <div class="field"><label>Full Name *</label><input id="sName" required minlength="2" maxlength="120" placeholder="Priya Nair" /></div>
+          <div class="field"><label>Staff License ID *</label><input id="sLicense" required minlength="3" maxlength="40" placeholder="LIB-002" /></div>
         </div>
         <div class="row-2">
+          <div class="field"><label>Email *</label><input id="sEmail" type="email" required placeholder="priya@bibliograph.dev" /></div>
           <div class="field">
-            <label>Publisher *</label>
-            <input id="rPublisher" required maxlength="150" placeholder="Addison-Wesley" />
+            <label>Assigned Shift *</label>
+            <select id="sShift">
+              <option value="Morning">Morning</option>
+              <option value="Afternoon">Afternoon</option>
+              <option value="Evening">Evening</option>
+              <option value="Full Day">Full Day</option>
+            </select>
           </div>
-          <div class="field">
-            <label>Total Copies *</label>
-            <input id="rCopies" type="number" required min="1" max="500" value="3" />
-          </div>
         </div>
-        <div class="field">
-          <label>Authors (comma-separated) *</label>
-          <input id="rAuthors" required placeholder="David Thomas, Andrew Hunt" />
+        <div class="row-2">
+          <div class="field"><label>Phone Number *</label><input id="sPhone" type="tel" required minlength="7" maxlength="25" placeholder="+91 98765 11111" /></div>
+          <div class="field"><label>Initial Password (8–72 chars) *</label><input id="sPassword" type="password" required minlength="8" maxlength="72" /></div>
         </div>
-        <div class="field">
-          <label>Tags (comma-separated)</label>
-          <input id="rTags" placeholder="software-engineering, architecture" />
-        </div>
-        <div class="field">
-          <label>Reference URL (SSRF-validated public http/https)</label>
-          <input id="rUrl" type="url" maxlength="500" placeholder="https://example.org" />
-        </div>
-        <div class="field">
-          <label>Summary</label>
-          <textarea id="rSummary" rows="2" maxlength="2000"></textarea>
-        </div>
-        <button type="submit" class="btn btn-blue" style="width:100%;padding:11px;">Add to Library Catalogue</button>
+        <div class="field"><label>Desk / Address *</label><input id="sAddress" required minlength="5" maxlength="300" placeholder="CS Department Reading Room" /></div>
+        <button type="submit" class="btn btn-blue" style="width:100%;padding:11px;">Issue Staff License</button>
       </form>
     </div>
   </div>
@@ -598,14 +404,26 @@
   <script>
     const ADMIN_TOKEN_KEY = "bg_admin_token";
     const state = {
-      token: sessionStorage.getItem(ADMIN_TOKEN_KEY) || null,
+      token: localStorage.getItem(ADMIN_TOKEN_KEY) || sessionStorage.getItem(ADMIN_TOKEN_KEY) || null,
+      me: null,
       tab: "requests",
       loans: [],
       extensions: [],
+      waitlist: [],
+      resets: [],
       books: [],
+      staff: [],
+      lastCode: "",
     };
 
     const $ = (id) => document.getElementById(id);
+
+    function saveAdminToken(token, remember) {
+      state.token = token;
+      localStorage.removeItem(ADMIN_TOKEN_KEY);
+      sessionStorage.removeItem(ADMIN_TOKEN_KEY);
+      if (token) (remember ? localStorage : sessionStorage).setItem(ADMIN_TOKEN_KEY, token);
+    }
 
     function esc(v) {
       return String(v ?? "").replace(/[&<>"']/g, (c) => ({
@@ -615,16 +433,12 @@
 
     function fmtDateTime(iso) {
       if (!iso) return "—";
-      return new Date(iso).toLocaleString(undefined, {
-        month: "short", day: "numeric", year: "numeric", hour: "2-digit", minute: "2-digit"
-      });
+      return new Date(iso).toLocaleString(undefined, { month: "short", day: "numeric", year: "numeric", hour: "2-digit", minute: "2-digit" });
     }
 
     function fmtDate(iso) {
       if (!iso) return "—";
-      return new Date(iso).toLocaleDateString(undefined, {
-        month: "short", day: "numeric", year: "numeric"
-      });
+      return new Date(iso).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
     }
 
     let toastTimer = null;
@@ -645,6 +459,9 @@
       return fallback;
     }
 
+    function openModal(id) { $(id).classList.add("open"); }
+    function closeModal(id) { $(id).classList.remove("open"); }
+
     async function apiFetch(url, options = {}) {
       const headers = { ...(options.headers || {}) };
       if (state.token) headers["Authorization"] = `Bearer ${state.token}`;
@@ -657,7 +474,6 @@
         : "Local Member";
       const pillCls = row.borrower_type === "student" ? "student" : "";
       const suspended = row.borrower_suspended_until && new Date(row.borrower_suspended_until) > new Date();
-
       return `
         <div>
           <strong>${esc(row.borrower_name)}</strong>
@@ -669,21 +485,25 @@
       `;
     }
 
+    function staffLabel(name, license, shift) {
+      if (!name) return "—";
+      const parts = [license, shift].filter(Boolean).join(" · ");
+      return `${esc(name)}${parts ? ` <span class="mono">(${esc(parts)})</span>` : ""}`;
+    }
+
     async function verifyAdminSession() {
-      if (!state.token) {
-        showGate();
-        return;
-      }
+      if (!state.token) { showGate(); return; }
       const res = await apiFetch("/api/v1/auth/me");
-      if (!res.ok) {
-        adminSignOut();
-        return;
-      }
+      if (!res.ok) { adminSignOut(); return; }
       const user = await res.json();
       if (user.role !== "librarian") {
         adminSignOut("Librarian privileges required. Regular members should use /ui.");
         return;
       }
+      state.me = user;
+      const lic = user.staff_license_id || "STAFF";
+      const shift = user.shift ? ` · ${user.shift}` : "";
+      $("staffIdentity").textContent = `${user.full_name} · ${lic}${shift}`;
       $("loginGate").style.display = "none";
       $("adminShell").style.display = "block";
       await refreshAll();
@@ -701,21 +521,22 @@
     }
 
     function adminSignOut(msg = "") {
-      state.token = null;
-      sessionStorage.removeItem(ADMIN_TOKEN_KEY);
+      saveAdminToken(null, false);
+      state.me = null;
       showGate(msg);
     }
 
     $("adminLoginForm").addEventListener("submit", async (e) => {
       e.preventDefault();
       $("gateErr").className = "form-err";
-
+      const remember = $("adminRemember").checked;
       const res = await fetch("/api/v1/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           email: $("adminEmail").value.trim(),
           password: $("adminPassword").value,
+          remember_me: remember,
         }),
       });
       const data = await res.json().catch(() => null);
@@ -725,43 +546,48 @@
         return;
       }
       if (data.user.role !== "librarian") {
-        $("gateErr").textContent = "Access denied: This account is a regular member. Only librarians can access /admin.";
+        $("gateErr").textContent = "Access denied: Only licensed librarians can sign in at /admin.";
         $("gateErr").className = "form-err show";
         return;
       }
-
-      state.token = data.access_token;
-      sessionStorage.setItem(ADMIN_TOKEN_KEY, state.token);
+      saveAdminToken(data.access_token, remember);
       $("adminLoginForm").reset();
       await verifyAdminSession();
     });
 
     async function refreshAll() {
-      const [loansRes, extRes, booksRes] = await Promise.all([
+      const [loansRes, extRes, waitRes, resetRes, booksRes, staffRes] = await Promise.all([
         apiFetch("/api/v1/loans?limit=50"),
         apiFetch("/api/v1/loans/extensions?limit=50"),
+        apiFetch("/api/v1/loans/waitlist"),
+        apiFetch("/api/v1/auth/password-reset/requests"),
         apiFetch("/api/v1/resources?limit=50"),
+        apiFetch("/api/v1/auth/staff"),
       ]);
 
       if (loansRes.ok) state.loans = await loansRes.json();
       if (extRes.ok) state.extensions = await extRes.json();
-      if (booksRes.ok) {
-        const bData = await booksRes.json();
-        state.books = bData.items || [];
-      }
+      if (waitRes.ok) state.waitlist = await waitRes.json();
+      if (resetRes.ok) state.resets = await resetRes.json();
+      if (booksRes.ok) state.books = (await booksRes.json()).items || [];
+      if (staffRes.ok) state.staff = await staffRes.json();
 
       const pendingCount = state.loans.filter((l) => l.status === "pending").length;
       const activeCount = state.loans.filter((l) => l.status === "active").length;
+      const waitCount = state.waitlist.filter((w) => ["waiting", "assigned", "ready"].includes(w.status)).length;
       const extPending = state.extensions.filter((e) => e.status === "pending").length;
+      const resetPending = state.resets.filter((r) => r.status === "pending").length;
 
       $("kpiPending").textContent = String(pendingCount);
       $("kpiActive").textContent = String(activeCount);
-      $("kpiExt").textContent = String(extPending);
-      $("kpiBooks").textContent = String(state.books.length);
+      $("kpiWait").textContent = String(waitCount);
+      $("kpiDesk").textContent = String(extPending + resetPending);
 
       setBadge("cntPending", pendingCount);
       setBadge("cntActive", activeCount);
+      setBadge("cntWait", waitCount);
       setBadge("cntExt", extPending);
+      setBadge("cntResets", resetPending);
 
       renderTab();
     }
@@ -784,222 +610,276 @@
       const titles = {
         requests: "Pending Borrow Requests",
         active: "Active Issued Loans",
+        waitlist: "Rare-Book Waitlist & Reserved Holds",
         extensions: "Extension Tickets",
+        resets: "Password Recovery Desk",
         history: "Completed & Declined History",
         catalogue: "Catalogue Inventory",
+        staff: "Shift Librarians & My Staff Profile",
       };
       $("panelTitle").textContent = titles[state.tab];
+      $("addStaffBtn").style.display =
+        state.tab === "staff" && state.me && state.me.is_head_librarian ? "inline-flex" : "none";
+
       const body = $("panelBody");
 
       if (state.tab === "requests") {
         const rows = state.loans.filter((l) => l.status === "pending");
-        if (!rows.length) {
-          body.innerHTML = `<div class="empty-box">No pending borrow requests waiting for approval.</div>`;
-          return;
-        }
+        if (!rows.length) { body.innerHTML = `<div class="empty-box">No pending borrow requests waiting for approval.</div>`; return; }
         body.innerHTML = `
-          <div class="table-card">
-            <table>
-              <thead>
+          <div class="table-card"><table>
+            <thead><tr><th>Borrower Profile</th><th>Requested Book</th><th>Requested At</th><th style="text-align:right;">Issue Days &amp; Decision</th></tr></thead>
+            <tbody>
+              ${rows.map((l) => `
                 <tr>
-                  <th>Borrower Profile</th>
-                  <th>Requested Book</th>
-                  <th>Requested At</th>
-                  <th style="text-align:right;">Issue Days &amp; Decision</th>
+                  <td>${borrowerCell(l)}</td>
+                  <td><strong>${esc(l.resource_title)}</strong><div class="mono">ISBN ${esc(l.resource_isbn)}</div></td>
+                  <td style="font-size:12.5px;color:var(--text-secondary);">${fmtDateTime(l.requested_at)}<div class="mono">Asked ${l.requested_days}d</div></td>
+                  <td style="text-align:right;white-space:nowrap;">
+                    <input type="number" min="1" max="30" value="${l.requested_days}" id="days-${l.id}" class="inline-days" />
+                    <button class="btn btn-green btn-sm" onclick="approveLoan(${l.id})">Issue Book</button>
+                    <button class="btn btn-red btn-sm" onclick="rejectLoan(${l.id})">Decline</button>
+                  </td>
                 </tr>
-              </thead>
-              <tbody>
-                ${rows.map((l) => `
-                  <tr>
-                    <td>${borrowerCell(l)}</td>
-                    <td>
-                      <strong>${esc(l.resource_title)}</strong>
-                      <div class="mono">ISBN ${esc(l.resource_isbn)}</div>
-                    </td>
-                    <td style="font-size:12.5px;color:var(--text-secondary);">
-                      ${fmtDateTime(l.requested_at)}
-                      <div class="mono">Asked for ${l.requested_days} days</div>
-                    </td>
-                    <td style="text-align:right;white-space:nowrap;">
-                      <input type="number" min="1" max="30" value="${l.requested_days}" id="days-${l.id}" class="inline-days" title="Approved days" />
-                      <button class="btn btn-green btn-sm" onclick="approveLoan(${l.id})">Issue Book</button>
-                      <button class="btn btn-red btn-sm" onclick="rejectLoan(${l.id})">Decline</button>
-                    </td>
-                  </tr>
-                `).join("")}
-              </tbody>
-            </table>
-          </div>
+              `).join("")}
+            </tbody>
+          </table></div>
         `;
       } else if (state.tab === "active") {
         const rows = state.loans.filter((l) => l.status === "active");
-        if (!rows.length) {
-          body.innerHTML = `<div class="empty-box">No books are currently checked out.</div>`;
-          return;
-        }
+        if (!rows.length) { body.innerHTML = `<div class="empty-box">No books are currently checked out.</div>`; return; }
         body.innerHTML = `
-          <div class="table-card">
-            <table>
-              <thead>
-                <tr>
-                  <th>Borrower Profile</th>
-                  <th>Book</th>
-                  <th>Issued / Due</th>
-                  <th style="text-align:right;">Return Control</th>
-                </tr>
-              </thead>
-              <tbody>
-                ${rows.map((l) => {
-                  const due = l.due_at ? new Date(l.due_at) : null;
-                  const now = new Date();
-                  const lateDays = due && now > due ? Math.max(1, Math.ceil((now - due) / 86400000)) : 0;
-                  return `
-                    <tr>
-                      <td>${borrowerCell(l)}</td>
-                      <td>
-                        <strong>${esc(l.resource_title)}</strong>
-                        <div class="mono">ISBN ${esc(l.resource_isbn)}</div>
-                      </td>
-                      <td style="font-size:12.5px;">
-                        <div>Issued: ${fmtDateTime(l.borrowed_at)}</div>
-                        <div style="margin-top:3px;">
-                          Due: <strong>${fmtDate(l.due_at)}</strong>
-                          ${lateDays > 0 ? `<span class="pill overdue" style="margin-left:6px;">${lateDays}d overdue</span>` : `<span class="pill active" style="margin-left:6px;">On schedule</span>`}
-                        </div>
-                      </td>
-                      <td style="text-align:right;">
-                        <button class="btn btn-blue btn-sm" onclick="markReturned(${l.id})">Mark Returned</button>
-                      </td>
-                    </tr>
+          <div class="table-card"><table>
+            <thead><tr><th>Borrower Profile</th><th>Book</th><th>Issued / Due</th><th>Issued By</th><th style="text-align:right;">Return</th></tr></thead>
+            <tbody>
+              ${rows.map((l) => {
+                const due = l.due_at ? new Date(l.due_at) : null;
+                const lateDays = due && new Date() > due ? Math.max(1, Math.ceil((new Date() - due) / 86400000)) : 0;
+                return `
+                  <tr>
+                    <td>${borrowerCell(l)}</td>
+                    <td><strong>${esc(l.resource_title)}</strong><div class="mono">ISBN ${esc(l.resource_isbn)}</div></td>
+                    <td style="font-size:12.5px;">
+                      <div>Issued: ${fmtDateTime(l.borrowed_at)}</div>
+                      <div style="margin-top:3px;">Due: <strong>${fmtDate(l.due_at)}</strong>
+                        ${lateDays > 0 ? `<span class="pill overdue" style="margin-left:4px;">${lateDays}d overdue</span>` : `<span class="pill active" style="margin-left:4px;">On track</span>`}
+                      </div>
+                    </td>
+                    <td style="font-size:12.5px;">${staffLabel(l.issued_by_name, l.issued_by_license, l.issued_by_shift)}</td>
+                    <td style="text-align:right;"><button class="btn btn-blue btn-sm" onclick="markReturned(${l.id})">Mark Returned</button></td>
+                  </tr>
+                `;
+              }).join("")}
+            </tbody>
+          </table></div>
+        `;
+      } else if (state.tab === "waitlist") {
+        if (!state.waitlist.length) { body.innerHTML = `<div class="empty-box">No readers are on any book waitlist yet.</div>`; return; }
+        body.innerHTML = `
+          <div class="table-card"><table>
+            <thead><tr><th>Reader</th><th>Rare Book</th><th>Status &amp; Schedule</th><th>Pre-Assigned By</th><th style="text-align:right;">Governance Action</th></tr></thead>
+            <tbody>
+              ${state.waitlist.map((w) => {
+                let action = `<span class="mono">Closed</span>`;
+                if (w.status === "waiting") {
+                  action = `
+                    <button class="btn btn-blue btn-sm" onclick="preAssignWaitlist(${w.id})">Pre-Assign Spot</button>
+                    <button class="btn btn-red btn-sm" onclick="cancelWaitlistAdmin(${w.id})">Remove</button>
                   `;
-                }).join("")}
-              </tbody>
-            </table>
-          </div>
+                } else if (w.status === "assigned") {
+                  action = `
+                    <span class="detail-line" style="color:var(--blue);margin-bottom:4px;">Auto-holds on return</span>
+                    <button class="btn btn-red btn-sm" onclick="cancelWaitlistAdmin(${w.id})">Cancel</button>
+                  `;
+                } else if (w.status === "ready") {
+                  action = `
+                    <input type="number" min="1" max="30" value="14" id="wdays-${w.id}" class="inline-days" />
+                    <button class="btn btn-green btn-sm" onclick="fulfillWaitlist(${w.id})">Issue Held Copy</button>
+                    <button class="btn btn-red btn-sm" onclick="cancelWaitlistAdmin(${w.id})">Release</button>
+                  `;
+                }
+                const sched = w.status === "ready"
+                  ? `Held until <strong>${fmtDateTime(w.hold_expires_at)}</strong>`
+                  : (w.expected_available_at ? `Expected ~${fmtDate(w.expected_available_at)}` : "Queued");
+                return `
+                  <tr>
+                    <td>${borrowerCell(w)}</td>
+                    <td><strong>${esc(w.resource_title)}</strong><div class="mono">ISBN ${esc(w.resource_isbn)}</div></td>
+                    <td>
+                      <span class="pill ${esc(w.status)}">${esc(w.status)}</span>
+                      <span class="detail-line">${sched}</span>
+                    </td>
+                    <td style="font-size:12.5px;">${staffLabel(w.assigned_by_name, w.assigned_by_license, w.assigned_by_shift)}</td>
+                    <td style="text-align:right;white-space:nowrap;">${action}</td>
+                  </tr>
+                `;
+              }).join("")}
+            </tbody>
+          </table></div>
         `;
       } else if (state.tab === "extensions") {
-        if (!state.extensions.length) {
-          body.innerHTML = `<div class="empty-box">No extension tickets submitted yet.</div>`;
-          return;
-        }
+        if (!state.extensions.length) { body.innerHTML = `<div class="empty-box">No extension tickets submitted yet.</div>`; return; }
         body.innerHTML = `
-          <div class="table-card">
-            <table>
-              <thead>
+          <div class="table-card"><table>
+            <thead><tr><th>Borrower</th><th>Book &amp; Due</th><th>Request &amp; Reason</th><th>Status / Decided By</th><th style="text-align:right;">Decision</th></tr></thead>
+            <tbody>
+              ${state.extensions.map((t) => `
                 <tr>
-                  <th>Borrower</th>
-                  <th>Book &amp; Current Due</th>
-                  <th>Request &amp; Reason</th>
-                  <th>Status</th>
-                  <th style="text-align:right;">Decision</th>
+                  <td>
+                    <strong>${esc(t.borrower_name)}</strong>
+                    <span class="member-pill ${t.borrower_type === "student" ? "student" : ""}">
+                      ${esc(t.borrower_type === "student" ? `Student · ${t.borrower_semester || "N/A"}` : "Local")}
+                    </span>
+                    <span class="detail-line">${esc(t.borrower_email)} · ${esc(t.borrower_phone)}</span>
+                  </td>
+                  <td><strong>${esc(t.resource_title)}</strong><span class="detail-line">Due: ${fmtDate(t.current_due_at)}</span></td>
+                  <td><strong>+${t.extra_days} extra days</strong><span class="detail-line">"${esc(t.reason)}"</span></td>
+                  <td>
+                    <span class="pill ${esc(t.status)}">${esc(t.status)}</span>
+                    ${t.decided_by_name ? `<span class="detail-line">${staffLabel(t.decided_by_name, t.decided_by_license, null)}</span>` : ""}
+                  </td>
+                  <td style="text-align:right;white-space:nowrap;">
+                    ${t.status === "pending"
+                      ? `<button class="btn btn-green btn-sm" onclick="decideExtension(${t.id}, 'approved')">Approve</button>
+                         <button class="btn btn-red btn-sm" onclick="decideExtension(${t.id}, 'declined')">Decline</button>`
+                      : `<span class="mono">${fmtDate(t.decided_at)}</span>`}
+                  </td>
                 </tr>
-              </thead>
-              <tbody>
-                ${state.extensions.map((t) => `
-                  <tr>
-                    <td>
-                      <strong>${esc(t.borrower_name)}</strong>
-                      <span class="member-pill ${t.borrower_type === "student" ? "student" : ""}">
-                        ${esc(t.borrower_type === "student" ? `Student · ${t.borrower_semester || "N/A"}` : "Local")}
-                      </span>
-                      <span class="detail-line">${esc(t.borrower_email)} · ${esc(t.borrower_phone)}</span>
-                    </td>
-                    <td>
-                      <strong>${esc(t.resource_title)}</strong>
-                      <span class="detail-line">Due: ${fmtDate(t.current_due_at)}</span>
-                    </td>
-                    <td>
-                      <strong>+${t.extra_days} extra days</strong>
-                      <span class="detail-line">"${esc(t.reason)}"</span>
-                    </td>
-                    <td><span class="pill ${esc(t.status)}">${esc(t.status)}</span></td>
-                    <td style="text-align:right;white-space:nowrap;">
-                      ${t.status === "pending"
-                        ? `<button class="btn btn-green btn-sm" onclick="decideExtension(${t.id}, 'approved')">Approve</button>
-                           <button class="btn btn-red btn-sm" onclick="decideExtension(${t.id}, 'declined')">Decline</button>`
-                        : `<span class="mono">${fmtDate(t.decided_at)}</span>`}
-                    </td>
-                  </tr>
-                `).join("")}
-              </tbody>
-            </table>
-          </div>
+              `).join("")}
+            </tbody>
+          </table></div>
+        `;
+      } else if (state.tab === "resets") {
+        if (!state.resets.length) { body.innerHTML = `<div class="empty-box">No password recovery requests submitted.</div>`; return; }
+        body.innerHTML = `
+          <div class="table-card"><table>
+            <thead><tr><th>Account</th><th>Status</th><th>Requested At</th><th>Handled By</th><th style="text-align:right;">Action</th></tr></thead>
+            <tbody>
+              ${state.resets.map((r) => `
+                <tr>
+                  <td>
+                    <strong>${esc(r.user_name)}</strong>
+                    <span class="detail-line">${esc(r.user_email)} · ${esc(r.user_phone)}</span>
+                  </td>
+                  <td><span class="pill ${esc(r.status)}">${esc(r.status)}</span></td>
+                  <td style="font-size:12.5px;color:var(--text-secondary);">${fmtDateTime(r.requested_at)}</td>
+                  <td style="font-size:12.5px;">${staffLabel(r.issued_by_name, r.issued_by_license, null)}</td>
+                  <td style="text-align:right;">
+                    ${(r.status === "pending" || r.status === "issued")
+                      ? `<button class="btn btn-blue btn-sm" onclick="issueResetCode(${r.id})">${r.status === "issued" ? "Regenerate Code" : "Generate 6-Digit Code"}</button>`
+                      : `<span class="mono">Closed</span>`}
+                  </td>
+                </tr>
+              `).join("")}
+            </tbody>
+          </table></div>
         `;
       } else if (state.tab === "history") {
         const rows = state.loans.filter((l) => l.status === "returned" || l.status === "rejected");
-        if (!rows.length) {
-          body.innerHTML = `<div class="empty-box">No returned or declined records yet.</div>`;
-          return;
-        }
+        if (!rows.length) { body.innerHTML = `<div class="empty-box">No returned or declined records yet.</div>`; return; }
         body.innerHTML = `
-          <div class="table-card">
-            <table>
-              <thead>
+          <div class="table-card"><table>
+            <thead><tr><th>Borrower</th><th>Book</th><th>Outcome</th><th>Staff Audit Trail</th><th>Penalty / Notes</th></tr></thead>
+            <tbody>
+              ${rows.map((l) => `
                 <tr>
-                  <th>Borrower</th>
-                  <th>Book</th>
-                  <th>Outcome</th>
-                  <th>Penalty / Notes</th>
+                  <td>${borrowerCell(l)}</td>
+                  <td><strong>${esc(l.resource_title)}</strong><div class="mono">ISBN ${esc(l.resource_isbn)}</div></td>
+                  <td>
+                    <span class="pill ${esc(l.status)}">${esc(l.status)}</span>
+                    <div class="detail-line">${l.status === "returned" ? fmtDateTime(l.returned_at) : fmtDateTime(l.requested_at)}</div>
+                  </td>
+                  <td style="font-size:12.5px;">
+                    <div>Issued: ${staffLabel(l.issued_by_name, l.issued_by_license, l.issued_by_shift)}</div>
+                    ${l.returned_by_name ? `<div style="margin-top:2px;">Returned: ${staffLabel(l.returned_by_name, l.returned_by_license, null)}</div>` : ""}
+                  </td>
+                  <td style="font-size:12.5px;">
+                    ${l.overdue_days > 0 ? `<span class="pill overdue">${l.overdue_days}d overdue penalty</span>` : (l.admin_note ? esc(l.admin_note) : "Clean")}
+                  </td>
                 </tr>
-              </thead>
-              <tbody>
-                ${rows.map((l) => `
-                  <tr>
-                    <td>${borrowerCell(l)}</td>
-                    <td>
-                      <strong>${esc(l.resource_title)}</strong>
-                      <div class="mono">ISBN ${esc(l.resource_isbn)}</div>
-                    </td>
-                    <td>
-                      <span class="pill ${esc(l.status)}">${esc(l.status)}</span>
-                      <div class="detail-line">${l.status === "returned" ? `Returned ${fmtDateTime(l.returned_at)}` : `Requested ${fmtDateTime(l.requested_at)}`}</div>
-                    </td>
-                    <td style="font-size:12.5px;">
-                      ${l.overdue_days > 0
-                        ? `<span class="pill overdue">${l.overdue_days}d overdue penalty served</span>`
-                        : (l.admin_note ? esc(l.admin_note) : "Clean return")}
-                    </td>
-                  </tr>
-                `).join("")}
-              </tbody>
-            </table>
-          </div>
+              `).join("")}
+            </tbody>
+          </table></div>
         `;
       } else if (state.tab === "catalogue") {
-        if (!state.books.length) {
-          body.innerHTML = `<div class="empty-box">Catalogue is empty.</div>`;
-          return;
-        }
+        if (!state.books.length) { body.innerHTML = `<div class="empty-box">Catalogue is empty.</div>`; return; }
         body.innerHTML = `
-          <div class="table-card">
-            <table>
-              <thead>
+          <div class="table-card"><table>
+            <thead><tr><th>Title &amp; Authors</th><th>ISBN</th><th>Stock</th><th style="text-align:right;">Actions</th></tr></thead>
+            <tbody>
+              ${state.books.map((b) => `
                 <tr>
-                  <th>Title &amp; Authors</th>
-                  <th>ISBN</th>
-                  <th>Stock</th>
-                  <th style="text-align:right;">Actions</th>
+                  <td><strong>${esc(b.title)}</strong><span class="detail-line">${esc(b.authors.join(", "))} · ${esc(b.publisher)} (${b.publication_year})</span></td>
+                  <td class="mono">${esc(b.isbn)}</td>
+                  <td><strong>${b.available_copies}</strong> / ${b.total_copies}</td>
+                  <td style="text-align:right;white-space:nowrap;">
+                    ${b.source_url ? `<button class="btn btn-sm" onclick="verifyLink(${b.id})">Verify URL</button>` : ""}
+                    <button class="btn btn-red btn-sm" onclick="deleteBook(${b.id})">Delete</button>
+                  </td>
                 </tr>
-              </thead>
-              <tbody>
-                ${state.books.map((b) => `
-                  <tr>
-                    <td>
-                      <strong>${esc(b.title)}</strong>
-                      <span class="detail-line">${esc(b.authors.join(", "))} · ${esc(b.publisher)} (${b.publication_year})</span>
-                    </td>
-                    <td class="mono">${esc(b.isbn)}</td>
-                    <td><strong>${b.available_copies}</strong> / ${b.total_copies}</td>
-                    <td style="text-align:right;white-space:nowrap;">
-                      ${b.source_url ? `<button class="btn btn-sm" onclick="verifyLink(${b.id})">Verify URL</button>` : ""}
-                      <button class="btn btn-red btn-sm" onclick="deleteBook(${b.id})">Delete</button>
-                    </td>
-                  </tr>
-                `).join("")}
-              </tbody>
-            </table>
+              `).join("")}
+            </tbody>
+          </table></div>
+        `;
+      } else if (state.tab === "staff") {
+        const isHead = Boolean(state.me && state.me.is_head_librarian);
+        body.innerHTML = `
+          <div class="staff-grid">
+            <div class="panel-card">
+              <h3>My Staff Profile</h3>
+              <p class="detail-line" style="margin-bottom:16px;">
+                License: <strong>${esc(state.me.staff_license_id || "STAFF")}</strong> · Shift: <strong>${esc(state.me.shift || "Unassigned")}</strong> · ${isHead ? "Head Librarian" : "Shift Librarian"}
+              </p>
+              <form id="myStaffPwForm">
+                <div class="field"><label>Current Password</label><input id="myCurPw" type="password" required /></div>
+                <div class="field"><label>New Password (8–72 chars)</label><input id="myNewPw" type="password" required minlength="8" maxlength="72" /></div>
+                <button type="submit" class="btn btn-blue btn-sm">Update My Password</button>
+              </form>
+            </div>
+
+            <div class="table-card">
+              <table>
+                <thead><tr><th>Librarian &amp; License</th><th>Shift</th><th>Status</th>${isHead ? '<th style="text-align:right;">Controls</th>' : ''}</tr></thead>
+                <tbody>
+                  ${state.staff.map((s) => `
+                    <tr>
+                      <td>
+                        <strong>${esc(s.full_name)}</strong>
+                        <span class="member-pill ${s.is_head_librarian ? 'student' : ''}">${esc(s.staff_license_id || "STAFF")}</span>
+                        <span class="detail-line">${esc(s.email)} · ${esc(s.phone)}</span>
+                      </td>
+                      <td>${esc(s.shift || "—")}</td>
+                      <td><span class="pill ${s.is_active ? 'approved' : 'inactive'}">${s.is_active ? 'Active' : 'Inactive'}</span></td>
+                      ${isHead ? `
+                        <td style="text-align:right;white-space:nowrap;">
+                          ${s.id !== state.me.id
+                            ? `<button class="btn btn-sm" onclick="cycleStaffShift(${s.id}, '${esc(s.shift || 'Morning')}')">Shift</button>
+                               <button class="btn ${s.is_active ? 'btn-red' : 'btn-green'} btn-sm" onclick="toggleStaffActive(${s.id}, ${!s.is_active})">${s.is_active ? 'Deactivate' : 'Reactivate'}</button>`
+                            : `<span class="mono">Head Desk</span>`}
+                        </td>
+                      ` : ''}
+                    </tr>
+                  `).join("")}
+                </tbody>
+              </table>
+            </div>
           </div>
         `;
+        $("myStaffPwForm").addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const res = await apiFetch("/api/v1/auth/change-password", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ current_password: $("myCurPw").value, new_password: $("myNewPw").value }),
+          });
+          if (!res.ok) {
+            const d = await res.json().catch(() => null);
+            showToast(extractError(d, "Could not update password."), "err");
+            return;
+          }
+          $("myStaffPwForm").reset();
+          showToast("Staff password updated.");
+        });
       }
     }
 
@@ -1011,26 +891,19 @@
         body: JSON.stringify({ days }),
       });
       const data = await res.json().catch(() => null);
-      if (!res.ok) {
-        showToast(extractError(data, "Could not issue book."), "err");
-        return;
-      }
-      showToast(`Issued "${data.resource_title}" to ${data.borrower_name} for ${days} days.`);
+      if (!res.ok) { showToast(extractError(data, "Could not issue book."), "err"); return; }
+      showToast(`Issued "${data.resource_title}" under ${state.me.staff_license_id}.`);
       await refreshAll();
     }
 
     async function rejectLoan(loanId) {
-      const note = prompt("Optional reason for declining this request:") ?? "";
+      const note = prompt("Optional reason for declining:") ?? "";
       const res = await apiFetch(`/api/v1/loans/${loanId}/reject`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ admin_note: note.trim() || null }),
       });
-      const data = await res.json().catch(() => null);
-      if (!res.ok) {
-        showToast(extractError(data, "Decline failed."), "err");
-        return;
-      }
+      if (!res.ok) { showToast("Decline failed.", "err"); return; }
       showToast("Borrow request declined.");
       await refreshAll();
     }
@@ -1038,15 +911,42 @@
     async function markReturned(loanId) {
       const res = await apiFetch(`/api/v1/loans/${loanId}/return`, { method: "POST" });
       const data = await res.json().catch(() => null);
-      if (!res.ok) {
-        showToast(extractError(data, "Return failed."), "err");
-        return;
-      }
-      if (data.overdue_days > 0) {
-        showToast(`Returned ${data.overdue_days}d late. Cooldown penalty applied to ${data.borrower_name}.`);
-      } else {
-        showToast(`Returned on time. Copy restored to stock.`);
-      }
+      if (!res.ok) { showToast(extractError(data, "Return failed."), "err"); return; }
+      showToast(data.overdue_days > 0
+        ? `Returned ${data.overdue_days}d late. Penalty cooldown applied.`
+        : "Returned cleanly. Stock or waitlist hold updated.");
+      await refreshAll();
+    }
+
+    async function preAssignWaitlist(entryId) {
+      const res = await apiFetch(`/api/v1/loans/waitlist/${entryId}/assign`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({}),
+      });
+      const data = await res.json().catch(() => null);
+      if (!res.ok) { showToast(extractError(data, "Pre-assign failed."), "err"); return; }
+      showToast(`Spot pre-assigned to ${data.borrower_name}. Copy will auto-hold on return.`);
+      await refreshAll();
+    }
+
+    async function fulfillWaitlist(entryId) {
+      const days = Number($(`wdays-${entryId}`)?.value) || 14;
+      const res = await apiFetch(`/api/v1/loans/waitlist/${entryId}/fulfill`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ days }),
+      });
+      const data = await res.json().catch(() => null);
+      if (!res.ok) { showToast(extractError(data, "Issue failed."), "err"); return; }
+      showToast(`Issued reserved copy of "${data.resource_title}" to ${data.borrower_name}.`);
+      await refreshAll();
+    }
+
+    async function cancelWaitlistAdmin(entryId) {
+      const res = await apiFetch(`/api/v1/loans/waitlist/${entryId}`, { method: "DELETE" });
+      if (!res.ok) { showToast("Could not remove waitlist entry.", "err"); return; }
+      showToast("Waitlist entry updated.");
       await refreshAll();
     }
 
@@ -1057,11 +957,53 @@
         body: JSON.stringify({ decision }),
       });
       const data = await res.json().catch(() => null);
-      if (!res.ok) {
-        showToast(extractError(data, "Could not update ticket."), "err");
-        return;
-      }
+      if (!res.ok) { showToast(extractError(data, "Update failed."), "err"); return; }
       showToast(decision === "approved" ? `Extension approved (+${data.extra_days}d).` : "Extension declined.");
+      await refreshAll();
+    }
+
+    async function issueResetCode(reqId) {
+      const res = await apiFetch(`/api/v1/auth/password-reset/${reqId}/issue`, { method: "POST" });
+      const data = await res.json().catch(() => null);
+      if (!res.ok) { showToast(extractError(data, "Could not generate code."), "err"); return; }
+      state.lastCode = data.recovery_code;
+      $("codeBannerUser").textContent = `Recovery Code for ${data.user_name} (${data.user_email})`;
+      $("codeBannerValue").textContent = data.recovery_code;
+      $("codeBanner").classList.add("show");
+      showToast("6-digit recovery code generated.");
+      await refreshAll();
+    }
+
+    async function copyRecoveryCode() {
+      try {
+        await navigator.clipboard.writeText(state.lastCode);
+        showToast("Recovery code copied.");
+      } catch {
+        showToast("Copy failed.", "err");
+      }
+    }
+
+    async function cycleStaffShift(staffId, currentShift) {
+      const order = ["Morning", "Afternoon", "Evening", "Full Day"];
+      const next = order[(order.indexOf(currentShift) + 1) % order.length];
+      const res = await apiFetch(`/api/v1/auth/staff/${staffId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ shift: next }),
+      });
+      if (!res.ok) { showToast("Could not update shift.", "err"); return; }
+      showToast(`Shift updated to ${next}.`);
+      await refreshAll();
+    }
+
+    async function toggleStaffActive(staffId, active) {
+      const res = await apiFetch(`/api/v1/auth/staff/${staffId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ is_active: active }),
+      });
+      if (!res.ok) { showToast("Could not update staff status.", "err"); return; }
+      showToast(active ? "Librarian reactivated." : "Librarian deactivated.");
       await refreshAll();
     }
 
@@ -1069,10 +1011,7 @@
       showToast("Checking external URL (SSRF-guarded, 3.5s max)…");
       const res = await apiFetch(`/api/v1/resources/${resourceId}/verify-link`, { method: "POST" });
       const data = await res.json().catch(() => null);
-      if (!res.ok) {
-        showToast(extractError(data, "Link verification failed."), "err");
-        return;
-      }
+      if (!res.ok) { showToast(extractError(data, "Link check failed."), "err"); return; }
       showToast(`HTTP ${data.status_code} · ${data.latency_ms} ms`);
     }
 
@@ -1080,40 +1019,32 @@
       if (!confirm("Delete this book from the catalogue?")) return;
       const res = await apiFetch(`/api/v1/resources/${resourceId}`, { method: "DELETE" });
       if (!res.ok) {
-        const data = await res.json().catch(() => null);
-        showToast(extractError(data, "Cannot delete book."), "err");
+        const d = await res.json().catch(() => null);
+        showToast(extractError(d, "Cannot delete book."), "err");
         return;
       }
       showToast("Book deleted.");
       await refreshAll();
     }
 
-    function openAddModal() {
-      $("addErr").className = "form-err";
-      $("addOverlay").classList.add("open");
-    }
-    function closeAddModal() { $("addOverlay").classList.remove("open"); }
-
     $("addForm").addEventListener("submit", async (e) => {
       e.preventDefault();
       $("addErr").className = "form-err";
-      const payload = {
-        isbn: $("rIsbn").value.trim(),
-        title: $("rTitle").value.trim(),
-        summary: $("rSummary").value.trim(),
-        publication_year: Number($("rYear").value),
-        publisher: $("rPublisher").value.trim(),
-        language: "en",
-        source_url: $("rUrl").value.trim() || null,
-        total_copies: Number($("rCopies").value),
-        authors: $("rAuthors").value.split(",").map((s) => s.trim()).filter(Boolean),
-        tags: $("rTags").value.split(",").map((s) => s.trim()).filter(Boolean),
-      };
-
       const res = await apiFetch("/api/v1/resources", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
+        body: JSON.stringify({
+          isbn: $("rIsbn").value.trim(),
+          title: $("rTitle").value.trim(),
+          summary: $("rSummary").value.trim(),
+          publication_year: Number($("rYear").value),
+          publisher: $("rPublisher").value.trim(),
+          language: "en",
+          source_url: $("rUrl").value.trim() || null,
+          total_copies: Number($("rCopies").value),
+          authors: $("rAuthors").value.split(",").map((s) => s.trim()).filter(Boolean),
+          tags: $("rTags").value.split(",").map((s) => s.trim()).filter(Boolean),
+        }),
       });
       const data = await res.json().catch(() => null);
       if (!res.ok) {
@@ -1121,14 +1052,42 @@
         $("addErr").className = "form-err show";
         return;
       }
-      closeAddModal();
+      closeModal("addOverlay");
       $("addForm").reset();
       showToast(`Registered "${data.title}"`);
       await refreshAll();
     });
 
-    $("addOverlay").addEventListener("click", (e) => {
-      if (e.target === $("addOverlay")) closeAddModal();
+    $("staffForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      $("staffErr").className = "form-err";
+      const res = await apiFetch("/api/v1/auth/staff", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          full_name: $("sName").value.trim(),
+          staff_license_id: $("sLicense").value.trim(),
+          email: $("sEmail").value.trim(),
+          shift: $("sShift").value,
+          phone: $("sPhone").value.trim(),
+          password: $("sPassword").value,
+          address: $("sAddress").value.trim(),
+        }),
+      });
+      const data = await res.json().catch(() => null);
+      if (!res.ok) {
+        $("staffErr").textContent = extractError(data, "Could not create shift librarian.");
+        $("staffErr").className = "form-err show";
+        return;
+      }
+      closeModal("staffOverlay");
+      $("staffForm").reset();
+      showToast(`Licensed ${data.full_name} (${data.staff_license_id} · ${data.shift}).`);
+      await refreshAll();
+    });
+
+    document.querySelectorAll(".overlay").forEach((ov) => {
+      ov.addEventListener("click", (e) => { if (e.target === ov) ov.classList.remove("open"); });
     });
 
     verifyAdminSession();

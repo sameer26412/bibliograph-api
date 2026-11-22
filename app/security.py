@@ -33,13 +33,19 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
     return bcrypt.checkpw(raw, hashed_password.encode("utf-8"))
 
 
-def create_access_token(user_id: int, role: str) -> str:
+def create_access_token(
+    *,
+    user_id: int,
+    role: str,
+    expires_minutes: int | None = None,
+) -> str:
     now = datetime.now(timezone.utc)
+    ttl = expires_minutes if expires_minutes is not None else settings.access_token_expire_minutes
     payload = {
         "sub": str(user_id),
         "role": role,
         "iat": int(now.timestamp()),
-        "exp": int((now + timedelta(minutes=settings.access_token_expire_minutes)).timestamp()),
+        "exp": int((now + timedelta(minutes=ttl)).timestamp()),
     }
     return jwt.encode(payload, settings.secret_key, algorithm=settings.jwt_algorithm)
 

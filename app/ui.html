@@ -9,7 +9,7 @@
       --bg: #f5f5f7;
       --surface: #ffffff;
       --surface-soft: #fbfbfd;
-      --glass: rgba(255, 255, 255, 0.82);
+      --glass: rgba(255, 255, 255, 0.84);
       --border: rgba(0, 0, 0, 0.08);
       --border-strong: rgba(0, 0, 0, 0.14);
       --text: #1d1d1f;
@@ -45,7 +45,6 @@
       min-height: 100vh;
     }
 
-    /* Apple Light Frosted Navbar */
     header {
       position: sticky;
       top: 0;
@@ -89,11 +88,7 @@
       letter-spacing: -0.04em;
     }
 
-    .brand-title {
-      font-size: 16px;
-      font-weight: 600;
-      letter-spacing: -0.02em;
-    }
+    .brand-title { font-size: 16px; font-weight: 600; letter-spacing: -0.02em; }
 
     .segmented {
       display: inline-flex;
@@ -111,7 +106,7 @@
       font: inherit;
       font-size: 13px;
       font-weight: 500;
-      padding: 6px 16px;
+      padding: 6px 15px;
       border-radius: 999px;
       cursor: pointer;
       display: inline-flex;
@@ -156,16 +151,10 @@
       border: 1px solid var(--border);
     }
 
-    .dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: var(--amber);
-    }
+    .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--amber); }
     .dot.ok { background: var(--green); }
     .dot.err { background: var(--red); }
 
-    /* Buttons */
     .btn {
       font: inherit;
       font-size: 13.5px;
@@ -183,57 +172,53 @@
       gap: 6px;
       transition: background 0.18s var(--ease), border-color 0.18s var(--ease), transform 0.12s var(--ease);
     }
-
     .btn:hover { background: #f0f0f3; border-color: rgba(0, 0, 0, 0.2); }
     .btn:active { transform: scale(0.98); }
     .btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
 
-    .btn-blue {
-      background: var(--blue);
-      border-color: var(--blue);
-      color: #ffffff;
-    }
+    .btn-blue { background: var(--blue); border-color: var(--blue); color: #ffffff; }
     .btn-blue:hover { background: var(--blue-hover); border-color: var(--blue-hover); }
 
-    .btn-ghost {
-      background: transparent;
-      border-color: transparent;
-      color: var(--text-secondary);
-    }
-    .btn-ghost:hover { background: rgba(0, 0, 0, 0.05); color: var(--text); border-color: transparent; }
+    .btn-green { background: var(--green); border-color: var(--green); color: #ffffff; }
+    .btn-green:hover { background: #187934; }
+
+    .btn-red { background: var(--red-soft); border-color: rgba(217, 48, 37, 0.25); color: var(--red); }
+    .btn-red:hover { background: #fadad7; }
+
+    .btn-ghost { background: transparent; border-color: transparent; color: var(--text-secondary); }
+    .btn-ghost:hover { background: rgba(0, 0, 0, 0.05); color: var(--text); }
 
     .btn-sm { padding: 6px 13px; font-size: 12.5px; }
 
-    /* Main Container */
     main {
       max-width: 1180px;
       margin: 0 auto;
-      padding: 40px 28px 96px;
+      padding: 36px 28px 96px;
     }
 
-    /* Cooldown Warning Banner */
-    .cooldown-banner {
-      display: none;
+    /* Alert & Notification Banners */
+    .alert-stack { display: flex; flex-direction: column; gap: 10px; margin-bottom: 22px; }
+
+    .alert-bar {
+      display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 16px;
-      padding: 14px 20px;
-      margin-bottom: 24px;
+      gap: 14px;
+      padding: 13px 18px;
       border-radius: var(--radius-md);
-      background: var(--red-soft);
-      border: 1px solid rgba(217, 48, 37, 0.22);
-      color: #9e1c14;
       font-size: 13.5px;
+      flex-wrap: wrap;
     }
-    .cooldown-banner.show { display: flex; }
+    .alert-bar.red { background: var(--red-soft); border: 1px solid rgba(217, 48, 37, 0.22); color: #9e1c14; }
+    .alert-bar.green { background: var(--green-soft); border: 1px solid rgba(30, 142, 62, 0.24); color: #135c28; }
+    .alert-bar.blue { background: var(--blue-soft); border: 1px solid rgba(0, 113, 227, 0.22); color: #004c99; }
 
-    /* Hero */
     .hero {
       display: flex;
       justify-content: space-between;
       align-items: flex-end;
       gap: 24px;
-      margin-bottom: 28px;
+      margin-bottom: 26px;
       flex-wrap: wrap;
     }
 
@@ -245,18 +230,9 @@
       margin-bottom: 6px;
     }
 
-    .hero p {
-      font-size: 15px;
-      color: var(--text-secondary);
-      max-width: 560px;
-    }
+    .hero p { font-size: 15px; color: var(--text-secondary); max-width: 560px; }
 
-    .metrics {
-      display: flex;
-      gap: 24px;
-      align-items: center;
-    }
-
+    .metrics { display: flex; gap: 16px; align-items: center; }
     .metric {
       background: var(--surface);
       border: 1px solid var(--border);
@@ -265,131 +241,51 @@
       min-width: 118px;
       box-shadow: var(--shadow-sm);
     }
+    .metric-val { font-size: 22px; font-weight: 600; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+    .metric-lbl { font-size: 11.5px; color: var(--text-muted); }
 
-    .metric-val {
-      font-size: 22px;
-      font-weight: 600;
-      letter-spacing: -0.02em;
-      font-variant-numeric: tabular-nums;
-      line-height: 1.2;
-    }
-
-    .metric-lbl {
-      font-size: 11.5px;
-      color: var(--text-muted);
-    }
-
-    /* Spotlight Search Bar */
-    .controls {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 14px;
-      flex-wrap: wrap;
-    }
-
-    .spotlight {
-      position: relative;
-      flex: 1;
-      min-width: 260px;
-    }
-
+    .controls { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; flex-wrap: wrap; }
+    .spotlight { position: relative; flex: 1; min-width: 260px; }
     .spotlight svg {
-      position: absolute;
-      left: 16px;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 17px;
-      height: 17px;
-      color: var(--text-muted);
-      pointer-events: none;
+      position: absolute; left: 16px; top: 50%; transform: translateY(-50%);
+      width: 17px; height: 17px; color: var(--text-muted); pointer-events: none;
     }
-
     .spotlight input {
-      width: 100%;
-      font: inherit;
-      font-size: 15px;
-      color: var(--text);
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 13px 44px;
-      outline: none;
-      box-shadow: var(--shadow-sm);
+      width: 100%; font: inherit; font-size: 15px; color: var(--text);
+      background: var(--surface); border: 1px solid var(--border); border-radius: 14px;
+      padding: 13px 44px; outline: none; box-shadow: var(--shadow-sm);
       transition: border-color 0.2s var(--ease), box-shadow 0.2s var(--ease);
     }
-
-    .spotlight input::placeholder { color: var(--text-muted); }
-    .spotlight input:focus {
-      border-color: var(--blue);
-      box-shadow: 0 0 0 4px rgba(0, 113, 227, 0.14);
-    }
-
+    .spotlight input:focus { border-color: var(--blue); box-shadow: 0 0 0 4px rgba(0, 113, 227, 0.14); }
     .clear-x {
-      position: absolute;
-      right: 12px;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 24px;
-      height: 24px;
-      border-radius: 50%;
-      border: none;
-      background: rgba(0, 0, 0, 0.08);
-      color: var(--text-secondary);
-      font-size: 14px;
-      cursor: pointer;
-      display: none;
-      place-items: center;
+      position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+      width: 24px; height: 24px; border-radius: 50%; border: none;
+      background: rgba(0, 0, 0, 0.08); color: var(--text-secondary);
+      font-size: 14px; cursor: pointer; display: none; place-items: center;
     }
     .clear-x.show { display: grid; }
-    .clear-x:hover { background: rgba(0, 0, 0, 0.14); color: var(--text); }
 
     select.light-select {
-      font: inherit;
-      font-size: 13px;
-      color: var(--text-secondary);
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 999px;
-      padding: 9px 14px;
-      outline: none;
-      cursor: pointer;
-      box-shadow: var(--shadow-sm);
+      font: inherit; font-size: 13px; color: var(--text-secondary);
+      background: var(--surface); border: 1px solid var(--border); border-radius: 999px;
+      padding: 9px 14px; outline: none; cursor: pointer; box-shadow: var(--shadow-sm);
     }
 
-    /* Filter Back Banner */
     .back-bar {
-      display: none;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      padding: 10px 16px;
-      margin-bottom: 16px;
-      border-radius: var(--radius-md);
-      background: var(--blue-soft);
-      border: 1px solid rgba(0, 113, 227, 0.2);
-      font-size: 13.5px;
-      color: #004c99;
-      flex-wrap: wrap;
+      display: none; align-items: center; justify-content: space-between; gap: 12px;
+      padding: 10px 16px; margin-bottom: 16px; border-radius: var(--radius-md);
+      background: var(--blue-soft); border: 1px solid rgba(0, 113, 227, 0.2);
+      font-size: 13.5px; color: #004c99; flex-wrap: wrap;
     }
     .back-bar.show { display: flex; }
 
     .sub-bar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 12.5px;
-      color: var(--text-muted);
-      margin-bottom: 18px;
+      display: flex; justify-content: space-between; align-items: center;
+      font-size: 12.5px; color: var(--text-muted); margin-bottom: 18px;
       font-variant-numeric: tabular-nums;
     }
 
-    /* Clean Book Cards (Click anywhere to open Brief Pop-up) */
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
-      gap: 20px;
-    }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)); gap: 20px; }
 
     .card {
       background: var(--surface);
@@ -403,53 +299,20 @@
       cursor: pointer;
       transition: transform 0.24s var(--ease), box-shadow 0.24s var(--ease), border-color 0.24s var(--ease);
     }
+    .card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); border-color: rgba(0, 113, 227, 0.28); }
 
-    .card:hover {
-      transform: translateY(-3px);
-      box-shadow: var(--shadow-md);
-      border-color: rgba(0, 113, 227, 0.28);
-    }
-
-    .card-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 12px;
-    }
-
-    .card-kicker {
-      font-size: 11.5px;
-      font-weight: 600;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-      margin-bottom: 4px;
-    }
-
-    .card h3 {
-      font-size: 17px;
-      font-weight: 600;
-      letter-spacing: -0.015em;
-      line-height: 1.3;
-      color: var(--text);
-    }
+    .card-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+    .card-kicker { font-size: 11.5px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 4px; }
+    .card h3 { font-size: 17px; font-weight: 600; letter-spacing: -0.015em; line-height: 1.3; }
 
     .stock-badge {
-      flex-shrink: 0;
-      font-size: 11.5px;
-      font-weight: 600;
-      font-variant-numeric: tabular-nums;
-      padding: 4px 10px;
-      border-radius: 999px;
+      flex-shrink: 0; font-size: 11.5px; font-weight: 600;
+      font-variant-numeric: tabular-nums; padding: 4px 10px; border-radius: 999px;
     }
     .stock-badge.in { background: var(--green-soft); color: var(--green); }
-    .stock-badge.out { background: var(--red-soft); color: var(--red); }
+    .stock-badge.out { background: var(--amber-soft); color: var(--amber); }
 
-    .authors {
-      font-size: 13.5px;
-      color: var(--text-secondary);
-      margin-top: -4px;
-    }
+    .authors { font-size: 13.5px; color: var(--text-secondary); margin-top: -4px; }
 
     .summary {
       font-size: 13.5px;
@@ -463,336 +326,159 @@
       flex-grow: 1;
     }
 
-    .tags {
-      display: flex;
-      gap: 6px;
-      flex-wrap: wrap;
-    }
-
+    .tags { display: flex; gap: 6px; flex-wrap: wrap; }
     .tag {
-      font-size: 11.5px;
-      color: var(--text-secondary);
-      background: var(--bg);
-      padding: 3px 10px;
-      border-radius: 999px;
-      transition: background 0.15s, color 0.15s;
+      font-size: 11.5px; color: var(--text-secondary); background: var(--bg);
+      padding: 3px 10px; border-radius: 999px; transition: background 0.15s, color 0.15s;
     }
     .tag:hover { background: var(--blue-soft); color: var(--blue); }
 
     .card-foot {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding-top: 12px;
-      border-top: 1px solid var(--border);
-      font-size: 12.5px;
+      display: flex; justify-content: space-between; align-items: center;
+      padding-top: 12px; border-top: 1px solid var(--border); font-size: 12.5px; gap: 8px;
     }
 
-    .status-inline {
-      font-weight: 600;
-      font-size: 12px;
-      padding: 3px 10px;
-      border-radius: 999px;
-    }
-    .status-inline.pending { background: var(--amber-soft); color: var(--amber); }
-    .status-inline.active { background: var(--blue-soft); color: var(--blue); }
+    .status-inline { font-weight: 600; font-size: 11.5px; padding: 3px 10px; border-radius: 999px; }
+    .status-inline.pending, .status-inline.waiting { background: var(--amber-soft); color: var(--amber); }
+    .status-inline.active, .status-inline.assigned { background: var(--blue-soft); color: var(--blue); }
+    .status-inline.ready { background: var(--green-soft); color: var(--green); }
 
-    .quick-cue {
-      color: var(--blue);
-      font-weight: 500;
-    }
+    .quick-cue { color: var(--blue); font-weight: 500; white-space: nowrap; }
 
-    /* My Loans Table */
+    /* Tables & Views */
     .view-head {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-end;
-      gap: 16px;
-      margin-bottom: 24px;
-      flex-wrap: wrap;
+      display: flex; justify-content: space-between; align-items: flex-end;
+      gap: 16px; margin-bottom: 22px; flex-wrap: wrap;
     }
+    .view-head h2 { font-size: 28px; font-weight: 600; letter-spacing: -0.025em; margin-bottom: 4px; }
+    .view-head p { font-size: 14.5px; color: var(--text-secondary); }
 
-    .view-head h2 {
-      font-size: 28px;
-      font-weight: 600;
-      letter-spacing: -0.025em;
-      margin-bottom: 4px;
-    }
-
-    .view-head p {
-      font-size: 14.5px;
-      color: var(--text-secondary);
-    }
+    .sub-heading { font-size: 16px; font-weight: 600; margin: 28px 0 12px; letter-spacing: -0.01em; }
 
     .table-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      box-shadow: var(--shadow-sm);
-      overflow-x: auto;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); overflow-x: auto;
     }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 14px;
-    }
-
+    table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
     th {
-      text-align: left;
-      font-size: 11.5px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      color: var(--text-muted);
-      padding: 14px 20px;
-      border-bottom: 1px solid var(--border);
-      background: var(--surface-soft);
+      text-align: left; font-size: 11px; font-weight: 600; text-transform: uppercase;
+      letter-spacing: 0.05em; color: var(--text-muted); padding: 13px 18px;
+      border-bottom: 1px solid var(--border); background: var(--surface-soft);
     }
-
-    td {
-      padding: 16px 20px;
-      border-bottom: 1px solid var(--border);
-      vertical-align: middle;
-    }
+    td { padding: 15px 18px; border-bottom: 1px solid var(--border); vertical-align: top; }
     tr:last-child td { border-bottom: none; }
 
-    .sub-mono {
-      display: block;
-      font-size: 12px;
-      font-family: var(--mono);
-      color: var(--text-muted);
-      margin-top: 2px;
-    }
+    .sub-mono { display: block; font-size: 11.5px; font-family: var(--mono); color: var(--text-muted); margin-top: 2px; }
+    .issuer-tag { display: block; font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
 
     .state-pill {
-      display: inline-flex;
-      align-items: center;
-      font-size: 12px;
-      font-weight: 600;
-      padding: 3px 10px;
-      border-radius: 999px;
-      text-transform: capitalize;
+      display: inline-flex; font-size: 11.5px; font-weight: 600;
+      padding: 3px 10px; border-radius: 999px; text-transform: capitalize;
     }
-    .state-pill.pending { background: var(--amber-soft); color: var(--amber); }
-    .state-pill.active { background: var(--blue-soft); color: var(--blue); }
-    .state-pill.returned { background: var(--green-soft); color: var(--green); }
-    .state-pill.rejected { background: var(--red-soft); color: var(--red); }
+    .state-pill.pending, .state-pill.waiting { background: var(--amber-soft); color: var(--amber); }
+    .state-pill.active, .state-pill.assigned { background: var(--blue-soft); color: var(--blue); }
+    .state-pill.returned, .state-pill.ready, .state-pill.fulfilled { background: var(--green-soft); color: var(--green); }
+    .state-pill.rejected, .state-pill.cancelled { background: var(--red-soft); color: var(--red); }
+
+    /* Profile Grid */
+    .profile-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: 20px; align-items: start; }
+    .panel-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius-lg); padding: 24px; box-shadow: var(--shadow-sm);
+    }
+    .panel-card h3 { font-size: 17px; font-weight: 600; margin-bottom: 4px; }
+    .panel-card .hint { font-size: 13px; color: var(--text-muted); margin-bottom: 18px; }
 
     .empty-box {
-      text-align: center;
-      padding: 64px 24px;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      color: var(--text-secondary);
-      box-shadow: var(--shadow-sm);
+      text-align: center; padding: 54px 24px; background: var(--surface);
+      border: 1px solid var(--border); border-radius: var(--radius-lg);
+      color: var(--text-secondary); box-shadow: var(--shadow-sm);
     }
 
-    .pager {
-      margin-top: 30px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 16px;
-    }
+    .pager { margin-top: 28px; display: flex; justify-content: center; align-items: center; gap: 16px; }
 
-    /* Apple Pop-up Sheets */
+    /* Modals */
     .overlay {
-      position: fixed;
-      inset: 0;
-      z-index: 50;
-      background: rgba(0, 0, 0, 0.36);
-      -webkit-backdrop-filter: blur(8px);
-      backdrop-filter: blur(8px);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
+      position: fixed; inset: 0; z-index: 50;
+      background: rgba(0, 0, 0, 0.36); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+      display: none; align-items: center; justify-content: center; padding: 20px;
     }
     .overlay.open { display: flex; }
 
     .sheet {
-      width: 100%;
-      max-width: 640px;
-      max-height: 88vh;
-      overflow-y: auto;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 24px;
-      padding: 28px;
-      box-shadow: var(--shadow-lg);
+      width: 100%; max-width: 650px; max-height: 88vh; overflow-y: auto;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 24px; padding: 28px; box-shadow: var(--shadow-lg);
     }
-    .sheet-sm { max-width: 450px; }
+    .sheet-sm { max-width: 460px; }
 
-    .sheet-head {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 14px;
-      margin-bottom: 18px;
-    }
+    .sheet-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 14px; margin-bottom: 16px; }
+    .sheet-head h2 { font-size: 21px; font-weight: 600; letter-spacing: -0.02em; line-height: 1.25; }
 
-    .sheet-head h2 {
-      font-size: 21px;
-      font-weight: 600;
-      letter-spacing: -0.02em;
-      line-height: 1.25;
-    }
+    .brief-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 16px 0 18px; }
+    .brief-cell { background: var(--bg); border-radius: var(--radius-sm); padding: 10px 12px; }
+    .brief-cell span { display: block; font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 2px; }
+    .brief-cell strong { font-size: 13px; font-weight: 600; }
 
-    /* Book Brief Pop-up Details */
-    .brief-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
-      margin: 16px 0 18px;
-    }
+    .borrow-box { margin-top: 18px; padding: 18px; border-radius: var(--radius-md); background: var(--bg); border: 1px solid var(--border); }
+    .borrow-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
 
-    .brief-cell {
-      background: var(--bg);
-      border-radius: var(--radius-sm);
-      padding: 10px 12px;
-    }
-
-    .brief-cell span {
-      display: block;
-      font-size: 11px;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-      margin-bottom: 2px;
-    }
-
-    .brief-cell strong {
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--text);
-    }
-
-    .borrow-box {
-      margin-top: 20px;
-      padding: 18px;
-      border-radius: var(--radius-md);
-      background: var(--bg);
-      border: 1px solid var(--border);
-    }
-
-    .borrow-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-
-    details.meta-drawer {
-      margin-top: 18px;
-      border-top: 1px solid var(--border);
-      padding-top: 14px;
-    }
-
-    details.meta-drawer summary {
-      font-size: 13px;
-      font-weight: 500;
-      color: var(--text-secondary);
-      cursor: pointer;
-      user-select: none;
-    }
-
-    .http-meta {
-      display: flex;
-      gap: 14px;
-      flex-wrap: wrap;
-      font-size: 11.5px;
-      font-family: var(--mono);
-      color: var(--text-muted);
-      margin: 12px 0 8px;
-    }
-
+    details.meta-drawer { margin-top: 18px; border-top: 1px solid var(--border); padding-top: 14px; }
+    details.meta-drawer summary { font-size: 13px; font-weight: 500; color: var(--text-secondary); cursor: pointer; user-select: none; }
+    .http-meta { display: flex; gap: 14px; flex-wrap: wrap; font-size: 11.5px; font-family: var(--mono); color: var(--text-muted); margin: 12px 0 8px; }
     pre {
-      background: #1d1d1f;
-      color: #f5f5f7;
-      border-radius: var(--radius-sm);
-      padding: 14px;
-      overflow-x: auto;
-      font-family: var(--mono);
-      font-size: 12px;
-      line-height: 1.55;
-      white-space: pre-wrap;
-      word-break: break-word;
+      background: #1d1d1f; color: #f5f5f7; border-radius: var(--radius-sm);
+      padding: 14px; overflow-x: auto; font-family: var(--mono); font-size: 12px;
+      line-height: 1.55; white-space: pre-wrap; word-break: break-word;
     }
 
-    /* Forms */
     .field { margin-bottom: 13px; }
-    .field label {
-      display: block;
-      font-size: 12.5px;
-      font-weight: 500;
-      color: var(--text-secondary);
-      margin-bottom: 5px;
-    }
-
+    .field label { display: block; font-size: 12.5px; font-weight: 500; color: var(--text-secondary); margin-bottom: 5px; }
     .field input, .field select, .field textarea {
-      width: 100%;
-      font: inherit;
-      font-size: 14px;
-      color: var(--text);
-      background: var(--surface-soft);
-      border: 1px solid var(--border-strong);
-      border-radius: var(--radius-sm);
-      padding: 10px 12px;
-      outline: none;
+      width: 100%; font: inherit; font-size: 14px; color: var(--text);
+      background: var(--surface-soft); border: 1px solid var(--border-strong);
+      border-radius: var(--radius-sm); padding: 10px 12px; outline: none;
     }
-
     .field input:focus, .field select:focus, .field textarea:focus {
-      border-color: var(--blue);
-      box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.14);
-      background: var(--surface);
+      border-color: var(--blue); box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.14); background: var(--surface);
     }
+    .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 
-    .row-2 {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
+    .check-row {
+      display: flex; align-items: center; justify-content: space-between; gap: 10px;
+      margin: 4px 0 16px; font-size: 13px; color: var(--text-secondary);
     }
+    .check-row label { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; }
+    .check-row input[type="checkbox"] { width: 15px; height: 15px; accent-color: var(--blue); }
+    .link-btn { background: none; border: none; color: var(--blue); font: inherit; font-size: 13px; font-weight: 500; cursor: pointer; }
+    .link-btn:hover { text-decoration: underline; }
 
     .form-err {
-      display: none;
-      background: var(--red-soft);
-      border: 1px solid rgba(217, 48, 37, 0.25);
-      color: var(--red);
-      font-size: 13px;
-      padding: 10px 12px;
-      border-radius: var(--radius-sm);
-      margin-bottom: 14px;
+      display: none; background: var(--red-soft); border: 1px solid rgba(217, 48, 37, 0.25);
+      color: var(--red); font-size: 13px; padding: 10px 12px; border-radius: var(--radius-sm); margin-bottom: 14px;
     }
     .form-err.show { display: block; }
 
-    /* Toast */
+    .form-ok {
+      display: none; background: var(--green-soft); border: 1px solid rgba(30, 142, 62, 0.25);
+      color: var(--green); font-size: 13px; padding: 10px 12px; border-radius: var(--radius-sm); margin-bottom: 14px;
+    }
+    .form-ok.show { display: block; }
+
     #toast {
-      position: fixed;
-      bottom: 26px;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 80;
-      max-width: 90vw;
-      padding: 11px 20px;
-      border-radius: 999px;
-      background: #1d1d1f;
-      color: #ffffff;
-      font-size: 13.5px;
-      font-weight: 500;
-      display: none;
-      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.24);
+      position: fixed; bottom: 26px; left: 50%; transform: translateX(-50%); z-index: 80;
+      max-width: 90vw; padding: 11px 20px; border-radius: 999px;
+      background: #1d1d1f; color: #ffffff; font-size: 13.5px; font-weight: 500;
+      display: none; box-shadow: 0 16px 40px rgba(0, 0, 0, 0.24);
     }
     #toast.show { display: block; }
     #toast.err { background: var(--red); }
 
-    @media (max-width: 820px) {
+    @media (max-width: 860px) {
       .nav-inner { grid-template-columns: auto auto; height: auto; padding: 12px 18px; }
       .segmented.main-nav { grid-column: 1 / -1; justify-self: center; }
       .status-chip, .metrics { display: none; }
-      .brief-grid, .row-2 { grid-template-columns: 1fr; }
+      .brief-grid, .row-2, .profile-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -809,6 +495,7 @@
         <button class="seg-btn" id="navLoans" style="display:none;" onclick="switchView('loans')">
           My Activity <span class="pill-count" id="myLoanCount">0</span>
         </button>
+        <button class="seg-btn" id="navProfile" style="display:none;" onclick="switchView('profile')">My Profile</button>
       </nav>
 
       <div class="nav-right">
@@ -824,17 +511,15 @@
   </header>
 
   <main>
-    <!-- Overdue Penalty Cooldown Banner -->
-    <div class="cooldown-banner" id="cooldownBanner">
-      <div id="cooldownText"></div>
-    </div>
+    <!-- Live Notifications (Cooldown + Waitlist Hold Ready / Pre-Assigned Alerts) -->
+    <div class="alert-stack" id="alertStack"></div>
 
     <!-- VIEW 1: CATALOGUE -->
     <section id="viewCatalogue">
       <div class="hero">
         <div>
           <h1>Library Catalogue</h1>
-          <p>Click any book for a full brief and submit a borrow request for librarian approval.</p>
+          <p>Click any book for a quick brief, request to borrow, or join the waitlist on high-demand titles.</p>
         </div>
         <div class="metrics">
           <div class="metric">
@@ -867,7 +552,7 @@
         <div class="segmented" id="availPills">
           <button class="seg-btn active" data-val="" onclick="setAvailFilter('')">All</button>
           <button class="seg-btn" data-val="true" onclick="setAvailFilter('true')">Available</button>
-          <button class="seg-btn" data-val="false" onclick="setAvailFilter('false')">Out</button>
+          <button class="seg-btn" data-val="false" onclick="setAvailFilter('false')">Checked Out</button>
         </div>
 
         <select id="limitSelect" class="light-select">
@@ -896,19 +581,86 @@
       </div>
     </section>
 
-    <!-- VIEW 2: MY ACTIVITY / LOANS (STRICTLY PRIVATE TO SIGNED-IN USER) -->
+    <!-- VIEW 2: MY ACTIVITY (LOANS + WAITLIST RESERVATIONS) -->
     <section id="viewLoans" style="display:none;">
       <div class="view-head">
         <div>
-          <h2>My Requests &amp; Loans</h2>
-          <p>Track librarian approval status, due dates, and extension tickets for your account.</p>
+          <h2>My Activity</h2>
+          <p>Your requests, issued books, handling librarian, extension tickets, and waitlist spots.</p>
         </div>
         <div style="display:flex;gap:8px;">
-          <button class="btn btn-sm" onclick="loadMyLoans(true)">Refresh</button>
+          <button class="btn btn-sm" onclick="refreshMemberActivity(true)">Refresh</button>
           <button class="btn btn-sm" onclick="switchView('catalogue')">← Back to Catalogue</button>
         </div>
       </div>
+
       <div id="myLoansContainer"></div>
+
+      <h3 class="sub-heading">Rare-Book Waitlist &amp; Reserved Holds</h3>
+      <div id="myWaitlistContainer"></div>
+    </section>
+
+    <!-- VIEW 3: MY PROFILE -->
+    <section id="viewProfile" style="display:none;">
+      <div class="view-head">
+        <div>
+          <h2>My Profile</h2>
+          <p>Manage your contact details, academic semester, and account password.</p>
+        </div>
+        <button class="btn btn-sm" onclick="switchView('catalogue')">← Back to Catalogue</button>
+      </div>
+
+      <div class="profile-grid">
+        <div class="panel-card">
+          <h3>Contact &amp; Member Details</h3>
+          <p class="hint" id="profileStanding"></p>
+          <div class="form-err" id="profErr"></div>
+          <form id="profileForm">
+            <div class="row-2">
+              <div class="field">
+                <label>Full Name</label>
+                <input id="pName" type="text" required minlength="2" maxlength="120" />
+              </div>
+              <div class="field">
+                <label>Email (Account ID)</label>
+                <input id="pEmail" type="email" disabled style="opacity:0.65;" />
+              </div>
+            </div>
+            <div class="row-2">
+              <div class="field">
+                <label>Phone Number</label>
+                <input id="pPhone" type="tel" required minlength="7" maxlength="25" />
+              </div>
+              <div class="field" id="pSemWrap">
+                <label>Semester</label>
+                <input id="pSemester" type="text" maxlength="30" />
+              </div>
+            </div>
+            <div class="field">
+              <label>Residential Address</label>
+              <textarea id="pAddress" rows="2" required minlength="5" maxlength="300"></textarea>
+            </div>
+            <button type="submit" class="btn btn-blue">Save Profile Changes</button>
+          </form>
+        </div>
+
+        <div class="panel-card">
+          <h3>Change Password</h3>
+          <p class="hint">Update your sign-in password at any time.</p>
+          <div class="form-err" id="pwErr"></div>
+          <form id="pwChangeForm">
+            <div class="field">
+              <label>Current Password</label>
+              <input id="curPw" type="password" required />
+            </div>
+            <div class="field">
+              <label>New Password (8–72 chars)</label>
+              <input id="newPw" type="password" required minlength="8" maxlength="72" />
+            </div>
+            <button type="submit" class="btn btn-blue">Update Password</button>
+          </form>
+        </div>
+      </div>
     </section>
   </main>
 
@@ -936,17 +688,14 @@
           <strong id="bIsbn" style="font-family:var(--mono);font-size:12px;">—</strong>
         </div>
         <div class="brief-cell">
-          <span>Language</span>
-          <strong id="bLang">—</strong>
+          <span>Next Expected</span>
+          <strong id="bExpected">Now</strong>
         </div>
       </div>
 
       <div class="tags" id="bTags"></div>
-
-      <!-- Borrow Request Controls -->
       <div class="borrow-box" id="bBorrowBox"></div>
 
-      <!-- Optional Standards Metadata Drawer (XML / JSON-LD for Migration) -->
       <details class="meta-drawer" id="metaDrawer">
         <summary>Interoperable Metadata (JSON · Dublin Core XML · Schema.org JSON-LD)</summary>
         <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:12px;flex-wrap:wrap;">
@@ -993,18 +742,24 @@
     </div>
   </div>
 
-  <!-- AUTH SHEET (SIGN IN / MEMBER REGISTRATION) -->
+  <!-- AUTH SHEET (SIGN IN / REGISTER / FORGOT PASSWORD) -->
   <div class="overlay" id="authOverlay">
     <div class="sheet sheet-sm">
       <div class="sheet-head">
         <h2 id="authHeading">Sign In</h2>
         <button class="btn btn-ghost btn-sm" onclick="closeModal('authOverlay')">✕</button>
       </div>
-      <div class="segmented" style="width:100%;display:grid;grid-template-columns:1fr 1fr;margin-bottom:16px;">
+
+      <div class="segmented" style="width:100%;display:grid;grid-template-columns:1fr 1fr 1fr;margin-bottom:16px;">
         <button class="seg-btn active" id="tabLogin" onclick="setAuthMode('login')">Sign In</button>
-        <button class="seg-btn" id="tabRegister" onclick="setAuthMode('register')">Create Account</button>
+        <button class="seg-btn" id="tabRegister" onclick="setAuthMode('register')">Register</button>
+        <button class="seg-btn" id="tabReset" onclick="setAuthMode('reset')">Recover</button>
       </div>
+
       <div class="form-err" id="authErr"></div>
+      <div class="form-ok" id="authOk"></div>
+
+      <!-- Login / Register Form -->
       <form id="authForm">
         <div id="registerFields" style="display:none;">
           <div class="field">
@@ -1039,11 +794,59 @@
           <input id="authEmail" type="email" required placeholder="you@example.com" />
         </div>
         <div class="field">
-          <label for="authPassword">Password (8–72 characters) *</label>
+          <label for="authPassword">Password (8–72 chars) *</label>
           <input id="authPassword" type="password" required minlength="8" maxlength="72" />
         </div>
-        <button type="submit" class="btn btn-blue" style="width:100%;padding:11px;margin-top:4px;" id="authSubmit">Sign In</button>
+
+        <div class="check-row" id="rememberRow">
+          <label>
+            <input type="checkbox" id="rememberMe" checked />
+            Keep me signed in (7 days)
+          </label>
+          <button type="button" class="link-btn" onclick="setAuthMode('reset')">Forgot password?</button>
+        </div>
+
+        <button type="submit" class="btn btn-blue" style="width:100%;padding:11px;" id="authSubmit">Sign In</button>
       </form>
+
+      <!-- Password Recovery Panel -->
+      <div id="resetPanel" style="display:none;">
+        <p style="font-size:13px;color:var(--text-secondary);margin-bottom:14px;">
+          <strong>Step 1:</strong> Verify your email &amp; phone to notify the library desk. Any on-duty librarian can then give you a 15-minute 6-digit recovery code.
+        </p>
+        <form id="resetReqForm" style="margin-bottom:18px;padding-bottom:16px;border-bottom:1px solid var(--border);">
+          <div class="field">
+            <label>Registered Email</label>
+            <input id="rrEmail" type="email" required placeholder="you@example.com" />
+          </div>
+          <div class="field">
+            <label>Registered Phone Number</label>
+            <input id="rrPhone" type="tel" required placeholder="+91 98765 43210" />
+          </div>
+          <button type="submit" class="btn" style="width:100%;">Request Recovery Code</button>
+        </form>
+
+        <p style="font-size:13px;color:var(--text-secondary);margin-bottom:12px;">
+          <strong>Step 2:</strong> Already received your 6-digit code from a librarian? Reset your password below.
+        </p>
+        <form id="resetConfirmForm">
+          <div class="row-2">
+            <div class="field">
+              <label>Email</label>
+              <input id="rcEmail" type="email" required placeholder="you@example.com" />
+            </div>
+            <div class="field">
+              <label>6-Digit Code</label>
+              <input id="rcCode" type="text" required minlength="6" maxlength="12" placeholder="123456" style="font-family:var(--mono);" />
+            </div>
+          </div>
+          <div class="field">
+            <label>New Password (8–72 chars)</label>
+            <input id="rcPassword" type="password" required minlength="8" maxlength="72" />
+          </div>
+          <button type="submit" class="btn btn-blue" style="width:100%;padding:10px;">Set New Password</button>
+        </form>
+      </div>
     </div>
   </div>
 
@@ -1052,14 +855,18 @@
   <script>
     const TOKEN_KEY = "bg_member_token";
     const state = {
-      token: sessionStorage.getItem(TOKEN_KEY) || null,
+      token: localStorage.getItem(TOKEN_KEY) || sessionStorage.getItem(TOKEN_KEY) || null,
       user: null,
       view: "catalogue",
       availFilter: "",
       offset: 0,
       limit: 15,
       itemsById: {},
+      availabilityMap: new Map(),
+      myLoans: [],
       myLoansByResource: new Map(),
+      myWaitlist: [],
+      myWaitlistByResource: new Map(),
       authMode: "login",
       activeBookId: null,
       extLoanId: null,
@@ -1067,6 +874,15 @@
     };
 
     const $ = (id) => document.getElementById(id);
+
+    function saveToken(token, remember) {
+      state.token = token;
+      localStorage.removeItem(TOKEN_KEY);
+      sessionStorage.removeItem(TOKEN_KEY);
+      if (token) {
+        (remember ? localStorage : sessionStorage).setItem(TOKEN_KEY, token);
+      }
+    }
 
     function esc(v) {
       return String(v ?? "").replace(/[&<>"']/g, (c) => ({
@@ -1076,9 +892,46 @@
 
     function fmtDate(iso) {
       if (!iso) return "—";
-      return new Date(iso).toLocaleDateString(undefined, {
-        year: "numeric", month: "short", day: "numeric"
+      return new Date(iso).toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" });
+    }
+
+    function fmtDateTime(iso) {
+      if (!iso) return "—";
+      return new Date(iso).toLocaleString(undefined, {
+        month: "short", day: "numeric", year: "numeric", hour: "2-digit", minute: "2-digit"
       });
+    }
+
+    function downloadCalendarReminder(title, description, isoDate) {
+      const start = isoDate ? new Date(isoDate) : new Date(Date.now() + 86400000);
+      const end = new Date(start.getTime() + 3600000);
+      const fmtIcs = (d) => d.toISOString().replace(/[-:]/g, "").split(".")[0] + "Z";
+      const clean = (s) => String(s || "").replace(/\r?\n/g, " ").replace(/([,;])/g, "\\$1");
+      const ics = [
+        "BEGIN:VCALENDAR",
+        "VERSION:2.0",
+        "PRODID:-//BiblioGraph//Library Reminder//EN",
+        "BEGIN:VEVENT",
+        `UID:${Date.now()}@bibliograph.local`,
+        `DTSTAMP:${fmtIcs(new Date())}`,
+        `DTSTART:${fmtIcs(start)}`,
+        `DTEND:${fmtIcs(end)}`,
+        `SUMMARY:${clean(title)}`,
+        `DESCRIPTION:${clean(description)}`,
+        "END:VEVENT",
+        "END:VCALENDAR",
+      ].join("\r\n");
+
+      const blob = new Blob([ics], { type: "text/calendar;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "bibliograph-reminder.ics";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+      showToast("Calendar reminder (.ics) downloaded.");
     }
 
     let toastTimer = null;
@@ -1109,33 +962,84 @@
     }
 
     function isSuspended() {
-      if (!state.user || !state.user.suspended_until) return false;
-      return new Date(state.user.suspended_until) > new Date();
+      return Boolean(state.user && state.user.suspended_until && new Date(state.user.suspended_until) > new Date());
     }
 
-    function renderCooldownBanner() {
-      const banner = $("cooldownBanner");
+    function renderAlerts() {
+      const stack = $("alertStack");
+      const bars = [];
+
       if (isSuspended()) {
         const until = new Date(state.user.suspended_until);
-        const daysLeft = Math.max(1, Math.ceil((until - new Date()) / 86400000));
-        $("cooldownText").innerHTML =
-          `<strong>Borrowing Paused (${daysLeft} day${daysLeft > 1 ? "s" : ""} remaining):</strong> ` +
-          `A previous late return placed your account in cooldown until <strong>${until.toLocaleString()}</strong> to keep books rotating fairly.`;
-        banner.classList.add("show");
-      } else {
-        banner.classList.remove("show");
+        const days = Math.max(1, Math.ceil((until - new Date()) / 86400000));
+        bars.push(`
+          <div class="alert-bar red">
+            <div><strong>Borrowing Paused (${days} day${days > 1 ? "s" : ""} left):</strong> Account in overdue cooldown until <strong>${until.toLocaleString()}</strong>.</div>
+          </div>
+        `);
       }
+
+      state.myWaitlist.forEach((w) => {
+        if (w.status === "ready") {
+          bars.push(`
+            <div class="alert-bar green">
+              <div><strong>Reserved Copy Ready!</strong> "${esc(w.resource_title)}" has arrived and is held for you until <strong>${fmtDateTime(w.hold_expires_at)}</strong>. Visit the library desk to collect it.</div>
+              <button class="btn btn-green btn-sm" onclick="downloadWaitlistCal(${w.id})">Add Pickup Reminder (.ics)</button>
+            </div>
+          `);
+        } else if (w.status === "assigned") {
+          bars.push(`
+            <div class="alert-bar blue">
+              <div><strong>Waitlist Spot Secured:</strong> "${esc(w.resource_title)}" is pre-assigned to you${w.expected_available_at ? ` (expected ~${fmtDate(w.expected_available_at)})` : ""}.</div>
+              <button class="btn btn-sm" onclick="downloadWaitlistCal(${w.id})">Add Calendar Reminder (.ics)</button>
+            </div>
+          `);
+        }
+      });
+
+      stack.innerHTML = bars.join("");
+    }
+
+    function downloadWaitlistCal(entryId) {
+      const w = state.myWaitlist.find((e) => e.id === entryId);
+      if (!w) return;
+      if (w.status === "ready") {
+        downloadCalendarReminder(
+          `BiblioGraph Pickup: ${w.resource_title}`,
+          `Your reserved copy of ${w.resource_title} (ISBN ${w.resource_isbn}) is held until ${fmtDateTime(w.hold_expires_at)}.`,
+          w.hold_expires_at
+        );
+      } else {
+        downloadCalendarReminder(
+          `BiblioGraph Expected Return: ${w.resource_title}`,
+          `Pre-assigned waitlist spot for ${w.resource_title}. Check BiblioGraph for pickup confirmation.`,
+          w.expected_available_at
+        );
+      }
+    }
+
+    function downloadLoanDueCal(loanId) {
+      const l = state.myLoans.find((x) => x.id === loanId);
+      if (!l || !l.due_at) return;
+      downloadCalendarReminder(
+        `BiblioGraph Return Due: ${l.resource_title}`,
+        `Return ${l.resource_title} (ISBN ${l.resource_isbn}) on time to avoid overdue cooldown penalties.`,
+        l.due_at
+      );
     }
 
     function switchView(viewName) {
       state.view = viewName;
       $("viewCatalogue").style.display = viewName === "catalogue" ? "block" : "none";
       $("viewLoans").style.display = viewName === "loans" ? "block" : "none";
+      $("viewProfile").style.display = viewName === "profile" ? "block" : "none";
       $("navCatalogue").classList.toggle("active", viewName === "catalogue");
       $("navLoans").classList.toggle("active", viewName === "loans");
+      $("navProfile").classList.toggle("active", viewName === "profile");
 
       if (viewName === "catalogue") loadCatalogue();
-      if (viewName === "loans") loadMyLoans(true);
+      if (viewName === "loans") refreshMemberActivity(true);
+      if (viewName === "profile") fillProfileForm();
     }
 
     function setAvailFilter(val) {
@@ -1184,19 +1088,24 @@
     async function syncSession() {
       if (!state.token) {
         state.user = null;
+        state.myLoans = [];
+        state.myWaitlist = [];
         state.myLoansByResource.clear();
+        state.myWaitlistByResource.clear();
         renderAuthState();
         return;
       }
       const res = await apiFetch("/api/v1/auth/me");
       if (res.ok) {
         state.user = await res.json();
-        await loadMyLoans(false);
+        await refreshMemberActivity(false);
       } else {
-        state.token = null;
+        saveToken(null, false);
         state.user = null;
+        state.myLoans = [];
+        state.myWaitlist = [];
         state.myLoansByResource.clear();
-        sessionStorage.removeItem(TOKEN_KEY);
+        state.myWaitlistByResource.clear();
       }
       renderAuthState();
     }
@@ -1207,16 +1116,15 @@
       $("logoutBtn").style.display = loggedIn ? "inline-flex" : "none";
       $("userBadge").style.display = loggedIn ? "inline" : "none";
       $("navLoans").style.display = loggedIn ? "inline-flex" : "none";
+      $("navProfile").style.display = loggedIn ? "inline-flex" : "none";
 
       if (loggedIn) {
-        const tag = state.user.member_type === "student" && state.user.semester
-          ? ` · ${state.user.semester}`
-          : "";
+        const tag = state.user.member_type === "student" && state.user.semester ? ` · ${state.user.semester}` : "";
         $("userBadge").textContent = `${state.user.full_name}${tag}`;
       } else if (state.view !== "catalogue") {
         switchView("catalogue");
       }
-      renderCooldownBanner();
+      renderAlerts();
     }
 
     async function loadCatalogue() {
@@ -1232,27 +1140,31 @@
         const parts = [];
         if (q) parts.push(`"${q}"`);
         if (avail === "true") parts.push("Available only");
-        if (avail === "false") parts.push("Out of stock");
+        if (avail === "false") parts.push("Checked out");
         $("filterSummary").textContent = `Showing filtered results for ${parts.join(" · ")}`;
       }
 
-      const params = new URLSearchParams({
-        limit: String(state.limit),
-        offset: String(state.offset),
-      });
+      const params = new URLSearchParams({ limit: String(state.limit), offset: String(state.offset) });
       if (q) params.set("q", q);
       if (avail) params.set("available", avail);
 
-      const res = await apiFetch(`/api/v1/resources?${params.toString()}`);
+      const [res, availRes] = await Promise.all([
+        apiFetch(`/api/v1/resources?${params.toString()}`),
+        apiFetch("/api/v1/loans/availability"),
+      ]);
       if (seq !== state.searchSeq) return;
+
+      if (availRes.ok) {
+        const forecast = await availRes.json();
+        state.availabilityMap = new Map(forecast.map((f) => [f.resource_id, f]));
+      }
 
       if (!res.ok) {
         const err = await res.json().catch(() => null);
         showToast(extractError(err, "Could not load catalogue."), "err");
         return;
       }
-      const data = await res.json();
-      renderCatalogue(data, hasFilter);
+      renderCatalogue(await res.json(), hasFilter);
     }
 
     function renderCatalogue(data, hasFilter) {
@@ -1264,8 +1176,7 @@
 
       if (!hasFilter) {
         $("statTotal").textContent = String(data.total);
-        const ready = data.items.reduce((acc, it) => acc + it.available_copies, 0);
-        $("statAvail").textContent = String(ready);
+        $("statAvail").textContent = String(data.items.reduce((acc, it) => acc + it.available_copies, 0));
       }
 
       state.itemsById = {};
@@ -1285,19 +1196,31 @@
       grid.innerHTML = data.items.map((item) => {
         const inStock = item.available_copies > 0;
         const myLoan = state.myLoansByResource.get(item.id);
-        const badge = inStock
-          ? `<span class="stock-badge in">${item.available_copies} of ${item.total_copies} ready</span>`
-          : `<span class="stock-badge out">Out of stock</span>`;
+        const myWait = state.myWaitlistByResource.get(item.id);
+        const forecast = state.availabilityMap.get(item.id);
 
-        const tagsHtml = item.tags
-          .map((t) => `<span class="tag" data-tag="${esc(t)}">#${esc(t)}</span>`)
-          .join("");
+        let badge;
+        if (inStock) {
+          badge = `<span class="stock-badge in">${item.available_copies} of ${item.total_copies} ready</span>`;
+        } else if (forecast && forecast.next_available_at) {
+          badge = `<span class="stock-badge out">Due back ${fmtDate(forecast.next_available_at)}</span>`;
+        } else {
+          badge = `<span class="stock-badge out">Waitlist open</span>`;
+        }
+
+        const tagsHtml = item.tags.map((t) => `<span class="tag" data-tag="${esc(t)}">#${esc(t)}</span>`).join("");
 
         let footLeft = `<span style="color:var(--text-muted);font-family:var(--mono);font-size:11.5px;">ISBN ${esc(item.isbn)}</span>`;
         if (myLoan && myLoan.status === "pending") {
           footLeft = `<span class="status-inline pending">Approval Pending</span>`;
         } else if (myLoan && myLoan.status === "active") {
           footLeft = `<span class="status-inline active">Issued · Due ${fmtDate(myLoan.due_at)}</span>`;
+        } else if (myWait && myWait.status === "ready") {
+          footLeft = `<span class="status-inline ready">Reserved Copy Ready!</span>`;
+        } else if (myWait && myWait.status === "assigned") {
+          footLeft = `<span class="status-inline assigned">Spot Secured</span>`;
+        } else if (myWait && myWait.status === "waiting") {
+          footLeft = `<span class="status-inline waiting">On Waitlist</span>`;
         }
 
         return `
@@ -1343,28 +1266,32 @@
       const item = state.itemsById[id];
       if (!item) return;
       state.activeBookId = id;
+      const forecast = state.availabilityMap.get(id);
 
-      $("bKicker").textContent = `${item.publisher} · ${item.publication_year}`;
+      $("bKicker").textContent = `${item.publisher} · ${item.publication_year} · ${item.language.toUpperCase()}`;
       $("bTitle").textContent = item.title;
       $("bAuthors").textContent = `By ${item.authors.join(", ")}`;
       $("bSummary").textContent = item.summary || "No summary provided.";
       $("bStock").textContent = `${item.available_copies} / ${item.total_copies} copies`;
       $("bIsbn").textContent = item.isbn;
-      $("bLang").textContent = item.language.toUpperCase();
+      $("bExpected").textContent =
+        item.available_copies > 0
+          ? "Available Now"
+          : (forecast && forecast.next_available_at ? fmtDate(forecast.next_available_at) : "Awaiting Return");
       $("bTags").innerHTML = item.tags.map((t) => `<span class="tag">#${esc(t)}</span>`).join("");
 
-      // Reset optional metadata drawer
       $("metaDrawer").open = false;
       $("metaBody").textContent = "Loading…";
       $("metaHeaders").innerHTML = "";
 
       const box = $("bBorrowBox");
       const myLoan = state.myLoansByResource.get(id);
+      const myWait = state.myWaitlistByResource.get(id);
 
       if (!state.token) {
         box.innerHTML = `
           <div class="borrow-row">
-            <span style="font-size:13.5px;color:var(--text-secondary);">Sign in or create an account to request this book from the librarian.</span>
+            <span style="font-size:13.5px;color:var(--text-secondary);">Sign in or create an account to request this book or join its waitlist.</span>
             <button class="btn btn-blue btn-sm" onclick="closeModal('bookOverlay'); setAuthMode('register'); openModal('authOverlay');">Sign In / Register</button>
           </div>
         `;
@@ -1373,34 +1300,75 @@
           <div class="borrow-row">
             <div>
               <strong style="font-size:14px;color:var(--amber);">Borrow Request Pending</strong>
-              <p style="font-size:13px;color:var(--text-secondary);">Requested for ${myLoan.requested_days} days on ${fmtDate(myLoan.requested_at)}. Waiting for librarian approval.</p>
+              <p style="font-size:13px;color:var(--text-secondary);">Requested for ${myLoan.requested_days} days. Waiting for librarian approval.</p>
             </div>
             <button class="btn btn-sm" onclick="closeModal('bookOverlay'); switchView('loans');">View My Activity</button>
           </div>
         `;
       } else if (myLoan && myLoan.status === "active") {
+        const issuer = myLoan.issued_by_name
+          ? `Issued by ${esc(myLoan.issued_by_name)} (${esc(myLoan.issued_by_license || "Staff")})`
+          : "Currently issued to you";
         box.innerHTML = `
           <div class="borrow-row">
             <div>
-              <strong style="font-size:14px;color:var(--blue);">Currently Issued to You</strong>
-              <p style="font-size:13px;color:var(--text-secondary);">Due on <strong>${fmtDate(myLoan.due_at)}</strong>. Need more time? Raise an extension ticket.</p>
+              <strong style="font-size:14px;color:var(--blue);">${issuer}</strong>
+              <p style="font-size:13px;color:var(--text-secondary);">Due on <strong>${fmtDate(myLoan.due_at)}</strong>.</p>
             </div>
-            <button class="btn btn-blue btn-sm" onclick="closeModal('bookOverlay'); openExtModal(${myLoan.id}, '${esc(item.title)}');">Request Extension</button>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+              <button class="btn btn-sm" onclick="downloadLoanDueCal(${myLoan.id})">Calendar (.ics)</button>
+              <button class="btn btn-blue btn-sm" onclick="closeModal('bookOverlay'); openExtModal(${myLoan.id});">Extend Due Date</button>
+            </div>
+          </div>
+        `;
+      } else if (myWait && myWait.status === "ready") {
+        box.innerHTML = `
+          <div class="borrow-row">
+            <div>
+              <strong style="font-size:14px;color:var(--green);">Reserved Copy Held for You!</strong>
+              <p style="font-size:13px;color:var(--text-secondary);">Held until <strong>${fmtDateTime(myWait.hold_expires_at)}</strong>. Visit the desk to issue.</p>
+            </div>
+            <button class="btn btn-green btn-sm" onclick="downloadWaitlistCal(${myWait.id})">Add Pickup Reminder (.ics)</button>
+          </div>
+        `;
+      } else if (myWait && (myWait.status === "waiting" || myWait.status === "assigned")) {
+        const heading = myWait.status === "assigned" ? "Waitlist Spot Pre-Assigned!" : "You Are on the Waitlist";
+        box.innerHTML = `
+          <div class="borrow-row">
+            <div>
+              <strong style="font-size:14px;color:var(--blue);">${heading}</strong>
+              <p style="font-size:13px;color:var(--text-secondary);">${esc(myWait.note || "A librarian will pre-assign the next returned copy to you.")}</p>
+            </div>
+            <div style="display:flex;gap:8px;">
+              ${myWait.expected_available_at ? `<button class="btn btn-sm" onclick="downloadWaitlistCal(${myWait.id})">Calendar (.ics)</button>` : ""}
+              <button class="btn btn-red btn-sm" onclick="cancelWaitlist(${myWait.id})">Leave</button>
+            </div>
           </div>
         `;
       } else if (isSuspended()) {
         box.innerHTML = `
           <div style="font-size:13.5px;color:var(--red);">
-            <strong>Account in Cooldown:</strong> Borrowing is paused until ${new Date(state.user.suspended_until).toLocaleString()} due to a prior overdue return.
+            <strong>Account in Cooldown:</strong> Borrowing and waitlists are paused until ${new Date(state.user.suspended_until).toLocaleString()}.
           </div>
         `;
       } else if (item.available_copies <= 0) {
-        box.innerHTML = `<div style="font-size:13.5px;color:var(--text-secondary);">All copies are currently checked out. Check back once a copy is returned.</div>`;
+        const waitInfo = forecast && forecast.next_available_at
+          ? `Earliest expected return: <strong>${fmtDate(forecast.next_available_at)}</strong>.`
+          : "All copies are currently out or held.";
+        box.innerHTML = `
+          <div class="borrow-row">
+            <div>
+              <strong style="font-size:14px;">All Copies Currently Out</strong>
+              <p style="font-size:13px;color:var(--text-secondary);">${waitInfo} Join the waitlist so a librarian can pre-assign the next return to you.</p>
+            </div>
+            <button class="btn btn-blue" onclick="joinWaitlist(${item.id})">Join Waitlist</button>
+          </div>
+        `;
       } else {
         box.innerHTML = `
           <div class="borrow-row">
             <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-              <label for="reqDays" style="font-size:13px;font-weight:500;color:var(--text-secondary);">Loan Duration:</label>
+              <label for="reqDays" style="font-size:13px;font-weight:500;color:var(--text-secondary);">Duration:</label>
               <select id="reqDays" class="light-select">
                 <option value="7">7 days</option>
                 <option value="14" selected>14 days</option>
@@ -1410,7 +1378,7 @@
             </div>
             <button class="btn btn-blue" onclick="submitBorrowRequest(${item.id})">Request to Borrow</button>
           </div>
-          <p style="font-size:12px;color:var(--text-muted);margin-top:8px;">Your request goes to the librarian queue. Stock updates once issued.</p>
+          <p style="font-size:12px;color:var(--text-muted);margin-top:8px;">Your request goes to the on-duty librarian queue. Stock updates once issued.</p>
         `;
       }
 
@@ -1418,9 +1386,7 @@
     }
 
     $("metaDrawer").addEventListener("toggle", () => {
-      if ($("metaDrawer").open && state.activeBookId) {
-        loadBookMetadata("json");
-      }
+      if ($("metaDrawer").open && state.activeBookId) loadBookMetadata("json");
     });
 
     async function loadBookMetadata(fmt) {
@@ -1428,11 +1394,7 @@
         b.classList.toggle("active", b.dataset.fmt === fmt);
       });
       $("metaBody").textContent = "Loading…";
-      const acceptMap = {
-        json: "application/json",
-        xml: "application/xml",
-        jsonld: "application/ld+json",
-      };
+      const acceptMap = { json: "application/json", xml: "application/xml", jsonld: "application/ld+json" };
       const res = await fetch(`/api/v1/resources/${state.activeBookId}?format=${fmt}`, {
         cache: "no-store",
         headers: { Accept: acceptMap[fmt] },
@@ -1445,18 +1407,15 @@
       if (fmt === "xml") {
         $("metaBody").textContent = raw;
       } else {
-        try {
-          $("metaBody").textContent = JSON.stringify(JSON.parse(raw), null, 2);
-        } catch {
-          $("metaBody").textContent = raw;
-        }
+        try { $("metaBody").textContent = JSON.stringify(JSON.parse(raw), null, 2); }
+        catch { $("metaBody").textContent = raw; }
       }
     }
 
     async function copyMetadata() {
       try {
         await navigator.clipboard.writeText($("metaBody").textContent);
-        showToast("Metadata copied to clipboard.");
+        showToast("Metadata copied.");
       } catch {
         showToast("Copy failed.", "err");
       }
@@ -1480,30 +1439,74 @@
       await loadCatalogue();
     }
 
-    async function loadMyLoans(render = true) {
-      if (!state.token) return;
-      const res = await apiFetch("/api/v1/loans/me?limit=50");
+    async function joinWaitlist(resourceId) {
+      const res = await apiFetch("/api/v1/loans/waitlist", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ resource_id: resourceId }),
+      });
+      const data = await res.json().catch(() => null);
       if (!res.ok) {
-        if (render) {
-          $("myLoansContainer").innerHTML = `<div class="empty-box">Unable to load your activity right now.</div>`;
-        }
+        showToast(extractError(data, "Could not join waitlist."), "err");
         return;
       }
-      const loans = await res.json();
+      closeModal("bookOverlay");
+      showToast(`Joined waitlist for "${data.resource_title}".`);
+      await syncSession();
+      await loadCatalogue();
+    }
+
+    async function cancelWaitlist(entryId) {
+      const res = await apiFetch(`/api/v1/loans/waitlist/${entryId}`, { method: "DELETE" });
+      if (!res.ok) {
+        const data = await res.json().catch(() => null);
+        showToast(extractError(data, "Could not leave waitlist."), "err");
+        return;
+      }
+      closeModal("bookOverlay");
+      showToast("Removed from waitlist.");
+      await refreshMemberActivity(state.view === "loans");
+      await loadCatalogue();
+    }
+
+    async function refreshMemberActivity(render = true) {
+      if (!state.token) return;
+      const [loansRes, waitRes] = await Promise.all([
+        apiFetch("/api/v1/loans/me?limit=50"),
+        apiFetch("/api/v1/loans/waitlist/me"),
+      ]);
+
+      if (loansRes.ok) state.myLoans = await loansRes.json();
+      if (waitRes.ok) state.myWaitlist = await waitRes.json();
 
       state.myLoansByResource = new Map();
       let openCount = 0;
-      loans.forEach((l) => {
+      state.myLoans.forEach((l) => {
         if (l.status === "pending" || l.status === "active") {
           state.myLoansByResource.set(l.resource_id, l);
           openCount += 1;
         }
       });
+
+      state.myWaitlistByResource = new Map();
+      state.myWaitlist.forEach((w) => {
+        if (w.status === "waiting" || w.status === "assigned" || w.status === "ready") {
+          state.myWaitlistByResource.set(w.resource_id, w);
+          openCount += 1;
+        }
+      });
+
       $("myLoanCount").textContent = String(openCount);
+      renderAlerts();
 
       if (!render) return;
+      renderMyLoansTable();
+      renderMyWaitlistTable();
+    }
+
+    function renderMyLoansTable() {
       const box = $("myLoansContainer");
-      if (!loans.length) {
+      if (!state.myLoans.length) {
         box.innerHTML = `
           <div class="empty-box">
             <p style="margin-bottom:16px;">You haven't requested any books yet.</p>
@@ -1521,37 +1524,48 @@
                 <th>Book</th>
                 <th>Status</th>
                 <th>Timeline</th>
-                <th>Notes / Tickets</th>
+                <th>Handled By (Librarian)</th>
                 <th style="text-align:right;">Action</th>
               </tr>
             </thead>
             <tbody>
-              ${loans.map((l) => {
+              ${state.myLoans.map((l) => {
                 const pendingExt = (l.extensions || []).find((e) => e.status === "pending");
                 const latestExt = (l.extensions || [])[0];
                 const isOverdue = l.status === "active" && l.due_at && new Date(l.due_at) < new Date();
 
                 let timeline = `Requested ${fmtDate(l.requested_at)} (${l.requested_days}d)`;
                 if (l.status === "active") {
-                  timeline = `Issued ${fmtDate(l.borrowed_at)} · <strong style="color:${isOverdue ? "var(--red)" : "var(--text)"}">Due ${fmtDate(l.due_at)}${isOverdue ? " (Overdue)" : ""}</strong>`;
+                  timeline = `Issued ${fmtDate(l.borrowed_at)}<br><strong style="color:${isOverdue ? "var(--red)" : "var(--text)"}">Due ${fmtDate(l.due_at)}${isOverdue ? " (Overdue)" : ""}</strong>`;
                 } else if (l.status === "returned") {
                   timeline = `Returned ${fmtDate(l.returned_at)}` +
-                    (l.overdue_days > 0 ? ` · <strong style="color:var(--red)">${l.overdue_days}d late penalty</strong>` : " · On time");
+                    (l.overdue_days > 0 ? `<br><strong style="color:var(--red)">${l.overdue_days}d penalty served</strong>` : " · On time");
                 }
 
-                const noteBits = [];
-                if (l.admin_note) noteBits.push(`Librarian: "${esc(l.admin_note)}"`);
-                if (latestExt) {
-                  noteBits.push(`Extension (+${latestExt.extra_days}d): <strong>${esc(latestExt.status)}</strong>`);
+                const staffBits = [];
+                if (l.issued_by_name) {
+                  const verb = l.status === "rejected" ? "Reviewed" : "Issued";
+                  const shiftTxt = l.issued_by_shift ? ` · ${esc(l.issued_by_shift)}` : "";
+                  staffBits.push(`<span class="issuer-tag"><strong>${verb}:</strong> ${esc(l.issued_by_name)} (${esc(l.issued_by_license || "Staff")}${shiftTxt})</span>`);
                 }
+                if (l.returned_by_name) {
+                  staffBits.push(`<span class="issuer-tag"><strong>Returned to:</strong> ${esc(l.returned_by_name)} (${esc(l.returned_by_license || "Staff")})</span>`);
+                }
+                if (l.admin_note) staffBits.push(`<span class="issuer-tag">Note: "${esc(l.admin_note)}"</span>`);
+                if (latestExt) staffBits.push(`<span class="issuer-tag">Extension (+${latestExt.extra_days}d): <strong>${esc(latestExt.status)}</strong></span>`);
 
                 let action = `<span style="font-size:12px;color:var(--text-muted);">—</span>`;
                 if (l.status === "pending") {
-                  action = `<span style="font-size:12px;color:var(--amber);">Awaiting admin</span>`;
+                  action = `<span style="font-size:12px;color:var(--amber);">Awaiting desk</span>`;
                 } else if (l.status === "active") {
-                  action = pendingExt
-                    ? `<span style="font-size:12px;color:var(--amber);">Ticket pending</span>`
-                    : `<button class="btn btn-sm" onclick="openExtModal(${l.id}, '${esc(l.resource_title)}')">Extend Due Date</button>`;
+                  action = `
+                    <div style="display:flex;gap:6px;justify-content:flex-end;flex-wrap:wrap;">
+                      <button class="btn btn-sm" onclick="downloadLoanDueCal(${l.id})">.ics</button>
+                      ${pendingExt
+                        ? `<span style="font-size:12px;color:var(--amber);align-self:center;">Ticket pending</span>`
+                        : `<button class="btn btn-sm" onclick="openExtModal(${l.id})">Extend</button>`}
+                    </div>
+                  `;
                 }
 
                 return `
@@ -1562,7 +1576,7 @@
                     </td>
                     <td><span class="state-pill ${esc(l.status)}">${esc(l.status)}</span></td>
                     <td style="font-size:13px;color:var(--text-secondary);">${timeline}</td>
-                    <td style="font-size:12.5px;color:var(--text-secondary);">${noteBits.join("<br>") || "—"}</td>
+                    <td>${staffBits.join("") || '<span style="color:var(--text-muted);font-size:12.5px;">Pending desk assignment</span>'}</td>
                     <td style="text-align:right;">${action}</td>
                   </tr>
                 `;
@@ -1573,9 +1587,129 @@
       `;
     }
 
-    function openExtModal(loanId, title) {
+    function renderMyWaitlistTable() {
+      const box = $("myWaitlistContainer");
+      if (!state.myWaitlist.length) {
+        box.innerHTML = `<div class="empty-box" style="padding:36px 20px;">No waitlist reservations. Click any checked-out rare book to join its queue.</div>`;
+        return;
+      }
+
+      box.innerHTML = `
+        <div class="table-card">
+          <table>
+            <thead>
+              <tr>
+                <th>Book</th>
+                <th>Status</th>
+                <th>Schedule &amp; Notes</th>
+                <th>Assigned By</th>
+                <th style="text-align:right;">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${state.myWaitlist.map((w) => {
+                const sched = w.status === "ready"
+                  ? `<strong style="color:var(--green);">Held until ${fmtDateTime(w.hold_expires_at)}</strong>`
+                  : (w.expected_available_at ? `Expected ~${fmtDate(w.expected_available_at)}` : "Awaiting return");
+                const by = w.assigned_by_name
+                  ? `${esc(w.assigned_by_name)} (${esc(w.assigned_by_license || "Staff")})`
+                  : "—";
+                const canCancel = w.status === "waiting" || w.status === "assigned" || w.status === "ready";
+                const canCal = w.status === "ready" || (w.status === "assigned" && w.expected_available_at);
+
+                return `
+                  <tr>
+                    <td>
+                      <strong>${esc(w.resource_title)}</strong>
+                      <span class="sub-mono">ISBN ${esc(w.resource_isbn)}</span>
+                    </td>
+                    <td><span class="state-pill ${esc(w.status)}">${esc(w.status)}</span></td>
+                    <td style="font-size:13px;color:var(--text-secondary);">
+                      ${sched}
+                      ${w.note ? `<span class="issuer-tag">${esc(w.note)}</span>` : ""}
+                    </td>
+                    <td style="font-size:12.5px;color:var(--text-secondary);">${by}</td>
+                    <td style="text-align:right;white-space:nowrap;">
+                      ${canCal ? `<button class="btn btn-sm" onclick="downloadWaitlistCal(${w.id})">Calendar (.ics)</button>` : ""}
+                      ${canCancel ? `<button class="btn btn-red btn-sm" onclick="cancelWaitlist(${w.id})">Cancel</button>` : ""}
+                    </td>
+                  </tr>
+                `;
+              }).join("")}
+            </tbody>
+          </table>
+        </div>
+      `;
+    }
+
+    function fillProfileForm() {
+      if (!state.user) return;
+      $("pName").value = state.user.full_name || "";
+      $("pEmail").value = state.user.email || "";
+      $("pPhone").value = state.user.phone || "";
+      $("pAddress").value = state.user.address || "";
+      const isStudent = state.user.member_type === "student";
+      $("pSemWrap").style.display = isStudent ? "block" : "none";
+      $("pSemester").value = state.user.semester || "";
+      $("profErr").className = "form-err";
+      $("pwErr").className = "form-err";
+      $("profileStanding").textContent = isSuspended()
+        ? `Account Type: ${state.user.member_type} · Cooldown active until ${new Date(state.user.suspended_until).toLocaleString()}`
+        : `Account Type: ${state.user.member_type} · Good standing`;
+    }
+
+    $("profileForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      $("profErr").className = "form-err";
+      const payload = {
+        full_name: $("pName").value.trim(),
+        phone: $("pPhone").value.trim(),
+        address: $("pAddress").value.trim(),
+      };
+      if (state.user.member_type === "student") {
+        payload.semester = $("pSemester").value.trim() || null;
+      }
+      const res = await apiFetch("/api/v1/auth/me", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const data = await res.json().catch(() => null);
+      if (!res.ok) {
+        $("profErr").textContent = extractError(data, "Could not update profile.");
+        $("profErr").className = "form-err show";
+        return;
+      }
+      state.user = data;
+      renderAuthState();
+      showToast("Profile updated.");
+    });
+
+    $("pwChangeForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      $("pwErr").className = "form-err";
+      const res = await apiFetch("/api/v1/auth/change-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          current_password: $("curPw").value,
+          new_password: $("newPw").value,
+        }),
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => null);
+        $("pwErr").textContent = extractError(data, "Could not change password.");
+        $("pwErr").className = "form-err show";
+        return;
+      }
+      $("pwChangeForm").reset();
+      showToast("Password updated.");
+    });
+
+    function openExtModal(loanId) {
+      const loan = state.myLoans.find((l) => l.id === loanId);
       state.extLoanId = loanId;
-      $("extBookName").textContent = title;
+      $("extBookName").textContent = loan ? loan.resource_title : `Loan #${loanId}`;
       $("extErr").className = "form-err";
       $("extForm").reset();
       openModal("extOverlay");
@@ -1600,7 +1734,7 @@
       }
       closeModal("extOverlay");
       showToast("Extension ticket sent to the librarian.");
-      await loadMyLoans(state.view === "loans");
+      await refreshMemberActivity(state.view === "loans");
     });
 
     function toggleSemesterField() {
@@ -1612,39 +1746,46 @@
     function setAuthMode(mode) {
       state.authMode = mode;
       const isReg = mode === "register";
-      $("authHeading").textContent = isReg ? "Create Library Account" : "Sign In";
-      $("authSubmit").textContent = isReg ? "Register & Sign In" : "Sign In";
+      const isReset = mode === "reset";
+      $("authHeading").textContent = isReset ? "Recover Account" : (isReg ? "Create Library Account" : "Sign In");
+      $("authForm").style.display = isReset ? "none" : "block";
+      $("resetPanel").style.display = isReset ? "block" : "none";
       $("registerFields").style.display = isReg ? "block" : "none";
+      $("rememberRow").style.display = isReg ? "none" : "flex";
+      $("authSubmit").textContent = isReg ? "Register & Sign In" : "Sign In";
       $("authName").required = isReg;
       $("authPhone").required = isReg;
       $("authAddress").required = isReg;
       toggleSemesterField();
-      $("tabLogin").classList.toggle("active", !isReg);
-      $("tabRegister").classList.toggle("active", isReg);
+      $("tabLogin").classList.toggle("active", mode === "login");
+      $("tabRegister").classList.toggle("active", mode === "register");
+      $("tabReset").classList.toggle("active", mode === "reset");
       $("authErr").className = "form-err";
+      $("authOk").className = "form-ok";
     }
 
     $("authForm").addEventListener("submit", async (e) => {
       e.preventDefault();
       $("authErr").className = "form-err";
+      $("authOk").className = "form-ok";
       const email = $("authEmail").value.trim();
       const password = $("authPassword").value;
+      const remember = state.authMode === "register" ? true : $("rememberMe").checked;
 
       if (state.authMode === "register") {
         const memberType = $("authType").value;
-        const regPayload = {
-          email,
-          full_name: $("authName").value.trim(),
-          password,
-          phone: $("authPhone").value.trim(),
-          address: $("authAddress").value.trim(),
-          member_type: memberType,
-          semester: memberType === "student" ? $("authSemester").value.trim() : null,
-        };
         const regRes = await fetch("/api/v1/auth/register", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(regPayload),
+          body: JSON.stringify({
+            email,
+            full_name: $("authName").value.trim(),
+            password,
+            phone: $("authPhone").value.trim(),
+            address: $("authAddress").value.trim(),
+            member_type: memberType,
+            semester: memberType === "student" ? $("authSemester").value.trim() : null,
+          }),
         });
         const regData = await regRes.json().catch(() => null);
         if (!regRes.ok) {
@@ -1657,7 +1798,7 @@
       const loginRes = await fetch("/api/v1/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email, password, remember_me: remember }),
       });
       const loginData = await loginRes.json().catch(() => null);
       if (!loginRes.ok) {
@@ -1666,15 +1807,62 @@
         return;
       }
 
-      state.token = loginData.access_token;
+      saveToken(loginData.access_token, remember);
       state.user = loginData.user;
-      sessionStorage.setItem(TOKEN_KEY, state.token);
       closeModal("authOverlay");
       $("authForm").reset();
-      await loadMyLoans(false);
+      await refreshMemberActivity(false);
       renderAuthState();
       await loadCatalogue();
       showToast(`Welcome, ${state.user.full_name}`);
+    });
+
+    $("resetReqForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      $("authErr").className = "form-err";
+      $("authOk").className = "form-ok";
+      const email = $("rrEmail").value.trim();
+      const res = await fetch("/api/v1/auth/password-reset/request", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, phone: $("rrPhone").value.trim() }),
+      });
+      const data = await res.json().catch(() => null);
+      if (!res.ok) {
+        $("authErr").textContent = extractError(data, "Verification failed.");
+        $("authErr").className = "form-err show";
+        return;
+      }
+      $("rcEmail").value = email;
+      $("authOk").textContent = data.detail;
+      $("authOk").className = "form-ok show";
+    });
+
+    $("resetConfirmForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      $("authErr").className = "form-err";
+      $("authOk").className = "form-ok";
+      const email = $("rcEmail").value.trim();
+      const res = await fetch("/api/v1/auth/password-reset/confirm", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email,
+          code: $("rcCode").value.trim(),
+          new_password: $("rcPassword").value,
+        }),
+      });
+      const data = await res.json().catch(() => null);
+      if (!res.ok) {
+        $("authErr").textContent = extractError(data, "Password reset failed.");
+        $("authErr").className = "form-err show";
+        return;
+      }
+      $("resetConfirmForm").reset();
+      setAuthMode("login");
+      $("authEmail").value = email;
+      $("authOk").textContent = data.detail;
+      $("authOk").className = "form-ok show";
     });
 
     let searchTimer = null;
@@ -1683,10 +1871,7 @@
       $("charCount").textContent = `${len} / 500`;
       $("clearSearchBtn").classList.toggle("show", len > 0);
       clearTimeout(searchTimer);
-      searchTimer = setTimeout(() => {
-        state.offset = 0;
-        loadCatalogue();
-      }, 180);
+      searchTimer = setTimeout(() => { state.offset = 0; loadCatalogue(); }, 180);
     });
 
     $("clearSearchBtn").onclick = clearAllFilters;
@@ -1695,19 +1880,19 @@
     $("nextBtn").onclick = () => { state.offset += state.limit; loadCatalogue(); };
     $("authBtn").onclick = () => { setAuthMode("login"); openModal("authOverlay"); };
     $("logoutBtn").onclick = () => {
-      state.token = null;
+      saveToken(null, false);
       state.user = null;
+      state.myLoans = [];
+      state.myWaitlist = [];
       state.myLoansByResource.clear();
-      sessionStorage.removeItem(TOKEN_KEY);
+      state.myWaitlistByResource.clear();
       renderAuthState();
       loadCatalogue();
       showToast("Signed out.");
     };
 
     document.querySelectorAll(".overlay").forEach((ov) => {
-      ov.addEventListener("click", (e) => {
-        if (e.target === ov) ov.classList.remove("open");
-      });
+      ov.addEventListener("click", (e) => { if (e.target === ov) ov.classList.remove("open"); });
     });
 
     checkHealth();

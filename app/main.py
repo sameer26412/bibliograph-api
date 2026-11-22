@@ -116,6 +116,10 @@ def init_db_and_seed() -> None:
                     address="Central Library Desk",
                     member_type="local",
                     semester=None,
+                    staff_license_id="LIB-001",
+                    shift="Full Day",
+                    is_head_librarian=True,
+                    is_active=True,
                     hashed_password=hash_password(settings.seed_librarian_password),
                     role="librarian",
                 )

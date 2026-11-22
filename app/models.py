@@ -1,6 +1,7 @@
 from datetime import datetime, timezone
 
 from sqlalchemy import (
+    Boolean,
     CheckConstraint,
     Column,
     DateTime,
@@ -60,6 +61,10 @@ class User(Base):
     address: Mapped[str] = mapped_column(String(300), nullable=False, default="")
     member_type: Mapped[str] = mapped_column(String(20), nullable=False, default="local")
     semester: Mapped[str | None] = mapped_column(String(30), nullable=True)
+    staff_license_id: Mapped[str | None] = mapped_column(String(40), unique=True, nullable=True)
+    shift: Mapped[str | None] = mapped_column(String(30), nullable=True)
+    is_head_librarian: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    is_active: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
     hashed_password: Mapped[str] = mapped_column(String(255), nullable=False)
     role: Mapped[str] = mapped_column(String(20), nullable=False, default="member")
     suspended_until: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
@@ -67,6 +72,7 @@ class User(Base):
 
     loans: Mapped[list["Loan"]] = relationship(
         back_populates="user",
+        foreign_keys="Loan.user_id",
         cascade="all, delete-orphan",
     )
 
@@ -133,6 +139,10 @@ class Resource(Base):
         back_populates="resource",
         cascade="all, delete-orphan",
     )
+    waitlist_entries: Mapped[list["WaitlistEntry"]] = relationship(
+        back_populates="resource",
+        cascade="all, delete-orphan",
+    )
 
 
 class Loan(Base):
@@ -149,6 +159,15 @@ class Loan(Base):
         index=True,
         nullable=False,
     )
+    issued_by_id: Mapped[int | None] = mapped_column(
+        ForeignKey("users.id", ondelete="SET NULL"),
+        index=True,
+        nullable=True,
+    )
+    returned_by_id: Mapped[int | None] = mapped_column(
+        ForeignKey("users.id", ondelete="SET NULL"),
+        nullable=True,
+    )
     requested_days: Mapped[int] = mapped_column(Integer, nullable=False, default=14)
     requested_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, nullable=False)
     borrowed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
@@ -159,7 +178,12 @@ class Loan(Base):
     # State machine: pending -> active -> returned, or pending -> rejected
     status: Mapped[str] = mapped_column(String(20), index=True, nullable=False, default="pending")
 
-    user: Mapped["User"] = relationship(back_populates="loans")
+    user: Mapped["User"] = relationship(
+        back_populates="loans",
+        foreign_keys=[user_id],
+    )
+    issued_by: Mapped["User | None"] = relationship(foreign_keys=[issued_by_id])
+    returned_by: Mapped["User | None"] = relationship(foreign_keys=[returned_by_id])
     resource: Mapped["Resource"] = relationship(back_populates="loans")
     extensions: Mapped[list["ExtensionRequest"]] = relationship(
         back_populates="loan",
@@ -182,6 +206,10 @@ class ExtensionRequest(Base):
         index=True,
         nullable=False,
     )
+    decided_by_id: Mapped[int | None] = mapped_column(
+        ForeignKey("users.id", ondelete="SET NULL"),
+        nullable=True,
+    )
     extra_days: Mapped[int] = mapped_column(Integer, nullable=False, default=7)
     reason: Mapped[str] = mapped_column(String(300), nullable=False)
     status: Mapped[str] = mapped_column(String(20), index=True, nullable=False, default="pending")
@@ -190,4 +218,65 @@ class ExtensionRequest(Base):
     decided_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
 
     loan: Mapped["Loan"] = relationship(back_populates="extensions")
-    user: Mapped["User"] = relationship()
+    user: Mapped["User"] = relationship(foreign_keys=[user_id])
+    decided_by: Mapped["User | None"] = relationship(foreign_keys=[decided_by_id])
+
+
+class WaitlistEntry(Base):
+    __tablename__ = "waitlist_entries"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
+    resource_id: Mapped[int] = mapped_column(
+        ForeignKey("resources.id", ondelete="CASCADE"),
+        index=True,
+        nullable=False,
+    )
+    user_id: Mapped[int] = mapped_column(
+        ForeignKey("users.id", ondelete="CASCADE"),
+        index=True,
+        nullable=False,
+    )
+    assigned_by_id: Mapped[int | None] = mapped_column(
+        ForeignKey("users.id", ondelete="SET NULL"),
+        nullable=True,
+    )
+    # State machine: waiting -> assigned -> ready -> fulfilled (or cancelled)
+    status: Mapped[str] = mapped_column(String(20), index=True, nullable=False, default="waiting")
+    expected_available_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    hold_expires_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    note: Mapped[str | None] = mapped_column(String(300), nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, nullable=False)
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        default=utcnow,
+        onupdate=utcnow,
+        nullable=False,
+    )
+
+    resource: Mapped["Resource"] = relationship(back_populates="waitlist_entries")
+    user: Mapped["User"] = relationship(foreign_keys=[user_id])
+    assigned_by: Mapped["User | None"] = relationship(foreign_keys=[assigned_by_id])
+
+
+class PasswordResetRequest(Base):
+    __tablename__ = "password_reset_requests"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
+    user_id: Mapped[int] = mapped_column(
+        ForeignKey("users.id", ondelete="CASCADE"),
+        index=True,
+        nullable=False,
+    )
+    issued_by_id: Mapped[int | None] = mapped_column(
+        ForeignKey("users.id", ondelete="SET NULL"),
+        nullable=True,
+    )
+    # State machine: pending -> issued -> completed (or cancelled)
+    status: Mapped[str] = mapped_column(String(20), index=True, nullable=False, default="pending")
+    code_hash: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    expires_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    requested_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, nullable=False)
+    completed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+
+    user: Mapped["User"] = relationship(foreign_keys=[user_id])
+    issued_by: Mapped["User | None"] = relationship(foreign_keys=[issued_by_id])

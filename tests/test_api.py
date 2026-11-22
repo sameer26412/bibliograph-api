@@ -40,6 +40,7 @@ def test_env(monkeypatch):
     monkeypatch.setattr(settings, "seed_demo_data", True)
     monkeypatch.setattr(settings, "seed_librarian_email", "librarian@bibliograph.dev")
     monkeypatch.setattr(settings, "seed_librarian_password", "LibrarianPass123!")
+    monkeypatch.setattr(settings, "rate_limit_auth_per_minute", 100)
 
     def override_get_db():
         db = testing_session_local()
@@ -64,10 +65,16 @@ def client(test_env):
     return test_env[0]
 
 
-def _login(client: TestClient, email: str, password: str) -> str:
+def _login(
+    client: TestClient,
+    email: str,
+    password: str,
+    *,
+    remember_me: bool = False,
+) -> str:
     res = client.post(
         "/api/v1/auth/login",
-        json={"email": email, "password": password},
+        json={"email": email, "password": password, "remember_me": remember_me},
     )
     assert res.status_code == 200, res.text
     return res.json()["access_token"]
@@ -79,6 +86,7 @@ def _register_and_login(
     full_name: str,
     password: str,
     *,
+    phone: str = "+91 98765 43210",
     member_type: str = "student",
     semester: str | None = "5th Sem BCA",
 ) -> str:
@@ -88,7 +96,7 @@ def _register_and_login(
             "email": email,
             "full_name": full_name,
             "password": password,
-            "phone": "+91 98765 43210",
+            "phone": phone,
             "address": "12 College Road, Haveri",
             "member_type": member_type,
             "semester": semester,
@@ -141,6 +149,325 @@ def test_student_requires_semester_and_local_allows_none(client: TestClient):
     )
     assert ok_local.status_code == 201
     assert ok_local.json()["semester"] is None
+
+
+def test_remember_me_and_member_profile_management(client: TestClient):
+    reg = client.post(
+        "/api/v1/auth/register",
+        json={
+            "email": "rohan@bibliograph.dev",
+            "full_name": "Rohan K",
+            "password": "InitialPassword1!",
+            "phone": "+91 98765 10101",
+            "address": "Old Address, Haveri",
+            "member_type": "student",
+            "semester": "5th Sem BCA",
+        },
+    )
+    assert reg.status_code == 201
+
+    # Remember Me issues a 7-day token (604,800 seconds)
+    login = client.post(
+        "/api/v1/auth/login",
+        json={
+            "email": "rohan@bibliograph.dev",
+            "password": "InitialPassword1!",
+            "remember_me": True,
+        },
+    )
+    assert login.status_code == 200
+    assert login.json()["expires_in"] == 60 * 60 * 24 * 7
+    headers = {"Authorization": f"Bearer {login.json()['access_token']}"}
+
+    # Member updates own profile details
+    updated = client.patch(
+        "/api/v1/auth/me",
+        json={"phone": "+91 98765 20202", "semester": "6th Sem BCA"},
+        headers=headers,
+    )
+    assert updated.status_code == 200
+    assert updated.json()["phone"] == "+91 98765 20202"
+    assert updated.json()["semester"] == "6th Sem BCA"
+
+    # Member changes password cleanly
+    changed = client.post(
+        "/api/v1/auth/change-password",
+        json={
+            "current_password": "InitialPassword1!",
+            "new_password": "UpdatedPassword2!",
+        },
+        headers=headers,
+    )
+    assert changed.status_code == 204
+
+    assert (
+        client.post(
+            "/api/v1/auth/login",
+            json={"email": "rohan@bibliograph.dev", "password": "InitialPassword1!"},
+        ).status_code
+        == 401
+    )
+    assert (
+        client.post(
+            "/api/v1/auth/login",
+            json={"email": "rohan@bibliograph.dev", "password": "UpdatedPassword2!"},
+        ).status_code
+        == 200
+    )
+
+
+def test_librarian_verified_password_recovery_flow(client: TestClient):
+    _register_and_login(
+        client,
+        "locked@bibliograph.dev",
+        "Locked Student",
+        "OldSecretPass1!",
+        phone="+91 98765 77777",
+    )
+    librarian_token = _login(client, "librarian@bibliograph.dev", "LibrarianPass123!")
+    lib_headers = {"Authorization": f"Bearer {librarian_token}"}
+
+    # Mismatched phone rejected
+    bad_req = client.post(
+        "/api/v1/auth/password-reset/request",
+        json={"email": "locked@bibliograph.dev", "phone": "+91 00000 00000"},
+    )
+    assert bad_req.status_code == 400
+
+    # Verified email + phone queues request for desk
+    ok_req = client.post(
+        "/api/v1/auth/password-reset/request",
+        json={"email": "locked@bibliograph.dev", "phone": "9876577777"},
+    )
+    assert ok_req.status_code == 202
+
+    pending = client.get("/api/v1/auth/password-reset/requests?status=pending", headers=lib_headers)
+    assert pending.status_code == 200
+    assert len(pending.json()) == 1
+    req_id = pending.json()[0]["id"]
+
+    # Librarian issues 6-digit recovery code
+    issued = client.post(f"/api/v1/auth/password-reset/{req_id}/issue", headers=lib_headers)
+    assert issued.status_code == 200
+    code = issued.json()["recovery_code"]
+    assert len(code) == 6
+    assert issued.json()["issued_by_license"] == "LIB-001"
+
+    # Wrong code rejected
+    wrong_confirm = client.post(
+        "/api/v1/auth/password-reset/confirm",
+        json={
+            "email": "locked@bibliograph.dev",
+            "code": "000000" if code != "000000" else "999999",
+            "new_password": "RecoveredPass2!",
+        },
+    )
+    assert wrong_confirm.status_code == 400
+
+    # Valid code resets password and cannot be reused
+    confirm = client.post(
+        "/api/v1/auth/password-reset/confirm",
+        json={
+            "email": "locked@bibliograph.dev",
+            "code": code,
+            "new_password": "RecoveredPass2!",
+        },
+    )
+    assert confirm.status_code == 200
+
+    reuse = client.post(
+        "/api/v1/auth/password-reset/confirm",
+        json={
+            "email": "locked@bibliograph.dev",
+            "code": code,
+            "new_password": "AnotherPass3!",
+        },
+    )
+    assert reuse.status_code == 400
+
+    # Student signs back in with recovered password
+    assert _login(client, "locked@bibliograph.dev", "RecoveredPass2!")
+
+
+def test_multi_librarian_shift_profiles_and_issuer_audit_trail(client: TestClient):
+    head_token = _login(client, "librarian@bibliograph.dev", "LibrarianPass123!")
+    head_headers = {"Authorization": f"Bearer {head_token}"}
+
+    # Head Librarian licenses an Afternoon shift librarian
+    created_staff = client.post(
+        "/api/v1/auth/staff",
+        json={
+            "email": "priya@bibliograph.dev",
+            "full_name": "Priya Nair",
+            "password": "ShiftStaffPass1!",
+            "phone": "+91 98765 55555",
+            "address": "Reading Hall Desk 2",
+            "staff_license_id": "LIB-002",
+            "shift": "Afternoon",
+        },
+        headers=head_headers,
+    )
+    assert created_staff.status_code == 201
+    staff_id = created_staff.json()["id"]
+    assert created_staff.json()["staff_license_id"] == "LIB-002"
+    assert created_staff.json()["is_head_librarian"] is False
+
+    priya_token = _login(client, "priya@bibliograph.dev", "ShiftStaffPass1!")
+    priya_headers = {"Authorization": f"Bearer {priya_token}"}
+
+    # Shift librarian cannot register other staff (Head Librarian only)
+    forbidden_staff = client.post(
+        "/api/v1/auth/staff",
+        json={
+            "email": "unauth@bibliograph.dev",
+            "full_name": "Unauthorized",
+            "password": "ShiftStaffPass1!",
+            "phone": "+91 98765 44444",
+            "address": "Desk 3",
+            "staff_license_id": "LIB-003",
+            "shift": "Evening",
+        },
+        headers=priya_headers,
+    )
+    assert forbidden_staff.status_code == 403
+
+    # Student requests book #1 -> Shift librarian Priya issues it -> audit trail visible to both
+    student_token = _register_and_login(
+        client, "auditstudent@bibliograph.dev", "Audit Student", "StudentPass123!"
+    )
+    student_headers = {"Authorization": f"Bearer {student_token}"}
+
+    req = client.post(
+        "/api/v1/loans",
+        json={"resource_id": 1, "days": 7},
+        headers=student_headers,
+    )
+    assert req.status_code == 201
+    loan_id = req.json()["id"]
+
+    issued = client.post(f"/api/v1/loans/{loan_id}/approve", headers=priya_headers)
+    assert issued.status_code == 200
+    assert issued.json()["issued_by_name"] == "Priya Nair"
+    assert issued.json()["issued_by_license"] == "LIB-002"
+    assert issued.json()["issued_by_shift"] == "Afternoon"
+
+    my_loans = client.get("/api/v1/loans/me", headers=student_headers)
+    assert my_loans.status_code == 200
+    assert my_loans.json()[0]["issued_by_name"] == "Priya Nair"
+    assert my_loans.json()[0]["issued_by_license"] == "LIB-002"
+
+    # Head Librarian processes return -> both issuer and returner recorded
+    returned = client.post(f"/api/v1/loans/{loan_id}/return", headers=head_headers)
+    assert returned.status_code == 200
+    assert returned.json()["issued_by_license"] == "LIB-002"
+    assert returned.json()["returned_by_license"] == "LIB-001"
+
+    # Head Librarian deactivates Priya -> existing token & new login both blocked with 403
+    deactivated = client.patch(
+        f"/api/v1/auth/staff/{staff_id}",
+        json={"is_active": False},
+        headers=head_headers,
+    )
+    assert deactivated.status_code == 200
+    assert deactivated.json()["is_active"] is False
+
+    assert client.get("/api/v1/auth/me", headers=priya_headers).status_code == 403
+    assert (
+        client.post(
+            "/api/v1/auth/login",
+            json={"email": "priya@bibliograph.dev", "password": "ShiftStaffPass1!"},
+        ).status_code
+        == 403
+    )
+
+
+def test_rare_book_waitlist_pre_assignment_auto_hold_and_fulfill(client: TestClient):
+    lib_token = _login(client, "librarian@bibliograph.dev", "LibrarianPass123!")
+    lib_headers = {"Authorization": f"Bearer {lib_token}"}
+
+    alice_headers = {
+        "Authorization": f"Bearer {_register_and_login(client, 'wa@bibliograph.dev', 'Alice A', 'AlicePass123!')}"
+    }
+    bob_headers = {
+        "Authorization": f"Bearer {_register_and_login(client, 'wb@bibliograph.dev', 'Bob B', 'BobPass123!')}"
+    }
+    charlie_headers = {
+        "Authorization": f"Bearer {_register_and_login(client, 'wc@bibliograph.dev', 'Charlie C', 'CharliePass123!')}"
+    }
+
+    # Register a 1-copy rare manuscript
+    rare = client.post(
+        "/api/v1/resources",
+        json={
+            "isbn": "978-0262033848",
+            "title": "Introduction to Algorithms (Rare Edition)",
+            "summary": "Single-copy reference edition.",
+            "publication_year": 2009,
+            "publisher": "MIT Press",
+            "total_copies": 1,
+            "authors": ["Thomas H. Cormen"],
+            "tags": ["algorithms"],
+        },
+        headers=lib_headers,
+    ).json()
+    rid = rare["id"]
+
+    # Alice borrows the sole copy -> stock drops to 0
+    loan_id = client.post(
+        "/api/v1/loans", json={"resource_id": rid, "days": 7}, headers=alice_headers
+    ).json()["id"]
+    assert client.post(f"/api/v1/loans/{loan_id}/approve", headers=lib_headers).status_code == 200
+    assert client.get(f"/api/v1/resources/{rid}").json()["available_copies"] == 0
+
+    # Public availability forecast exposes next expected return date without leaking borrower PII
+    forecast = client.get("/api/v1/loans/availability").json()
+    entry_forecast = next(f for f in forecast if f["resource_id"] == rid)
+    assert entry_forecast["next_available_at"] is not None
+
+    # Bob joins waitlist & Librarian pre-assigns the incoming return to Bob
+    joined = client.post("/api/v1/loans/waitlist", json={"resource_id": rid}, headers=bob_headers)
+    assert joined.status_code == 201
+    wait_id = joined.json()["id"]
+    assert joined.json()["status"] == "waiting"
+
+    assigned = client.post(
+        f"/api/v1/loans/waitlist/{wait_id}/assign",
+        json={},
+        headers=lib_headers,
+    )
+    assert assigned.status_code == 200
+    assert assigned.json()["status"] == "assigned"
+    assert assigned.json()["assigned_by_license"] == "LIB-001"
+
+    # Alice returns the rare book -> copy auto-holds exclusively for Bob (public stock stays 0)
+    assert client.post(f"/api/v1/loans/{loan_id}/return", headers=lib_headers).status_code == 200
+    assert client.get(f"/api/v1/resources/{rid}").json()["available_copies"] == 0
+
+    bob_wait = client.get("/api/v1/loans/waitlist/me", headers=bob_headers).json()
+    assert bob_wait[0]["status"] == "ready"
+    assert bob_wait[0]["hold_expires_at"] is not None
+
+    # Charlie cannot jump the queue while Bob's hold is active
+    assert (
+        client.post(
+            "/api/v1/loans", json={"resource_id": rid, "days": 7}, headers=charlie_headers
+        ).status_code
+        == 409
+    )
+
+    # Librarian issues the held copy directly to Bob -> active loan created & waitlist fulfilled
+    fulfilled = client.post(
+        f"/api/v1/loans/waitlist/{wait_id}/fulfill",
+        json={"days": 10},
+        headers=lib_headers,
+    )
+    assert fulfilled.status_code == 200
+    assert fulfilled.json()["status"] == "active"
+    assert fulfilled.json()["borrower_name"] == "Bob B"
+    assert fulfilled.json()["issued_by_license"] == "LIB-001"
+
+    bob_wait_after = client.get("/api/v1/loans/waitlist/me", headers=bob_headers).json()
+    assert bob_wait_after[0]["status"] == "fulfilled"
 
 
 def test_catalogue_pagination_and_search_limits(client: TestClient):
@@ -232,7 +559,6 @@ def test_rbac_mass_assignment_and_resource_crud(client: TestClient):
         == 403
     )
 
-    # Regular member cannot read admin circulation ledger
     assert (
         client.get(
             "/api/v1/loans",
@@ -305,7 +631,6 @@ def test_request_approval_extension_and_overdue_penalty_workflow(test_env):
     ).json()
     resource_id = book["id"]
 
-    # 1. Alice submits a borrow request -> stays pending, stock untouched (still 1)
     req = client.post(
         "/api/v1/loans",
         json={"resource_id": resource_id, "days": 7},
@@ -316,15 +641,12 @@ def test_request_approval_extension_and_overdue_penalty_workflow(test_env):
     assert req.json()["status"] == "pending"
     assert client.get(f"/api/v1/resources/{resource_id}").json()["available_copies"] == 1
 
-    # 2. Alice cannot self-approve or self-return
     assert client.post(f"/api/v1/loans/{loan_id}/approve", headers=alice_headers).status_code == 403
     assert client.post(f"/api/v1/loans/{loan_id}/return", headers=alice_headers).status_code == 403
 
-    # 3. Librarian inspects ledger with full borrower profile & issues book -> stock drops to 0
     ledger = client.get("/api/v1/loans?status=pending", headers=lib_headers)
     assert ledger.status_code == 200
     assert ledger.json()[0]["borrower_semester"] == "6th Sem CS"
-    assert ledger.json()[0]["borrower_phone"] == "+91 98765 43210"
 
     approved = client.post(
         f"/api/v1/loans/{loan_id}/approve",
@@ -336,7 +658,6 @@ def test_request_approval_extension_and_overdue_penalty_workflow(test_env):
     original_due = approved.json()["due_at"]
     assert client.get(f"/api/v1/resources/{resource_id}").json()["available_copies"] == 0
 
-    # 4. Bob cannot request while 0 copies remain
     assert (
         client.post(
             "/api/v1/loans",
@@ -346,7 +667,6 @@ def test_request_approval_extension_and_overdue_penalty_workflow(test_env):
         == 409
     )
 
-    # 5. Alice raises extension ticket -> Librarian approves -> due_at extended by 5 days
     ext = client.post(
         f"/api/v1/loans/{loan_id}/extensions",
         json={"extra_days": 5, "reason": "Need extra days for exam prep"},
@@ -364,7 +684,6 @@ def test_request_approval_extension_and_overdue_penalty_workflow(test_env):
     assert decided.json()["status"] == "approved"
     assert decided.json()["current_due_at"] > original_due
 
-    # 6. Simulate 3 days overdue -> Librarian marks returned -> penalty cooldown activates
     with session_factory() as db:
         loan_row = db.get(Loan, loan_id)
         loan_row.due_at = utcnow() - timedelta(days=3, hours=2)
@@ -377,7 +696,6 @@ def test_request_approval_extension_and_overdue_penalty_workflow(test_env):
     assert returned.json()["borrower_suspended_until"] is not None
     assert client.get(f"/api/v1/resources/{resource_id}").json()["available_copies"] == 1
 
-    # 7. Alice is blocked from borrowing again during her cooldown penalty
     blocked = client.post(
         "/api/v1/loans",
         json={"resource_id": resource_id, "days": 7},
@@ -386,7 +704,6 @@ def test_request_approval_extension_and_overdue_penalty_workflow(test_env):
     assert blocked.status_code == 403
     assert "Borrowing paused" in blocked.json()["detail"]
 
-    # 8. Bob (no penalty) CAN now request the returned book
     bob_req = client.post(
         "/api/v1/loans",
         json={"resource_id": resource_id, "days": 7},
