@@ -108,23 +108,6 @@ def init_db_and_seed() -> None:
         librarian_email = settings.seed_librarian_email.lower()
         existing_librarian = db.scalar(select(User).where(User.email == librarian_email))
         if existing_librarian is None:
-            demo_member_email = "member@bibliograph.dev"
-        existing_demo_member = db.scalar(select(User).where(User.email == demo_member_email))
-        if existing_demo_member is None:
-            db.add(
-                User(
-                    email=demo_member_email,
-                    full_name="Demo Student",
-                    phone="+91 90000 00001",
-                    address="Campus Reading Block, Haveri",
-                    member_type="student",
-                    semester="6th Sem BCA",
-                    is_active=True,
-                    hashed_password=hash_password("MemberDemo2026!"),
-                    role="member",
-                )
-            )
-            db.commit()
             db.add(
                 User(
                     email=librarian_email,
@@ -139,6 +122,24 @@ def init_db_and_seed() -> None:
                     is_active=True,
                     hashed_password=hash_password(settings.seed_librarian_password),
                     role="librarian",
+                )
+            )
+            db.commit()
+
+        demo_member_email = "member@bibliograph.dev"
+        existing_demo_member = db.scalar(select(User).where(User.email == demo_member_email))
+        if existing_demo_member is None:
+            db.add(
+                User(
+                    email=demo_member_email,
+                    full_name="Demo Student",
+                    phone="+91 90000 00001",
+                    address="Campus Reading Block, Haveri",
+                    member_type="student",
+                    semester="6th Sem BCA",
+                    is_active=True,
+                    hashed_password=hash_password("MemberDemo2026!"),
+                    role="member",
                 )
             )
             db.commit()
