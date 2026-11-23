@@ -9,7 +9,7 @@
       --bg: #f5f5f7;
       --surface: #ffffff;
       --surface-soft: #fbfbfd;
-      --glass: rgba(255, 255, 255, 0.84);
+      --glass: rgba(255, 255, 255, 0.88);
       --border: rgba(0, 0, 0, 0.08);
       --border-strong: rgba(0, 0, 0, 0.14);
       --text: #1d1d1f;
@@ -36,6 +36,8 @@
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
+    html, body { overflow-x: hidden; }
+
     body {
       font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Inter", "Segoe UI", sans-serif;
       background: var(--bg);
@@ -43,6 +45,8 @@
       line-height: 1.5;
       -webkit-font-smoothing: antialiased;
       min-height: 100vh;
+      display: flex;
+      flex-direction: column;
     }
 
     header {
@@ -58,18 +62,18 @@
     .nav-inner {
       max-width: 1180px;
       margin: 0 auto;
-      padding: 0 28px;
-      height: 60px;
+      padding: 0 24px;
+      min-height: 60px;
       display: grid;
       grid-template-columns: 1fr auto 1fr;
       align-items: center;
-      gap: 16px;
+      gap: 12px;
     }
 
     .brand {
       display: inline-flex;
       align-items: center;
-      gap: 10px;
+      gap: 9px;
       cursor: pointer;
       user-select: none;
       width: fit-content;
@@ -86,6 +90,7 @@
       font-weight: 700;
       font-size: 12.5px;
       letter-spacing: -0.04em;
+      flex-shrink: 0;
     }
 
     .brand-title { font-size: 16px; font-weight: 600; letter-spacing: -0.02em; }
@@ -97,6 +102,7 @@
       border-radius: 999px;
       padding: 3px;
       gap: 2px;
+      max-width: 100%;
     }
 
     .seg-btn {
@@ -106,12 +112,14 @@
       font: inherit;
       font-size: 13px;
       font-weight: 500;
-      padding: 6px 15px;
+      padding: 6px 14px;
       border-radius: 999px;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
-      gap: 7px;
+      justify-content: center;
+      gap: 6px;
+      white-space: nowrap;
       transition: all 0.2s var(--ease);
     }
 
@@ -136,7 +144,8 @@
       display: flex;
       align-items: center;
       justify-content: flex-end;
-      gap: 10px;
+      gap: 8px;
+      flex-wrap: nowrap;
     }
 
     .status-chip {
@@ -149,6 +158,7 @@
       border-radius: 999px;
       background: var(--surface);
       border: 1px solid var(--border);
+      white-space: nowrap;
     }
 
     .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--amber); }
@@ -159,7 +169,7 @@
       font: inherit;
       font-size: 13.5px;
       font-weight: 500;
-      padding: 8px 16px;
+      padding: 8px 15px;
       border-radius: 999px;
       border: 1px solid var(--border-strong);
       background: var(--surface);
@@ -170,14 +180,18 @@
       align-items: center;
       justify-content: center;
       gap: 6px;
+      white-space: nowrap;
       transition: background 0.18s var(--ease), border-color 0.18s var(--ease), transform 0.12s var(--ease);
     }
     .btn:hover { background: #f0f0f3; border-color: rgba(0, 0, 0, 0.2); }
     .btn:active { transform: scale(0.98); }
-    .btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+    .btn:disabled { opacity: 0.48; cursor: not-allowed; transform: none; }
 
     .btn-blue { background: var(--blue); border-color: var(--blue); color: #ffffff; }
     .btn-blue:hover { background: var(--blue-hover); border-color: var(--blue-hover); }
+
+    .btn-dark { background: #1d1d1f; border-color: #1d1d1f; color: #ffffff; }
+    .btn-dark:hover { background: #333336; border-color: #333336; }
 
     .btn-green { background: var(--green); border-color: var(--green); color: #ffffff; }
     .btn-green:hover { background: #187934; }
@@ -188,23 +202,24 @@
     .btn-ghost { background: transparent; border-color: transparent; color: var(--text-secondary); }
     .btn-ghost:hover { background: rgba(0, 0, 0, 0.05); color: var(--text); }
 
-    .btn-sm { padding: 6px 13px; font-size: 12.5px; }
+    .btn-sm { padding: 6px 12px; font-size: 12.5px; }
 
     main {
+      width: 100%;
       max-width: 1180px;
       margin: 0 auto;
-      padding: 36px 28px 96px;
+      padding: 32px 24px 72px;
+      flex: 1;
     }
 
-    /* Alert & Notification Banners */
-    .alert-stack { display: flex; flex-direction: column; gap: 10px; margin-bottom: 22px; }
+    .alert-stack { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
 
     .alert-bar {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 14px;
-      padding: 13px 18px;
+      gap: 12px;
+      padding: 13px 16px;
       border-radius: var(--radius-md);
       font-size: 13.5px;
       flex-wrap: wrap;
@@ -217,102 +232,114 @@
       display: flex;
       justify-content: space-between;
       align-items: flex-end;
-      gap: 24px;
-      margin-bottom: 26px;
+      gap: 20px;
+      margin-bottom: 22px;
       flex-wrap: wrap;
     }
 
     .hero h1 {
-      font-size: clamp(28px, 4vw, 40px);
+      font-size: clamp(26px, 4.5vw, 38px);
       font-weight: 600;
       letter-spacing: -0.03em;
-      line-height: 1.1;
+      line-height: 1.12;
       margin-bottom: 6px;
     }
 
-    .hero p { font-size: 15px; color: var(--text-secondary); max-width: 560px; }
+    .hero p { font-size: 14.5px; color: var(--text-secondary); max-width: 560px; }
 
-    .metrics { display: flex; gap: 16px; align-items: center; }
+    .metrics { display: flex; gap: 12px; align-items: center; }
     .metric {
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: var(--radius-md);
-      padding: 12px 18px;
-      min-width: 118px;
+      padding: 11px 16px;
+      min-width: 114px;
       box-shadow: var(--shadow-sm);
     }
-    .metric-val { font-size: 22px; font-weight: 600; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+    .metric-val { font-size: 21px; font-weight: 600; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
     .metric-lbl { font-size: 11.5px; color: var(--text-muted); }
 
-    .controls { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; flex-wrap: wrap; }
-    .spotlight { position: relative; flex: 1; min-width: 260px; }
+    .controls { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; flex-wrap: wrap; }
+    .spotlight { position: relative; flex: 1; min-width: min(100%, 260px); }
     .spotlight svg {
-      position: absolute; left: 16px; top: 50%; transform: translateY(-50%);
+      position: absolute; left: 15px; top: 50%; transform: translateY(-50%);
       width: 17px; height: 17px; color: var(--text-muted); pointer-events: none;
     }
     .spotlight input {
       width: 100%; font: inherit; font-size: 15px; color: var(--text);
       background: var(--surface); border: 1px solid var(--border); border-radius: 14px;
-      padding: 13px 44px; outline: none; box-shadow: var(--shadow-sm);
+      padding: 12px 42px; outline: none; box-shadow: var(--shadow-sm);
       transition: border-color 0.2s var(--ease), box-shadow 0.2s var(--ease);
     }
     .spotlight input:focus { border-color: var(--blue); box-shadow: 0 0 0 4px rgba(0, 113, 227, 0.14); }
     .clear-x {
-      position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+      position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
       width: 24px; height: 24px; border-radius: 50%; border: none;
       background: rgba(0, 0, 0, 0.08); color: var(--text-secondary);
       font-size: 14px; cursor: pointer; display: none; place-items: center;
     }
     .clear-x.show { display: grid; }
 
+    .filter-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
     select.light-select {
       font: inherit; font-size: 13px; color: var(--text-secondary);
       background: var(--surface); border: 1px solid var(--border); border-radius: 999px;
-      padding: 9px 14px; outline: none; cursor: pointer; box-shadow: var(--shadow-sm);
+      padding: 8px 13px; outline: none; cursor: pointer; box-shadow: var(--shadow-sm);
     }
 
     .back-bar {
-      display: none; align-items: center; justify-content: space-between; gap: 12px;
-      padding: 10px 16px; margin-bottom: 16px; border-radius: var(--radius-md);
+      display: none; align-items: center; justify-content: space-between; gap: 10px;
+      padding: 10px 14px; margin-bottom: 14px; border-radius: var(--radius-md);
       background: var(--blue-soft); border: 1px solid rgba(0, 113, 227, 0.2);
-      font-size: 13.5px; color: #004c99; flex-wrap: wrap;
+      font-size: 13px; color: #004c99; flex-wrap: wrap;
     }
     .back-bar.show { display: flex; }
 
     .sub-bar {
       display: flex; justify-content: space-between; align-items: center;
-      font-size: 12.5px; color: var(--text-muted); margin-bottom: 18px;
+      font-size: 12.5px; color: var(--text-muted); margin-bottom: 16px;
       font-variant-numeric: tabular-nums;
     }
 
-    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)); gap: 20px; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(min(100%, 305px), 1fr));
+      gap: 18px;
+    }
 
     .card {
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: var(--radius-lg);
-      padding: 22px 24px;
+      padding: 20px 22px;
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 11px;
       box-shadow: var(--shadow-sm);
       cursor: pointer;
+      min-width: 0;
       transition: transform 0.24s var(--ease), box-shadow 0.24s var(--ease), border-color 0.24s var(--ease);
     }
     .card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); border-color: rgba(0, 113, 227, 0.28); }
 
-    .card-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
-    .card-kicker { font-size: 11.5px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 4px; }
-    .card h3 { font-size: 17px; font-weight: 600; letter-spacing: -0.015em; line-height: 1.3; }
+    .card-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
+    .card-kicker { font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 4px; }
+    .card h3 { font-size: 16.5px; font-weight: 600; letter-spacing: -0.015em; line-height: 1.3; word-break: break-word; }
 
     .stock-badge {
-      flex-shrink: 0; font-size: 11.5px; font-weight: 600;
-      font-variant-numeric: tabular-nums; padding: 4px 10px; border-radius: 999px;
+      flex-shrink: 0; font-size: 11px; font-weight: 600;
+      font-variant-numeric: tabular-nums; padding: 4px 9px; border-radius: 999px; white-space: nowrap;
     }
     .stock-badge.in { background: var(--green-soft); color: var(--green); }
     .stock-badge.out { background: var(--amber-soft); color: var(--amber); }
 
-    .authors { font-size: 13.5px; color: var(--text-secondary); margin-top: -4px; }
+    .authors { font-size: 13.5px; color: var(--text-secondary); margin-top: -3px; }
 
     .summary {
       font-size: 13.5px;
@@ -335,7 +362,7 @@
 
     .card-foot {
       display: flex; justify-content: space-between; align-items: center;
-      padding-top: 12px; border-top: 1px solid var(--border); font-size: 12.5px; gap: 8px;
+      padding-top: 12px; border-top: 1px solid var(--border); font-size: 12.5px; gap: 8px; flex-wrap: wrap;
     }
 
     .status-inline { font-weight: 600; font-size: 11.5px; padding: 3px 10px; border-radius: 999px; }
@@ -345,19 +372,18 @@
 
     .quick-cue { color: var(--blue); font-weight: 500; white-space: nowrap; }
 
-    /* Tables & Views */
     .view-head {
       display: flex; justify-content: space-between; align-items: flex-end;
-      gap: 16px; margin-bottom: 22px; flex-wrap: wrap;
+      gap: 14px; margin-bottom: 20px; flex-wrap: wrap;
     }
-    .view-head h2 { font-size: 28px; font-weight: 600; letter-spacing: -0.025em; margin-bottom: 4px; }
-    .view-head p { font-size: 14.5px; color: var(--text-secondary); }
+    .view-head h2 { font-size: clamp(23px, 4vw, 28px); font-weight: 600; letter-spacing: -0.025em; margin-bottom: 4px; }
+    .view-head p { font-size: 14px; color: var(--text-secondary); }
 
-    .sub-heading { font-size: 16px; font-weight: 600; margin: 28px 0 12px; letter-spacing: -0.01em; }
+    .sub-heading { font-size: 16px; font-weight: 600; margin: 26px 0 12px; letter-spacing: -0.01em; }
 
     .table-card {
       background: var(--surface); border: 1px solid var(--border);
-      border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); overflow-x: auto;
+      border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); overflow: hidden;
     }
     table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
     th {
@@ -380,62 +406,100 @@
     .state-pill.returned, .state-pill.ready, .state-pill.fulfilled { background: var(--green-soft); color: var(--green); }
     .state-pill.rejected, .state-pill.cancelled { background: var(--red-soft); color: var(--red); }
 
-    /* Profile Grid */
-    .profile-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: 20px; align-items: start; }
+    .profile-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: 18px; align-items: start; }
     .panel-card {
       background: var(--surface); border: 1px solid var(--border);
-      border-radius: var(--radius-lg); padding: 24px; box-shadow: var(--shadow-sm);
+      border-radius: var(--radius-lg); padding: 22px; box-shadow: var(--shadow-sm);
     }
     .panel-card h3 { font-size: 17px; font-weight: 600; margin-bottom: 4px; }
-    .panel-card .hint { font-size: 13px; color: var(--text-muted); margin-bottom: 18px; }
+    .panel-card .hint { font-size: 13px; color: var(--text-muted); margin-bottom: 16px; }
 
     .empty-box {
-      text-align: center; padding: 54px 24px; background: var(--surface);
+      text-align: center; padding: 48px 20px; background: var(--surface);
       border: 1px solid var(--border); border-radius: var(--radius-lg);
       color: var(--text-secondary); box-shadow: var(--shadow-sm);
     }
 
-    .pager { margin-top: 28px; display: flex; justify-content: center; align-items: center; gap: 16px; }
+    .pager { margin-top: 26px; display: flex; justify-content: center; align-items: center; gap: 14px; }
+
+    footer.site-footer {
+      width: 100%;
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 20px 24px 32px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      font-size: 12.5px;
+      color: var(--text-muted);
+    }
+    footer.site-footer a { color: var(--text-secondary); text-decoration: none; font-weight: 500; }
+    footer.site-footer a:hover { color: var(--blue); }
 
     /* Modals */
     .overlay {
       position: fixed; inset: 0; z-index: 50;
       background: rgba(0, 0, 0, 0.36); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
-      display: none; align-items: center; justify-content: center; padding: 20px;
+      display: none; align-items: center; justify-content: center; padding: 16px;
     }
     .overlay.open { display: flex; }
 
     .sheet {
-      width: 100%; max-width: 650px; max-height: 88vh; overflow-y: auto;
+      width: 100%; max-width: 650px; max-height: 90vh; overflow-y: auto;
       background: var(--surface); border: 1px solid var(--border);
-      border-radius: 24px; padding: 28px; box-shadow: var(--shadow-lg);
+      border-radius: 22px; padding: 24px; box-shadow: var(--shadow-lg);
     }
-    .sheet-sm { max-width: 460px; }
+    .sheet-sm { max-width: 450px; }
 
-    .sheet-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 14px; margin-bottom: 16px; }
-    .sheet-head h2 { font-size: 21px; font-weight: 600; letter-spacing: -0.02em; line-height: 1.25; }
+    .sheet-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 14px; }
+    .sheet-head h2 { font-size: 20px; font-weight: 600; letter-spacing: -0.02em; line-height: 1.25; }
 
-    .brief-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 16px 0 18px; }
+    .brief-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 14px 0 16px; }
     .brief-cell { background: var(--bg); border-radius: var(--radius-sm); padding: 10px 12px; }
-    .brief-cell span { display: block; font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 2px; }
-    .brief-cell strong { font-size: 13px; font-weight: 600; }
+    .brief-cell span { display: block; font-size: 10.5px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 2px; }
+    .brief-cell strong { font-size: 13px; font-weight: 600; word-break: break-word; }
 
-    .borrow-box { margin-top: 18px; padding: 18px; border-radius: var(--radius-md); background: var(--bg); border: 1px solid var(--border); }
+    .borrow-box { margin-top: 16px; padding: 16px; border-radius: var(--radius-md); background: var(--bg); border: 1px solid var(--border); }
     .borrow-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
 
-    details.meta-drawer { margin-top: 18px; border-top: 1px solid var(--border); padding-top: 14px; }
+    details.meta-drawer { margin-top: 16px; border-top: 1px solid var(--border); padding-top: 14px; }
     details.meta-drawer summary { font-size: 13px; font-weight: 500; color: var(--text-secondary); cursor: pointer; user-select: none; }
-    .http-meta { display: flex; gap: 14px; flex-wrap: wrap; font-size: 11.5px; font-family: var(--mono); color: var(--text-muted); margin: 12px 0 8px; }
+    .http-meta { display: flex; gap: 12px; flex-wrap: wrap; font-size: 11.5px; font-family: var(--mono); color: var(--text-muted); margin: 10px 0 8px; }
     pre {
       background: #1d1d1f; color: #f5f5f7; border-radius: var(--radius-sm);
-      padding: 14px; overflow-x: auto; font-family: var(--mono); font-size: 12px;
-      line-height: 1.55; white-space: pre-wrap; word-break: break-word;
+      padding: 13px; overflow-x: auto; font-family: var(--mono); font-size: 11.5px;
+      line-height: 1.5; white-space: pre-wrap; word-break: break-word;
     }
 
-    .field { margin-bottom: 13px; }
+    .demo-box {
+      margin-top: 14px;
+      padding: 11px 13px;
+      border-radius: 12px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      font-size: 12.5px;
+      color: var(--text-secondary);
+    }
+    .demo-box summary { cursor: pointer; font-weight: 500; color: var(--text); user-select: none; }
+    .demo-creds {
+      margin-top: 8px;
+      font-family: var(--mono);
+      font-size: 11.5px;
+      line-height: 1.6;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .field { margin-bottom: 12px; }
     .field label { display: block; font-size: 12.5px; font-weight: 500; color: var(--text-secondary); margin-bottom: 5px; }
     .field input, .field select, .field textarea {
-      width: 100%; font: inherit; font-size: 14px; color: var(--text);
+      width: 100%; font: inherit; font-size: 15px; color: var(--text);
       background: var(--surface-soft); border: 1px solid var(--border-strong);
       border-radius: var(--radius-sm); padding: 10px 12px; outline: none;
     }
@@ -446,7 +510,7 @@
 
     .check-row {
       display: flex; align-items: center; justify-content: space-between; gap: 10px;
-      margin: 4px 0 16px; font-size: 13px; color: var(--text-secondary);
+      margin: 4px 0 15px; font-size: 13px; color: var(--text-secondary); flex-wrap: wrap;
     }
     .check-row label { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; }
     .check-row input[type="checkbox"] { width: 15px; height: 15px; accent-color: var(--blue); }
@@ -455,30 +519,88 @@
 
     .form-err {
       display: none; background: var(--red-soft); border: 1px solid rgba(217, 48, 37, 0.25);
-      color: var(--red); font-size: 13px; padding: 10px 12px; border-radius: var(--radius-sm); margin-bottom: 14px;
+      color: var(--red); font-size: 13px; padding: 10px 12px; border-radius: var(--radius-sm); margin-bottom: 12px;
     }
     .form-err.show { display: block; }
 
     .form-ok {
       display: none; background: var(--green-soft); border: 1px solid rgba(30, 142, 62, 0.25);
-      color: var(--green); font-size: 13px; padding: 10px 12px; border-radius: var(--radius-sm); margin-bottom: 14px;
+      color: var(--green); font-size: 13px; padding: 10px 12px; border-radius: var(--radius-sm); margin-bottom: 12px;
     }
     .form-ok.show { display: block; }
 
     #toast {
-      position: fixed; bottom: 26px; left: 50%; transform: translateX(-50%); z-index: 80;
-      max-width: 90vw; padding: 11px 20px; border-radius: 999px;
-      background: #1d1d1f; color: #ffffff; font-size: 13.5px; font-weight: 500;
-      display: none; box-shadow: 0 16px 40px rgba(0, 0, 0, 0.24);
+      position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 80;
+      max-width: calc(100vw - 32px); padding: 11px 18px; border-radius: 999px;
+      background: #1d1d1f; color: #ffffff; font-size: 13px; font-weight: 500;
+      display: none; box-shadow: 0 16px 40px rgba(0, 0, 0, 0.24); text-align: center;
     }
     #toast.show { display: block; }
     #toast.err { background: var(--red); }
 
+    /* Tablet & Mobile Responsive Layout */
     @media (max-width: 860px) {
-      .nav-inner { grid-template-columns: auto auto; height: auto; padding: 12px 18px; }
-      .segmented.main-nav { grid-column: 1 / -1; justify-self: center; }
-      .status-chip, .metrics { display: none; }
-      .brief-grid, .row-2, .profile-grid { grid-template-columns: 1fr; }
+      .nav-inner {
+        grid-template-columns: auto 1fr;
+        padding: 10px 16px;
+        gap: 10px;
+      }
+      .segmented.main-nav {
+        grid-column: 1 / -1;
+        order: 3;
+        width: 100%;
+        justify-content: space-between;
+      }
+      .segmented.main-nav .seg-btn { flex: 1; padding: 6px 10px; font-size: 12.5px; }
+      .status-chip, #userBadge { display: none !important; }
+      .metrics { width: 100%; }
+      .metric { flex: 1; min-width: 0; }
+      .profile-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 680px) {
+      main { padding: 20px 16px 56px; }
+      footer.site-footer { padding: 18px 16px 28px; }
+      .controls { flex-direction: column; align-items: stretch; }
+      .filter-row { justify-content: space-between; width: 100%; }
+      .filter-row .segmented { flex: 1; }
+      .filter-row .segmented .seg-btn { flex: 1; padding: 6px 8px; font-size: 12px; }
+      .brief-grid, .row-2 { grid-template-columns: 1fr; }
+      .overlay { padding: 10px; }
+      .sheet { padding: 20px 16px; border-radius: 18px; max-height: 92vh; }
+      .card { padding: 18px 16px; border-radius: 16px; }
+      .borrow-row { flex-direction: column; align-items: stretch; }
+      .borrow-row .btn { width: 100%; }
+
+      /* Mobile stacked cards for activity tables */
+      .table-card { background: transparent; border: none; box-shadow: none; }
+      table, tbody, tr, td { display: block; width: 100%; }
+      thead { display: none; }
+      tr {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 14px 16px;
+        margin-bottom: 12px;
+        box-shadow: var(--shadow-sm);
+      }
+      td {
+        padding: 6px 0;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        text-align: left !important;
+        white-space: normal !important;
+      }
+      td:last-child { border-bottom: none; padding-bottom: 0; }
+      td[data-label]::before {
+        content: attr(data-label);
+        display: block;
+        font-size: 10.5px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--text-muted);
+        margin-bottom: 3px;
+      }
     }
   </style>
 </head>
@@ -493,9 +615,9 @@
       <nav class="segmented main-nav">
         <button class="seg-btn active" id="navCatalogue" onclick="switchView('catalogue')">Catalogue</button>
         <button class="seg-btn" id="navLoans" style="display:none;" onclick="switchView('loans')">
-          My Activity <span class="pill-count" id="myLoanCount">0</span>
+          Activity <span class="pill-count" id="myLoanCount">0</span>
         </button>
-        <button class="seg-btn" id="navProfile" style="display:none;" onclick="switchView('profile')">My Profile</button>
+        <button class="seg-btn" id="navProfile" style="display:none;" onclick="switchView('profile')">Profile</button>
       </nav>
 
       <div class="nav-right">
@@ -504,6 +626,7 @@
           <span id="healthText">Checking…</span>
         </span>
         <span id="userBadge" style="font-size:13px;color:var(--text-secondary);font-weight:500;display:none;"></span>
+        <a class="btn btn-sm" href="/admin" title="Open Librarian Admin Console">Admin</a>
         <button class="btn btn-blue btn-sm" id="authBtn">Sign In</button>
         <button class="btn btn-ghost btn-sm" id="logoutBtn" style="display:none;">Sign Out</button>
       </div>
@@ -511,7 +634,6 @@
   </header>
 
   <main>
-    <!-- Live Notifications (Cooldown + Waitlist Hold Ready / Pre-Assigned Alerts) -->
     <div class="alert-stack" id="alertStack"></div>
 
     <!-- VIEW 1: CATALOGUE -->
@@ -519,7 +641,7 @@
       <div class="hero">
         <div>
           <h1>Library Catalogue</h1>
-          <p>Click any book for a quick brief, request to borrow, or join the waitlist on high-demand titles.</p>
+          <p>Tap any book for a quick brief, request to borrow, or join the waitlist on high-demand titles.</p>
         </div>
         <div class="metrics">
           <div class="metric">
@@ -544,27 +666,29 @@
             type="text"
             maxlength="500"
             autocomplete="off"
-            placeholder="Type to search live by title, author, ISBN, or topic…"
+            placeholder="Search by title, author, ISBN, or topic…"
           />
           <button class="clear-x" id="clearSearchBtn" title="Clear search">×</button>
         </div>
 
-        <div class="segmented" id="availPills">
-          <button class="seg-btn active" data-val="" onclick="setAvailFilter('')">All</button>
-          <button class="seg-btn" data-val="true" onclick="setAvailFilter('true')">Available</button>
-          <button class="seg-btn" data-val="false" onclick="setAvailFilter('false')">Checked Out</button>
-        </div>
+        <div class="filter-row">
+          <div class="segmented" id="availPills">
+            <button class="seg-btn active" data-val="" onclick="setAvailFilter('')">All</button>
+            <button class="seg-btn" data-val="true" onclick="setAvailFilter('true')">Available</button>
+            <button class="seg-btn" data-val="false" onclick="setAvailFilter('false')">Out</button>
+          </div>
 
-        <select id="limitSelect" class="light-select">
-          <option value="6">6 / page</option>
-          <option value="15" selected>15 / page</option>
-          <option value="50">50 / page</option>
-        </select>
+          <select id="limitSelect" class="light-select">
+            <option value="6">6 / page</option>
+            <option value="15" selected>15 / page</option>
+            <option value="50">50 / page</option>
+          </select>
+        </div>
       </div>
 
       <div class="back-bar" id="filterBanner">
         <span id="filterSummary"></span>
-        <button class="btn btn-sm" onclick="clearAllFilters()">← Back to Full Catalogue</button>
+        <button class="btn btn-sm" onclick="clearAllFilters()">← Full Catalogue</button>
       </div>
 
       <div class="sub-bar">
@@ -575,22 +699,22 @@
       <div id="catalogueGrid" class="grid"></div>
 
       <div class="pager" id="pager" style="display:none;">
-        <button class="btn btn-sm" id="prevBtn">← Previous</button>
+        <button class="btn btn-sm" id="prevBtn">← Prev</button>
         <span id="pageInfo" style="font-size:13px;color:var(--text-muted);"></span>
         <button class="btn btn-sm" id="nextBtn">Next →</button>
       </div>
     </section>
 
-    <!-- VIEW 2: MY ACTIVITY (LOANS + WAITLIST RESERVATIONS) -->
+    <!-- VIEW 2: MY ACTIVITY -->
     <section id="viewLoans" style="display:none;">
       <div class="view-head">
         <div>
           <h2>My Activity</h2>
           <p>Your requests, issued books, handling librarian, extension tickets, and waitlist spots.</p>
         </div>
-        <div style="display:flex;gap:8px;">
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
           <button class="btn btn-sm" onclick="refreshMemberActivity(true)">Refresh</button>
-          <button class="btn btn-sm" onclick="switchView('catalogue')">← Back to Catalogue</button>
+          <button class="btn btn-sm" onclick="switchView('catalogue')">← Catalogue</button>
         </div>
       </div>
 
@@ -607,7 +731,7 @@
           <h2>My Profile</h2>
           <p>Manage your contact details, academic semester, and account password.</p>
         </div>
-        <button class="btn btn-sm" onclick="switchView('catalogue')">← Back to Catalogue</button>
+        <button class="btn btn-sm" onclick="switchView('catalogue')">← Catalogue</button>
       </div>
 
       <div class="profile-grid">
@@ -664,13 +788,11 @@
     </section>
   </main>
 
-  <footer style="max-width:1180px;margin:0 auto;padding:24px 28px 40px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;font-size:12.5px;color:var(--text-muted);">
-    <span>BiblioGraph v2.0 · Bibliographic Catalogue &amp; Circulation System</span>
+  <footer class="site-footer">
+    <span>BiblioGraph v2.0</span>
     <div style="display:flex;gap:16px;flex-wrap:wrap;">
-      <a href="/admin" style="color:var(--text-secondary);text-decoration:none;font-weight:500;">Librarian Console (/admin)</a>
-      <a href="/docs" target="_blank" rel="noopener" style="color:var(--text-secondary);text-decoration:none;">OpenAPI Docs</a>
-      <a href="/health" target="_blank" rel="noopener" style="color:var(--text-secondary);text-decoration:none;">System Health</a>
-      <a href="https://github.com/sameer26412/bibliograph-api" target="_blank" rel="noopener" style="color:var(--text-secondary);text-decoration:none;">GitHub ↗</a>
+      <a href="/docs" target="_blank" rel="noopener">OpenAPI Docs ↗</a>
+      <a href="https://github.com/sameer26412/bibliograph-api" target="_blank" rel="noopener">GitHub ↗</a>
     </div>
   </footer>
 
@@ -679,14 +801,14 @@
     <div class="sheet">
       <div class="sheet-head">
         <div>
-          <div id="bKicker" style="font-size:12px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:4px;"></div>
+          <div id="bKicker" style="font-size:11.5px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:4px;"></div>
           <h2 id="bTitle">Book Title</h2>
           <p id="bAuthors" style="font-size:14px;color:var(--text-secondary);margin-top:4px;"></p>
         </div>
         <button class="btn btn-ghost btn-sm" onclick="closeModal('bookOverlay')">✕</button>
       </div>
 
-      <p id="bSummary" style="font-size:14.5px;color:var(--text-secondary);line-height:1.6;"></p>
+      <p id="bSummary" style="font-size:14px;color:var(--text-secondary);line-height:1.6;"></p>
 
       <div class="brief-grid">
         <div class="brief-cell">
@@ -707,12 +829,12 @@
       <div class="borrow-box" id="bBorrowBox"></div>
 
       <details class="meta-drawer" id="metaDrawer">
-        <summary>Interoperable Metadata (JSON · Dublin Core XML · Schema.org JSON-LD)</summary>
-        <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:12px;flex-wrap:wrap;">
+        <summary>Interoperable Metadata (JSON · Dublin Core XML · JSON-LD)</summary>
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:12px;flex-wrap:wrap;">
           <div class="segmented" id="fmtTabs">
             <button class="seg-btn active" data-fmt="json" onclick="loadBookMetadata('json')">JSON</button>
             <button class="seg-btn" data-fmt="xml" onclick="loadBookMetadata('xml')">Dublin Core XML</button>
-            <button class="seg-btn" data-fmt="jsonld" onclick="loadBookMetadata('jsonld')">Schema.org JSON-LD</button>
+            <button class="seg-btn" data-fmt="jsonld" onclick="loadBookMetadata('jsonld')">JSON-LD</button>
           </div>
           <button class="btn btn-sm" onclick="copyMetadata()">Copy</button>
         </div>
@@ -752,7 +874,7 @@
     </div>
   </div>
 
-  <!-- AUTH SHEET (SIGN IN / REGISTER / FORGOT PASSWORD) -->
+  <!-- AUTH SHEET -->
   <div class="overlay" id="authOverlay">
     <div class="sheet sheet-sm">
       <div class="sheet-head">
@@ -760,7 +882,7 @@
         <button class="btn btn-ghost btn-sm" onclick="closeModal('authOverlay')">✕</button>
       </div>
 
-      <div class="segmented" style="width:100%;display:grid;grid-template-columns:1fr 1fr 1fr;margin-bottom:16px;">
+      <div class="segmented" style="width:100%;display:grid;grid-template-columns:1fr 1fr 1fr;margin-bottom:14px;">
         <button class="seg-btn active" id="tabLogin" onclick="setAuthMode('login')">Sign In</button>
         <button class="seg-btn" id="tabRegister" onclick="setAuthMode('register')">Register</button>
         <button class="seg-btn" id="tabReset" onclick="setAuthMode('reset')">Recover</button>
@@ -769,7 +891,6 @@
       <div class="form-err" id="authErr"></div>
       <div class="form-ok" id="authOk"></div>
 
-      <!-- Login / Register Form -->
       <form id="authForm">
         <div id="registerFields" style="display:none;">
           <div class="field">
@@ -817,14 +938,24 @@
         </div>
 
         <button type="submit" class="btn btn-blue" style="width:100%;padding:11px;" id="authSubmit">Sign In</button>
+
+        <details class="demo-box" id="demoMemberBox">
+          <summary>Demo Member Account (Instant Try)</summary>
+          <div class="demo-creds">
+            <div>
+              Email: member@bibliograph.dev<br />
+              Pass:  MemberDemo2026!
+            </div>
+            <button type="button" class="btn btn-sm" onclick="fillDemoMember()">Fill Credentials</button>
+          </div>
+        </details>
       </form>
 
-      <!-- Password Recovery Panel -->
       <div id="resetPanel" style="display:none;">
-        <p style="font-size:13px;color:var(--text-secondary);margin-bottom:14px;">
+        <p style="font-size:13px;color:var(--text-secondary);margin-bottom:12px;">
           <strong>Step 1:</strong> Verify your email &amp; phone to notify the library desk. Any on-duty librarian can then give you a 15-minute 6-digit recovery code.
         </p>
-        <form id="resetReqForm" style="margin-bottom:18px;padding-bottom:16px;border-bottom:1px solid var(--border);">
+        <form id="resetReqForm" style="margin-bottom:16px;padding-bottom:14px;border-bottom:1px solid var(--border);">
           <div class="field">
             <label>Registered Email</label>
             <input id="rrEmail" type="email" required placeholder="you@example.com" />
@@ -837,7 +968,7 @@
         </form>
 
         <p style="font-size:13px;color:var(--text-secondary);margin-bottom:12px;">
-          <strong>Step 2:</strong> Already received your 6-digit code from a librarian? Reset your password below.
+          <strong>Step 2:</strong> Enter the 6-digit code from the librarian to set a new password.
         </p>
         <form id="resetConfirmForm">
           <div class="row-2">
@@ -889,9 +1020,7 @@
       state.token = token;
       localStorage.removeItem(TOKEN_KEY);
       sessionStorage.removeItem(TOKEN_KEY);
-      if (token) {
-        (remember ? localStorage : sessionStorage).setItem(TOKEN_KEY, token);
-      }
+      if (token) (remember ? localStorage : sessionStorage).setItem(TOKEN_KEY, token);
     }
 
     function esc(v) {
@@ -910,6 +1039,14 @@
       return new Date(iso).toLocaleString(undefined, {
         month: "short", day: "numeric", year: "numeric", hour: "2-digit", minute: "2-digit"
       });
+    }
+
+    function fillDemoMember() {
+      setAuthMode("login");
+      $("authEmail").value = "member@bibliograph.dev";
+      $("authPassword").value = "MemberDemo2026!";
+      $("rememberMe").checked = true;
+      showToast("Demo member credentials filled. Tap Sign In.");
     }
 
     function downloadCalendarReminder(title, description, isoDate) {
@@ -993,15 +1130,15 @@
         if (w.status === "ready") {
           bars.push(`
             <div class="alert-bar green">
-              <div><strong>Reserved Copy Ready!</strong> "${esc(w.resource_title)}" has arrived and is held for you until <strong>${fmtDateTime(w.hold_expires_at)}</strong>. Visit the library desk to collect it.</div>
-              <button class="btn btn-green btn-sm" onclick="downloadWaitlistCal(${w.id})">Add Pickup Reminder (.ics)</button>
+              <div><strong>Reserved Copy Ready!</strong> "${esc(w.resource_title)}" has arrived and is held for you until <strong>${fmtDateTime(w.hold_expires_at)}</strong>.</div>
+              <button class="btn btn-green btn-sm" onclick="downloadWaitlistCal(${w.id})">Pickup Reminder (.ics)</button>
             </div>
           `);
         } else if (w.status === "assigned") {
           bars.push(`
             <div class="alert-bar blue">
               <div><strong>Waitlist Spot Secured:</strong> "${esc(w.resource_title)}" is pre-assigned to you${w.expected_available_at ? ` (expected ~${fmtDate(w.expected_available_at)})` : ""}.</div>
-              <button class="btn btn-sm" onclick="downloadWaitlistCal(${w.id})">Add Calendar Reminder (.ics)</button>
+              <button class="btn btn-sm" onclick="downloadWaitlistCal(${w.id})">Calendar (.ics)</button>
             </div>
           `);
         }
@@ -1149,9 +1286,9 @@
       if (hasFilter) {
         const parts = [];
         if (q) parts.push(`"${q}"`);
-        if (avail === "true") parts.push("Available only");
+        if (avail === "true") parts.push("Available");
         if (avail === "false") parts.push("Checked out");
-        $("filterSummary").textContent = `Showing filtered results for ${parts.join(" · ")}`;
+        $("filterSummary").textContent = `Filtered: ${parts.join(" · ")}`;
       }
 
       const params = new URLSearchParams({ limit: String(state.limit), offset: String(state.offset) });
@@ -1195,8 +1332,8 @@
       if (!data.items.length) {
         grid.innerHTML = `
           <div class="empty-box" style="grid-column:1/-1;">
-            <p style="margin-bottom:16px;">No books matched your search.</p>
-            <button class="btn btn-sm" onclick="clearAllFilters()">← Back to Full Catalogue</button>
+            <p style="margin-bottom:14px;">No books matched your search.</p>
+            <button class="btn btn-sm" onclick="clearAllFilters()">← Full Catalogue</button>
           </div>
         `;
         $("pager").style.display = "none";
@@ -1211,11 +1348,11 @@
 
         let badge;
         if (inStock) {
-          badge = `<span class="stock-badge in">${item.available_copies} of ${item.total_copies} ready</span>`;
+          badge = `<span class="stock-badge in">${item.available_copies}/${item.total_copies} ready</span>`;
         } else if (forecast && forecast.next_available_at) {
-          badge = `<span class="stock-badge out">Due back ${fmtDate(forecast.next_available_at)}</span>`;
+          badge = `<span class="stock-badge out">Due ${fmtDate(forecast.next_available_at)}</span>`;
         } else {
-          badge = `<span class="stock-badge out">Waitlist open</span>`;
+          badge = `<span class="stock-badge out">Waitlist</span>`;
         }
 
         const tagsHtml = item.tags.map((t) => `<span class="tag" data-tag="${esc(t)}">#${esc(t)}</span>`).join("");
@@ -1236,14 +1373,14 @@
         return `
           <article class="card" onclick="openBookModal(${item.id})">
             <div class="card-top">
-              <div>
+              <div style="min-width:0;">
                 <div class="card-kicker">${esc(item.publisher)} · ${esc(item.publication_year)}</div>
                 <h3>${esc(item.title)}</h3>
               </div>
               ${badge}
             </div>
             <div class="authors">${esc(item.authors.join(", "))}</div>
-            <p class="summary">${esc(item.summary || "Click to read details and request this book.")}</p>
+            <p class="summary">${esc(item.summary || "Tap to read details and request this book.")}</p>
             <div class="tags">${tagsHtml}</div>
             <div class="card-foot">
               ${footLeft}
@@ -1301,8 +1438,8 @@
       if (!state.token) {
         box.innerHTML = `
           <div class="borrow-row">
-            <span style="font-size:13.5px;color:var(--text-secondary);">Sign in or create an account to request this book or join its waitlist.</span>
-            <button class="btn btn-blue btn-sm" onclick="closeModal('bookOverlay'); setAuthMode('register'); openModal('authOverlay');">Sign In / Register</button>
+            <span style="font-size:13.5px;color:var(--text-secondary);">Sign in (or use the demo account) to borrow or join the waitlist.</span>
+            <button class="btn btn-blue btn-sm" onclick="closeModal('bookOverlay'); setAuthMode('login'); openModal('authOverlay');">Sign In / Demo</button>
           </div>
         `;
       } else if (myLoan && myLoan.status === "pending") {
@@ -1312,7 +1449,7 @@
               <strong style="font-size:14px;color:var(--amber);">Borrow Request Pending</strong>
               <p style="font-size:13px;color:var(--text-secondary);">Requested for ${myLoan.requested_days} days. Waiting for librarian approval.</p>
             </div>
-            <button class="btn btn-sm" onclick="closeModal('bookOverlay'); switchView('loans');">View My Activity</button>
+            <button class="btn btn-sm" onclick="closeModal('bookOverlay'); switchView('loans');">View Activity</button>
           </div>
         `;
       } else if (myLoan && myLoan.status === "active") {
@@ -1338,7 +1475,7 @@
               <strong style="font-size:14px;color:var(--green);">Reserved Copy Held for You!</strong>
               <p style="font-size:13px;color:var(--text-secondary);">Held until <strong>${fmtDateTime(myWait.hold_expires_at)}</strong>. Visit the desk to issue.</p>
             </div>
-            <button class="btn btn-green btn-sm" onclick="downloadWaitlistCal(${myWait.id})">Add Pickup Reminder (.ics)</button>
+            <button class="btn btn-green btn-sm" onclick="downloadWaitlistCal(${myWait.id})">Pickup Reminder (.ics)</button>
           </div>
         `;
       } else if (myWait && (myWait.status === "waiting" || myWait.status === "assigned")) {
@@ -1349,7 +1486,7 @@
               <strong style="font-size:14px;color:var(--blue);">${heading}</strong>
               <p style="font-size:13px;color:var(--text-secondary);">${esc(myWait.note || "A librarian will pre-assign the next returned copy to you.")}</p>
             </div>
-            <div style="display:flex;gap:8px;">
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
               ${myWait.expected_available_at ? `<button class="btn btn-sm" onclick="downloadWaitlistCal(${myWait.id})">Calendar (.ics)</button>` : ""}
               <button class="btn btn-red btn-sm" onclick="cancelWaitlist(${myWait.id})">Leave</button>
             </div>
@@ -1519,7 +1656,7 @@
       if (!state.myLoans.length) {
         box.innerHTML = `
           <div class="empty-box">
-            <p style="margin-bottom:16px;">You haven't requested any books yet.</p>
+            <p style="margin-bottom:14px;">You haven't requested any books yet.</p>
             <button class="btn btn-blue btn-sm" onclick="switchView('catalogue')">Browse Catalogue</button>
           </div>
         `;
@@ -1534,7 +1671,7 @@
                 <th>Book</th>
                 <th>Status</th>
                 <th>Timeline</th>
-                <th>Handled By (Librarian)</th>
+                <th>Handled By</th>
                 <th style="text-align:right;">Action</th>
               </tr>
             </thead>
@@ -1569,7 +1706,7 @@
                   action = `<span style="font-size:12px;color:var(--amber);">Awaiting desk</span>`;
                 } else if (l.status === "active") {
                   action = `
-                    <div style="display:flex;gap:6px;justify-content:flex-end;flex-wrap:wrap;">
+                    <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;">
                       <button class="btn btn-sm" onclick="downloadLoanDueCal(${l.id})">.ics</button>
                       ${pendingExt
                         ? `<span style="font-size:12px;color:var(--amber);align-self:center;">Ticket pending</span>`
@@ -1580,14 +1717,14 @@
 
                 return `
                   <tr>
-                    <td>
+                    <td data-label="Book">
                       <strong>${esc(l.resource_title)}</strong>
                       <span class="sub-mono">ISBN ${esc(l.resource_isbn)}</span>
                     </td>
-                    <td><span class="state-pill ${esc(l.status)}">${esc(l.status)}</span></td>
-                    <td style="font-size:13px;color:var(--text-secondary);">${timeline}</td>
-                    <td>${staffBits.join("") || '<span style="color:var(--text-muted);font-size:12.5px;">Pending desk assignment</span>'}</td>
-                    <td style="text-align:right;">${action}</td>
+                    <td data-label="Status"><span class="state-pill ${esc(l.status)}">${esc(l.status)}</span></td>
+                    <td data-label="Timeline" style="font-size:13px;color:var(--text-secondary);">${timeline}</td>
+                    <td data-label="Handled By">${staffBits.join("") || '<span style="color:var(--text-muted);font-size:12.5px;">Pending desk assignment</span>'}</td>
+                    <td data-label="Action" style="text-align:right;">${action}</td>
                   </tr>
                 `;
               }).join("")}
@@ -1600,7 +1737,7 @@
     function renderMyWaitlistTable() {
       const box = $("myWaitlistContainer");
       if (!state.myWaitlist.length) {
-        box.innerHTML = `<div class="empty-box" style="padding:36px 20px;">No waitlist reservations. Click any checked-out rare book to join its queue.</div>`;
+        box.innerHTML = `<div class="empty-box" style="padding:32px 18px;">No waitlist reservations. Tap any checked-out book to join its queue.</div>`;
         return;
       }
 
@@ -1629,19 +1766,21 @@
 
                 return `
                   <tr>
-                    <td>
+                    <td data-label="Book">
                       <strong>${esc(w.resource_title)}</strong>
                       <span class="sub-mono">ISBN ${esc(w.resource_isbn)}</span>
                     </td>
-                    <td><span class="state-pill ${esc(w.status)}">${esc(w.status)}</span></td>
-                    <td style="font-size:13px;color:var(--text-secondary);">
+                    <td data-label="Status"><span class="state-pill ${esc(w.status)}">${esc(w.status)}</span></td>
+                    <td data-label="Schedule" style="font-size:13px;color:var(--text-secondary);">
                       ${sched}
                       ${w.note ? `<span class="issuer-tag">${esc(w.note)}</span>` : ""}
                     </td>
-                    <td style="font-size:12.5px;color:var(--text-secondary);">${by}</td>
-                    <td style="text-align:right;white-space:nowrap;">
-                      ${canCal ? `<button class="btn btn-sm" onclick="downloadWaitlistCal(${w.id})">Calendar (.ics)</button>` : ""}
-                      ${canCancel ? `<button class="btn btn-red btn-sm" onclick="cancelWaitlist(${w.id})">Cancel</button>` : ""}
+                    <td data-label="Assigned By" style="font-size:12.5px;color:var(--text-secondary);">${by}</td>
+                    <td data-label="Action" style="text-align:right;">
+                      <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;">
+                        ${canCal ? `<button class="btn btn-sm" onclick="downloadWaitlistCal(${w.id})">Calendar (.ics)</button>` : ""}
+                        ${canCancel ? `<button class="btn btn-red btn-sm" onclick="cancelWaitlist(${w.id})">Cancel</button>` : ""}
+                      </div>
                     </td>
                   </tr>
                 `;
@@ -1762,6 +1901,7 @@
       $("resetPanel").style.display = isReset ? "block" : "none";
       $("registerFields").style.display = isReg ? "block" : "none";
       $("rememberRow").style.display = isReg ? "none" : "flex";
+      $("demoMemberBox").style.display = isReg ? "none" : "block";
       $("authSubmit").textContent = isReg ? "Register & Sign In" : "Sign In";
       $("authName").required = isReg;
       $("authPhone").required = isReg;
@@ -1778,53 +1918,63 @@
       e.preventDefault();
       $("authErr").className = "form-err";
       $("authOk").className = "form-ok";
-      const email = $("authEmail").value.trim();
-      const password = $("authPassword").value;
-      const remember = state.authMode === "register" ? true : $("rememberMe").checked;
+      const submitBtn = $("authSubmit");
+      const defaultLabel = state.authMode === "register" ? "Register & Sign In" : "Sign In";
+      submitBtn.disabled = true;
+      submitBtn.textContent = state.authMode === "register" ? "Creating account…" : "Signing in…";
 
-      if (state.authMode === "register") {
-        const memberType = $("authType").value;
-        const regRes = await fetch("/api/v1/auth/register", {
+      try {
+        const email = $("authEmail").value.trim();
+        const password = $("authPassword").value;
+        const remember = state.authMode === "register" ? true : $("rememberMe").checked;
+
+        if (state.authMode === "register") {
+          const memberType = $("authType").value;
+          const regRes = await fetch("/api/v1/auth/register", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              email,
+              full_name: $("authName").value.trim(),
+              password,
+              phone: $("authPhone").value.trim(),
+              address: $("authAddress").value.trim(),
+              member_type: memberType,
+              semester: memberType === "student" ? $("authSemester").value.trim() : null,
+            }),
+          });
+          const regData = await regRes.json().catch(() => null);
+          if (!regRes.ok) {
+            $("authErr").textContent = extractError(regData, "Registration failed.");
+            $("authErr").className = "form-err show";
+            return;
+          }
+        }
+
+        const loginRes = await fetch("/api/v1/auth/login", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            email,
-            full_name: $("authName").value.trim(),
-            password,
-            phone: $("authPhone").value.trim(),
-            address: $("authAddress").value.trim(),
-            member_type: memberType,
-            semester: memberType === "student" ? $("authSemester").value.trim() : null,
-          }),
+          body: JSON.stringify({ email, password, remember_me: remember }),
         });
-        const regData = await regRes.json().catch(() => null);
-        if (!regRes.ok) {
-          $("authErr").textContent = extractError(regData, "Registration failed.");
+        const loginData = await loginRes.json().catch(() => null);
+        if (!loginRes.ok) {
+          $("authErr").textContent = extractError(loginData, "Invalid credentials.");
           $("authErr").className = "form-err show";
           return;
         }
-      }
 
-      const loginRes = await fetch("/api/v1/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password, remember_me: remember }),
-      });
-      const loginData = await loginRes.json().catch(() => null);
-      if (!loginRes.ok) {
-        $("authErr").textContent = extractError(loginData, "Invalid credentials.");
-        $("authErr").className = "form-err show";
-        return;
+        saveToken(loginData.access_token, remember);
+        state.user = loginData.user;
+        closeModal("authOverlay");
+        $("authForm").reset();
+        await refreshMemberActivity(false);
+        renderAuthState();
+        await loadCatalogue();
+        showToast(`Welcome, ${state.user.full_name}`);
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = defaultLabel;
       }
-
-      saveToken(loginData.access_token, remember);
-      state.user = loginData.user;
-      closeModal("authOverlay");
-      $("authForm").reset();
-      await refreshMemberActivity(false);
-      renderAuthState();
-      await loadCatalogue();
-      showToast(`Welcome, ${state.user.full_name}`);
     });
 
     $("resetReqForm").addEventListener("submit", async (e) => {
