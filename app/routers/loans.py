@@ -294,14 +294,26 @@ def issue_ready_waitlist_hold(
             detail=f"Waitlist entry {entry_id} not found.",
         )
 
-    if entry.status != "ready":
+    days = payload.days if payload else 14
+    now = utcnow()
+    claimed = db.execute(
+        update(WaitlistEntry)
+        .where(
+            WaitlistEntry.id == entry.id,
+            WaitlistEntry.status == "ready",
+        )
+        .values(
+            status="fulfilled",
+            note=f"Issued by {librarian.full_name} ({librarian.staff_license_id or 'Staff'}).",
+        )
+    )
+    if claimed.rowcount == 0:
+        db.rollback()
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
             detail="Only a 'ready' reserved hold can be issued directly.",
         )
 
-    days = payload.days if payload else 14
-    now = utcnow()
     loan = Loan(
         user_id=entry.user_id,
         resource_id=entry.resource_id,
@@ -313,8 +325,6 @@ def issue_ready_waitlist_hold(
         admin_note=(payload.admin_note if payload and payload.admin_note else "Issued from reserved waitlist hold."),
         status="active",
     )
-    entry.status = "fulfilled"
-    entry.note = f"Issued by {librarian.full_name} ({librarian.staff_license_id or 'Staff'})."
     db.add(loan)
     db.commit()
     db.expire_all()
@@ -349,12 +359,26 @@ def cancel_waitlist_entry(
             detail="This waitlist entry is already closed.",
         )
 
-    was_ready_hold = entry.status == "ready"
-    entry.status = "cancelled"
+    original_status = entry.status
+    claimed = db.execute(
+        update(WaitlistEntry)
+        .where(
+            WaitlistEntry.id == entry.id,
+            WaitlistEntry.status == original_status,
+            WaitlistEntry.status.not_in(("fulfilled", "cancelled")),
+        )
+        .values(status="cancelled")
+    )
+    if claimed.rowcount == 0:
+        db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="This waitlist entry is already closed.",
+        )
 
-    # If a held copy is released, pass it to the next pre-assigned reader or return to stock
-    if was_ready_hold:
-        next_assigned = db.scalar(
+    if original_status == "ready":
+        promoted = False
+        candidates = db.scalars(
             select(WaitlistEntry)
             .where(
                 WaitlistEntry.resource_id == entry.resource_id,
@@ -362,16 +386,26 @@ def cancel_waitlist_entry(
                 WaitlistEntry.id != entry.id,
             )
             .order_by(WaitlistEntry.created_at.asc())
-        )
-        if next_assigned is not None:
+        ).all()
+        for next_assigned in candidates:
             hold_until = utcnow() + timedelta(days=WAITLIST_HOLD_DAYS)
-            next_assigned.status = "ready"
-            next_assigned.hold_expires_at = hold_until
-            next_assigned.note = (
+            hold_note = (
                 f"A copy of '{entry.resource.title}' is now held exclusively for you "
                 f"until {hold_until.strftime('%Y-%m-%d %H:%M UTC')}."
             )
-        else:
+            res = db.execute(
+                update(WaitlistEntry)
+                .where(
+                    WaitlistEntry.id == next_assigned.id,
+                    WaitlistEntry.status == "assigned",
+                )
+                .values(status="ready", hold_expires_at=hold_until, note=hold_note)
+            )
+            if res.rowcount == 1:
+                promoted = True
+                break
+
+        if not promoted:
             db.execute(
                 update(Resource)
                 .where(
@@ -612,13 +646,32 @@ def approve_and_issue_loan(
             detail=f"Loan request {loan_id} not found.",
         )
 
-    if loan.status != "pending":
+    issued_days = payload.days if (payload and payload.days is not None) else loan.requested_days
+    now = utcnow()
+    transition_values = {
+        "status": "active",
+        "issued_by_id": librarian.id,
+        "requested_days": issued_days,
+        "borrowed_at": now,
+        "due_at": now + timedelta(days=issued_days),
+    }
+    if payload and payload.admin_note is not None:
+        transition_values["admin_note"] = payload.admin_note
+
+    claimed = db.execute(
+        update(Loan)
+        .where(
+            Loan.id == loan.id,
+            Loan.status == "pending",
+        )
+        .values(**transition_values)
+    )
+    if claimed.rowcount == 0:
+        db.rollback()
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
             detail="Only pending borrow requests can be approved.",
         )
-
-    issued_days = payload.days if (payload and payload.days is not None) else loan.requested_days
 
     decrement = db.execute(
         update(Resource)
@@ -634,15 +687,6 @@ def approve_and_issue_loan(
             status_code=status.HTTP_409_CONFLICT,
             detail="Cannot issue: 0 copies left in stock.",
         )
-
-    now = utcnow()
-    loan.status = "active"
-    loan.issued_by_id = librarian.id
-    loan.requested_days = issued_days
-    loan.borrowed_at = now
-    loan.due_at = now + timedelta(days=issued_days)
-    if payload and payload.admin_note is not None:
-        loan.admin_note = payload.admin_note
 
     db.commit()
     db.expire_all()
@@ -667,16 +711,27 @@ def reject_loan_request(
             detail=f"Loan request {loan_id} not found.",
         )
 
-    if loan.status != "pending":
+    values = {
+        "status": "rejected",
+        "issued_by_id": librarian.id,
+    }
+    if payload and payload.admin_note is not None:
+        values["admin_note"] = payload.admin_note
+
+    claimed = db.execute(
+        update(Loan)
+        .where(
+            Loan.id == loan.id,
+            Loan.status == "pending",
+        )
+        .values(**values)
+    )
+    if claimed.rowcount == 0:
+        db.rollback()
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
             detail="Only pending borrow requests can be declined.",
         )
-
-    loan.status = "rejected"
-    loan.issued_by_id = librarian.id
-    if payload and payload.admin_note is not None:
-        loan.admin_note = payload.admin_note
 
     db.commit()
     db.expire_all()
@@ -699,20 +754,34 @@ def mark_loan_returned(
             detail=f"Loan {loan_id} not found.",
         )
 
-    if loan.status != "active":
+    now = utcnow()
+    due_at = _as_utc(loan.due_at)
+    overdue_days = 0
+    if due_at is not None and now > due_at:
+        seconds_late = (now - due_at).total_seconds()
+        overdue_days = max(1, math.ceil(seconds_late / 86400))
+
+    claimed = db.execute(
+        update(Loan)
+        .where(
+            Loan.id == loan.id,
+            Loan.status == "active",
+        )
+        .values(
+            status="returned",
+            returned_at=now,
+            returned_by_id=librarian.id,
+            overdue_days=overdue_days,
+        )
+    )
+    if claimed.rowcount == 0:
+        db.rollback()
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
             detail="Only active issued loans can be marked returned.",
         )
 
-    now = utcnow()
-    due_at = _as_utc(loan.due_at)
-    overdue_days = 0
-
-    if due_at is not None and now > due_at:
-        seconds_late = (now - due_at).total_seconds()
-        overdue_days = max(1, math.ceil(seconds_late / 86400))
-
+    if overdue_days > 0:
         existing_suspension = _as_utc(loan.user.suspended_until)
         penalty_start = (
             existing_suspension
@@ -721,11 +790,6 @@ def mark_loan_returned(
         )
         loan.user.suspended_until = penalty_start + timedelta(days=overdue_days)
 
-    loan.status = "returned"
-    loan.returned_at = now
-    loan.returned_by_id = librarian.id
-    loan.overdue_days = overdue_days
-
     for ext in loan.extensions:
         if ext.status == "pending":
             ext.status = "declined"
@@ -733,24 +797,35 @@ def mark_loan_returned(
             ext.decided_at = now
             ext.admin_note = "Closed automatically when book was returned."
 
-    # Auto-hold for the earliest pre-assigned waitlist reader; otherwise return to public stock
-    assigned_entry = db.scalar(
+    # Atomically promote the earliest pre-assigned waitlist reader; otherwise return to public stock
+    promoted = False
+    candidates = db.scalars(
         select(WaitlistEntry)
         .where(
             WaitlistEntry.resource_id == loan.resource_id,
             WaitlistEntry.status == "assigned",
         )
         .order_by(WaitlistEntry.created_at.asc())
-    )
-    if assigned_entry is not None:
+    ).all()
+    for candidate in candidates:
         hold_until = now + timedelta(days=WAITLIST_HOLD_DAYS)
-        assigned_entry.status = "ready"
-        assigned_entry.hold_expires_at = hold_until
-        assigned_entry.note = (
+        hold_note = (
             f"Your reserved copy of '{loan.resource.title}' has arrived! "
             f"Held exclusively for you until {hold_until.strftime('%Y-%m-%d %H:%M UTC')}."
         )
-    else:
+        promote_res = db.execute(
+            update(WaitlistEntry)
+            .where(
+                WaitlistEntry.id == candidate.id,
+                WaitlistEntry.status == "assigned",
+            )
+            .values(status="ready", hold_expires_at=hold_until, note=hold_note)
+        )
+        if promote_res.rowcount == 1:
+            promoted = True
+            break
+
+    if not promoted:
         db.execute(
             update(Resource)
             .where(

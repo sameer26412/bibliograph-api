@@ -275,6 +275,7 @@ class PasswordResetRequest(Base):
     status: Mapped[str] = mapped_column(String(20), index=True, nullable=False, default="pending")
     code_hash: Mapped[str | None] = mapped_column(String(255), nullable=True)
     expires_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    failed_attempts: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
     requested_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, nullable=False)
     completed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
 

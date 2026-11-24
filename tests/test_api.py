@@ -515,6 +515,8 @@ def test_content_negotiation_xml_jsonld_and_etag_caching(client: TestClient):
         headers={"Accept": "application/ld+json", "If-None-Match": etag},
     )
     assert cached.status_code == 304
+    assert "accept" in xml_res.headers.get("vary", "").lower()
+    assert "accept" in jld_res.headers.get("vary", "").lower()
 
 
 def test_rbac_mass_assignment_and_resource_crud(client: TestClient):
@@ -777,3 +779,204 @@ def test_auth_rate_limiting_enforces_429(client: TestClient, monkeypatch):
     )
     assert limited.status_code == 429
     assert "retry-after" in limited.headers
+
+def test_recovery_code_five_attempt_lockout(client: TestClient):
+    _register_and_login(
+        client,
+        "lockout@bibliograph.dev",
+        "Lockout Member",
+        "InitialPass123!",
+        phone="+91 90000 55555",
+    )
+    lib_headers = {"Authorization": f"Bearer {_login(client, 'librarian@bibliograph.dev', 'LibrarianPass123!')}"}
+
+    req_res = client.post(
+        "/api/v1/auth/password-reset/request",
+        json={"email": "lockout@bibliograph.dev", "phone": "+91 90000 55555"},
+    )
+    assert req_res.status_code == 202
+
+    all_reqs = client.get("/api/v1/auth/password-reset/requests", headers=lib_headers).json()
+    target_id = next(r["id"] for r in all_reqs if r["user_email"] == "lockout@bibliograph.dev")
+    issued = client.post(f"/api/v1/auth/password-reset/{target_id}/issue", headers=lib_headers)
+    assert issued.status_code == 200
+    real_code = issued.json()["recovery_code"]
+    wrong_code = "000000" if real_code != "000000" else "999999"
+
+    for _ in range(4):
+        bad = client.post(
+            "/api/v1/auth/password-reset/confirm",
+            json={"email": "lockout@bibliograph.dev", "code": wrong_code, "new_password": "NewPassword123!"},
+        )
+        assert bad.status_code == 400
+
+    fifth = client.post(
+        "/api/v1/auth/password-reset/confirm",
+        json={"email": "lockout@bibliograph.dev", "code": wrong_code, "new_password": "NewPassword123!"},
+    )
+    assert fifth.status_code == 429
+
+    # Real code must now be invalidated
+    after_lock = client.post(
+        "/api/v1/auth/password-reset/confirm",
+        json={"email": "lockout@bibliograph.dev", "code": real_code, "new_password": "NewPassword123!"},
+    )
+    assert after_lock.status_code == 400
+
+
+def test_password_72_byte_utf8_boundary(client: TestClient):
+    # 25 euro signs = 25 characters, but 75 UTF-8 bytes (> 72-byte bcrypt ceiling)
+    too_many_bytes = client.post(
+        "/api/v1/auth/register",
+        json={
+            "email": "utf8fail@bibliograph.dev",
+            "full_name": "UTF8 Boundary",
+            "password": "€" * 25,
+            "phone": "+91 90000 77771",
+            "address": "Test Street 1",
+            "member_type": "local",
+        },
+    )
+    assert too_many_bytes.status_code == 422
+
+    # 24 euro signs = 72 UTF-8 bytes exactly (must be accepted)
+    exact_bytes = client.post(
+        "/api/v1/auth/register",
+        json={
+            "email": "utf8ok@bibliograph.dev",
+            "full_name": "UTF8 Exact",
+            "password": "€" * 24,
+            "phone": "+91 90000 77772",
+            "address": "Test Street 2",
+            "member_type": "local",
+        },
+    )
+    assert exact_bytes.status_code == 201
+
+
+def test_concurrent_loan_approvals_and_returns(tmp_path, monkeypatch):
+    from concurrent.futures import ThreadPoolExecutor
+    import threading
+    from sqlalchemy.pool import NullPool
+
+    db_file = tmp_path / "concurrency.db"
+    conc_engine = create_engine(
+        f"sqlite:///{db_file}",
+        connect_args={"check_same_thread": False, "timeout": 15},
+        poolclass=NullPool,
+    )
+
+    @event.listens_for(conc_engine, "connect")
+    def _configure_sqlite(dbapi_connection, _connection_record):
+        cur = dbapi_connection.cursor()
+        cur.execute("PRAGMA foreign_keys=ON")
+        cur.execute("PRAGMA journal_mode=WAL")
+        cur.execute("PRAGMA busy_timeout=5000")
+        cur.close()
+
+    conc_session_local = sessionmaker(
+        bind=conc_engine,
+        autocommit=False,
+        autoflush=False,
+        expire_on_commit=False,
+    )
+    monkeypatch.setattr(main_module, "engine", conc_engine)
+    monkeypatch.setattr(main_module, "SessionLocal", conc_session_local)
+    monkeypatch.setattr(settings, "seed_demo_data", True)
+    monkeypatch.setattr(settings, "seed_librarian_email", "librarian@bibliograph.dev")
+    monkeypatch.setattr(settings, "seed_librarian_password", "LibrarianPass123!")
+    monkeypatch.setattr(settings, "rate_limit_auth_per_minute", 200)
+    monkeypatch.setattr(settings, "rate_limit_default_per_minute", 200)
+
+    def override_get_db():
+        db = conc_session_local()
+        try:
+            yield db
+        finally:
+            db.close()
+
+    main_module.app.dependency_overrides[get_db] = override_get_db
+    security_module.rate_limiter.reset()
+
+    try:
+        with TestClient(main_module.app) as setup_client:
+            lib_headers = {"Authorization": f"Bearer {_login(setup_client, 'librarian@bibliograph.dev', 'LibrarianPass123!')}"}
+            a_headers = {"Authorization": f"Bearer {_register_and_login(setup_client, 'race_a@bibliograph.dev', 'Race A', 'RacePass123!')}"}
+            b_headers = {"Authorization": f"Bearer {_register_and_login(setup_client, 'race_b@bibliograph.dev', 'Race B', 'RacePass123!')}"}
+
+            # Scenario 1: Two pending loans racing for the last copy (total_copies=1)
+            one_copy = setup_client.post(
+                "/api/v1/resources",
+                json={
+                    "isbn": "978-0000000101",
+                    "title": "Single Copy Concurrency Book",
+                    "publication_year": 2025,
+                    "publisher": "Concurrency Press",
+                    "total_copies": 1,
+                    "authors": ["Test Author"],
+                },
+                headers=lib_headers,
+            ).json()
+
+            loan_a = setup_client.post("/api/v1/loans", json={"resource_id": one_copy["id"], "days": 7}, headers=a_headers).json()
+            loan_b = setup_client.post("/api/v1/loans", json={"resource_id": one_copy["id"], "days": 7}, headers=b_headers).json()
+
+            barrier_1 = threading.Barrier(2)
+
+            def approve_loan_worker(loan_id: int) -> int:
+                with TestClient(main_module.app) as worker_client:
+                    barrier_1.wait(timeout=5)
+                    return worker_client.post(f"/api/v1/loans/{loan_id}/approve", json={"days": 7}, headers=lib_headers).status_code
+
+            with ThreadPoolExecutor(max_workers=2) as pool:
+                statuses_1 = sorted(pool.map(approve_loan_worker, [loan_a["id"], loan_b["id"]]))
+
+            assert statuses_1 == [200, 409]
+            book_after_1 = setup_client.get(f"/api/v1/resources/{one_copy['id']}").json()
+            assert book_after_1["available_copies"] == 0
+
+            # Scenario 2: Two librarians approving the SAME pending loan concurrently (must decrement stock only once)
+            two_copy = setup_client.post(
+                "/api/v1/resources",
+                json={
+                    "isbn": "978-0000000102",
+                    "title": "Double Approval Guard Book",
+                    "publication_year": 2025,
+                    "publisher": "Concurrency Press",
+                    "total_copies": 2,
+                    "authors": ["Test Author"],
+                },
+                headers=lib_headers,
+            ).json()
+            same_loan = setup_client.post("/api/v1/loans", json={"resource_id": two_copy["id"], "days": 7}, headers=a_headers).json()
+
+            barrier_2 = threading.Barrier(2)
+
+            def approve_same_worker(_idx: int) -> int:
+                with TestClient(main_module.app) as worker_client:
+                    barrier_2.wait(timeout=5)
+                    return worker_client.post(f"/api/v1/loans/{same_loan['id']}/approve", json={"days": 7}, headers=lib_headers).status_code
+
+            with ThreadPoolExecutor(max_workers=2) as pool:
+                statuses_2 = sorted(pool.map(approve_same_worker, [0, 1]))
+
+            assert statuses_2 == [200, 409]
+            assert setup_client.get(f"/api/v1/resources/{two_copy['id']}").json()["available_copies"] == 1
+
+            # Scenario 3: Two librarians marking the SAME active loan returned concurrently
+            barrier_3 = threading.Barrier(2)
+
+            def return_same_worker(_idx: int) -> int:
+                with TestClient(main_module.app) as worker_client:
+                    barrier_3.wait(timeout=5)
+                    return worker_client.post(f"/api/v1/loans/{same_loan['id']}/return", headers=lib_headers).status_code
+
+            with ThreadPoolExecutor(max_workers=2) as pool:
+                statuses_3 = sorted(pool.map(return_same_worker, [0, 1]))
+
+            assert statuses_3 == [200, 409]
+            assert setup_client.get(f"/api/v1/resources/{two_copy['id']}").json()["available_copies"] == 2
+    finally:
+        main_module.app.dependency_overrides.clear()
+        Base.metadata.drop_all(bind=conc_engine)
+        conc_engine.dispose()

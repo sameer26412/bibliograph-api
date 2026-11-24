@@ -4,7 +4,7 @@ import secrets
 from typing import Literal
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
-from sqlalchemy import select
+from sqlalchemy import select, update
 from sqlalchemy.orm import Session, selectinload
 
 from app.config import settings
@@ -31,6 +31,7 @@ router = APIRouter(prefix="/api/v1/auth", tags=["Authentication & Profiles"])
 
 REMEMBER_ME_MINUTES = 60 * 24 * 7  # 7 days
 RESET_CODE_TTL_MINUTES = 15
+MAX_RESET_ATTEMPTS = 5
 
 
 def _as_utc(dt: datetime | None) -> datetime | None:
@@ -263,6 +264,7 @@ def issue_password_reset_code(
     req.status = "issued"
     req.issued_by_id = librarian.id
     req.expires_at = utcnow() + timedelta(minutes=RESET_CODE_TTL_MINUTES)
+    req.failed_attempts = 0
     db.commit()
     db.expire_all()
 
@@ -307,17 +309,58 @@ def confirm_password_reset(
         or not req.code_hash
         or req.expires_at is None
         or _as_utc(req.expires_at) < now
-        or not verify_password(payload.code.strip(), req.code_hash)
     ):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Invalid or expired recovery code. Request a fresh code from the librarian.",
         )
 
+    if not verify_password(payload.code.strip(), req.code_hash):
+        db.execute(
+            update(PasswordResetRequest)
+            .where(
+                PasswordResetRequest.id == req.id,
+                PasswordResetRequest.status == "issued",
+            )
+            .values(failed_attempts=PasswordResetRequest.failed_attempts + 1)
+        )
+        db.flush()
+        db.refresh(req)
+        if req.failed_attempts >= MAX_RESET_ATTEMPTS:
+            req.status = "cancelled"
+            req.code_hash = None
+            db.commit()
+            raise HTTPException(
+                status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+                detail=(
+                    f"Recovery code invalidated after {MAX_RESET_ATTEMPTS} failed attempts. "
+                    "Request a fresh code from the librarian."
+                ),
+            )
+        db.commit()
+        remaining = MAX_RESET_ATTEMPTS - req.failed_attempts
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Invalid recovery code. {remaining} attempt(s) remaining before lockout.",
+        )
+
+    claimed = db.execute(
+        update(PasswordResetRequest)
+        .where(
+            PasswordResetRequest.id == req.id,
+            PasswordResetRequest.status == "issued",
+            PasswordResetRequest.failed_attempts < MAX_RESET_ATTEMPTS,
+        )
+        .values(status="completed", completed_at=now, code_hash=None)
+    )
+    if claimed.rowcount == 0:
+        db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Recovery code has already been used or invalidated.",
+        )
+
     user.hashed_password = hash_password(payload.new_password)
-    req.status = "completed"
-    req.completed_at = now
-    req.code_hash = None
     db.commit()
     return {"detail": "Password reset complete. You can now sign in with your new password."}
 

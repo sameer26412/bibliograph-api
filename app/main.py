@@ -100,6 +100,12 @@ DEMO_RESOURCES = [
 
 def init_db_and_seed() -> None:
     Base.metadata.create_all(bind=engine)
+    from sqlalchemy import inspect as sa_inspect
+    with engine.begin() as conn:
+        if "password_reset_requests" in sa_inspect(conn).get_table_names():
+            cols = {c["name"] for c in sa_inspect(conn).get_columns("password_reset_requests")}
+            if "failed_attempts" not in cols:
+                conn.execute(text("ALTER TABLE password_reset_requests ADD COLUMN failed_attempts INTEGER NOT NULL DEFAULT 0"))
     if not settings.seed_demo_data:
         return
 
@@ -195,7 +201,7 @@ async def lifespan(_app: FastAPI):
 
 app = FastAPI(
     title="BiblioGraph API",
-    version="1.0.0",
+    version="2.0.0",
     description=(
         "Headless bibliographic catalogue and librarian-governed circulation REST API with HTTP "
         "content negotiation (JSON, Dublin Core XML, Schema.org JSON-LD), approval workflows, "
