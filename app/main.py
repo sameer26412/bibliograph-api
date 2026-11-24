@@ -312,3 +312,32 @@ def health_check(
         database="connected",
         environment=settings.app_env,
     )
+    
+from pathlib import Path
+from fastapi.responses import FileResponse
+
+DOCS_DIR = Path(__file__).resolve().parent.parent / "projectdocs"
+
+
+def _serve_pdf(filename: str):
+    pdf_path = DOCS_DIR / filename
+    if not pdf_path.is_file():
+        return JSONResponse(status_code=404, content={"detail": "Document not found."})
+    return FileResponse(
+        path=pdf_path,
+        media_type="application/pdf",
+        headers={
+            "Content-Disposition": f'inline; filename="{filename}"',
+            "Cache-Control": "public, max-age=3600",
+        },
+    )
+
+
+@app.get("/report", include_in_schema=False)
+def project_report_pdf():
+    return _serve_pdf("Sameer_Ghanate_BiblioGraph_Project_Report.pdf")
+
+
+@app.get("/abstract", include_in_schema=False)
+def project_abstract_pdf():
+    return _serve_pdf("Sameer_Ghanate_BiblioGraph_Abstract.pdf")
