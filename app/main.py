@@ -245,7 +245,9 @@ async def security_and_rate_limit_middleware(request: Request, call_next):
     for key, value in rate_headers.items():
         response.headers[key] = value
     response.headers["X-Content-Type-Options"] = "nosniff"
-    response.headers["X-Frame-Options"] = "DENY"
+    response.headers["Content-Security-Policy"] = (
+        "frame-ancestors 'self' https://sameermg-portfolio.vercel.app"
+    )
     response.headers["Referrer-Policy"] = "no-referrer"
     return response
 
